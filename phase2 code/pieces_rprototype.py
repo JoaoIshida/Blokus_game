@@ -1,5 +1,6 @@
 
 import sys
+from board import Board
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QVBoxLayout, QFrame
 from PyQt5.QtGui import QPixmap, QPainter, QBitmap, QImage, QColor
 from PyQt5.QtCore import Qt, QPoint
@@ -54,7 +55,7 @@ class DraggableLabel(QLabel):
             self.move(new_pos)
 
             # Check if the move is possible and update the color overlay accordingly
-            if self.geometry().intersects(green_square.geometry()) and not self.check_collision():
+            if self.geometry().intersects(boardLayout.geometry()) and not self.check_collision():
                 self.set_color_overlay(Qt.green) #MEANS THAT THE PIECE CAN BE PLACED AND COUNTS THE POINTS
             else:
                 self.set_color_overlay(Qt.red) #PIECE CANNOT BE PLACED
@@ -62,7 +63,7 @@ class DraggableLabel(QLabel):
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton:
             self.dragging = False
-            if not self.onboard and self.geometry().intersects(green_square.geometry()) and not self.check_collision():
+            if not self.onboard and self.geometry().intersects(boardLayout.geometry()) and not self.check_collision():
                 # Check if the piece is dropped on top of another piece
                 for piece in pieces:
                     if piece != self and piece.onboard and self.pixel_collision(piece):
@@ -139,12 +140,12 @@ if __name__ == '__main__':
     exit_button = QPushButton('Exit', window)
     exit_button.clicked.connect(on_exit_clicked)
 
-    green_square = QFrame(window)
-    green_square.setFixedSize(550, 550)
-    green_square.setStyleSheet("background-color: rgb(255, 255, 255);")
+    boardLayout = Board()
+    boardLayout.setFixedSize(550, 550)
+    boardLayout.setStyleSheet("background-color: rgb(255, 255, 255);")
 
     layout.addWidget(exit_button)
-    layout.addWidget(green_square)
+    layout.addWidget(boardLayout)
 
     # Player 1 - RED
     score_label1 = QLabel("0")
@@ -207,7 +208,7 @@ if __name__ == '__main__':
 
     # Player 4's Pieces -YELLOW
     initial_position4 = QPoint(50, score_label4.height() + 250)
-    image_label4 = DraggableLabel(window, player4.score_label, 'assets/Y5.png', initial_position4, 4)
+    image_label4 = DraggableLabel(window, player4.score_label, '../assets/Y5.png', initial_position4, 4)
     image_label4.setScaledContents(True)
     image_label4.set_size_by_percentage(1)
     pieces.append(image_label4)
