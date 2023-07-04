@@ -10,7 +10,8 @@ class tile(QFrame):
         self.x = x
         self.y = y
         self.isTileEmpty = True
-    
+        self.setStyleSheet(f"background-color: white; border: 1px solid black;")
+
     # Checks if the tile is empty
     def isEmpty(self):
         return self.isTileEmpty
@@ -37,11 +38,7 @@ class Board(QMainWindow):
     def initBoard(self):
         for row in range(20):
             for col in range(20):
-                # Creates a tile with the given row and column
-                frame = tile(row, col)
-                frame.setStyleSheet(f"background-color: white; border: 1px solid black;")
-                frame.setFrameShape(QFrame.StyledPanel)
-                # Adds the tile to the board
-                self.gridLayout.addWidget(frame, row+1, col+1)
+                # Creates a tile with the given row and column then adds the tile to the board
+                self.gridLayout.addWidget(tile(row, col), row+1, col+1)
 
 
