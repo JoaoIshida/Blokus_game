@@ -11,11 +11,13 @@ class Player:
         self.pieces = [] #SAVES PLAYER PIECES
 
 class DraggableLabel(QLabel):
-    def __init__(self, parent, score_label, pixmap_path, initial_position, weight):
+    def __init__(self, parent, score_label, pixmap_path, initial_position, weight, Layout, pieces):
         super().__init__(parent)
         self.pixmap = QPixmap(pixmap_path) #PIXMAP IS SO THAT THE PYQT CAN IDENTIFY THE COLORED PART OF THE PIECES
         self.setPixmap(self.pixmap)        # LIKE THE L OR T SHAPED
         self.setAlignment(Qt.AlignCenter)
+        self.Layout = Layout
+        self.pieces = pieces
         self.dragging = False
         self.offset = QPoint()
         self.score_label = score_label
@@ -65,7 +67,7 @@ class DraggableLabel(QLabel):
             self.move(new_pos)
 
             # Check if the move is possible and update the color overlay accordingly
-            if self.geometry().intersects(boardLayout.geometry()) and not self.check_collision():
+            if self.geometry().intersects(self.Layout.geometry()) and not self.check_collision(self.pieces):
                 self.set_color_overlay(Qt.green) #MEANS THAT THE PIECE CAN BE PLACED AND COUNTS THE POINTS
             else:
                 self.set_color_overlay(Qt.red) #PIECE CANNOT BE PLACED
@@ -73,7 +75,7 @@ class DraggableLabel(QLabel):
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton:
             self.dragging = False
-            if not self.onboard and self.geometry().intersects(boardLayout.geometry()) and not self.check_collision():
+            if not self.onboard and self.geometry().intersects(self.Layout.geometry()) and not self.check_collision(self.pieces):
                 # Store the new position but don't confirm it yet
                 self.new_position = self.pos()
             # After dropping the piece, reset the color overlay to transparent
@@ -93,7 +95,7 @@ class DraggableLabel(QLabel):
         self.setPixmap(overlay_pixmap)
 
     #SELF EXPLANATORY
-    def check_collision(self):
+    def check_collision(self, pieces):
         for piece in pieces:
             if piece != self and piece.onboard and self.pixel_collision(piece):
                 return True
@@ -126,7 +128,7 @@ class DraggableLabel(QLabel):
 def on_exit_clicked():
     QApplication.quit()
 
-def confirm_placement():
+def confirm_placement(pieces):
     for piece in pieces:
         if piece.new_position is not None:
             # Update the score count
@@ -137,8 +139,9 @@ def confirm_placement():
             piece.last_confirmed_position = piece.new_position
             piece.new_position = None
 
-if __name__ == '__main__':
+def startGame():
     app = QApplication(sys.argv)
+    pieces = []
 
     window = QWidget()
     window.setWindowTitle("Game")
@@ -151,7 +154,7 @@ if __name__ == '__main__':
     exit_button.clicked.connect(on_exit_clicked)
 
     confirm_button = QPushButton('Confirm', window)
-    confirm_button.clicked.connect(confirm_placement)
+    confirm_button.clicked.connect(lambda: confirm_placement(pieces))
     layout.addWidget(confirm_button)
 
     boardLayout = Board()
@@ -197,31 +200,29 @@ if __name__ == '__main__':
 
     player4 = Player(score_label4)
 
-    pieces = []
-
     # Player 1's Pieces - RED
     initial_position1 = QPoint(3, score_label1.height() + 154)
-    image_label1 = DraggableLabel(window, player1.score_label, 'assets/X5.png', initial_position1, 5)
+    image_label1 = DraggableLabel(window, player1.score_label, 'assets/X5.png', initial_position1, 5, boardLayout, pieces)
     image_label1.setScaledContents(True)
     image_label1.set_size_by_percentage(1)
     pieces.append(image_label1)
 
     # Player 2's Pieces - GREEN
     initial_position2 = QPoint(124, score_label2.height() + 234)
-    image_label2 = DraggableLabel(window, player2.score_label, 'assets/L5.png', initial_position2, 5)
+    image_label2 = DraggableLabel(window, player2.score_label, 'assets/L5.png', initial_position2, 5, boardLayout, pieces)
     image_label2.setScaledContents(True)
     image_label2.set_size_by_percentage(1)
     pieces.append(image_label2)
 
     # Player 3's Pieces - BLUE
     initial_position3 = QPoint(320, score_label3.height() + 294)
-    image_label3 = DraggableLabel(window, player3.score_label, 'assets/Z5.png', initial_position3, 2)
+    image_label3 = DraggableLabel(window, player3.score_label, 'assets/Z5.png', initial_position3, 2, boardLayout, pieces)
     image_label3.setScaledContents(True)
     image_label3.set_size_by_percentage(1)
     pieces.append(image_label3)
 
     initial_position4 = QPoint(460, score_label4.height() + 358)
-    image_label4 = DraggableLabel(window, player4.score_label, 'assets/Y5.png', initial_position4, 4)
+    image_label4 = DraggableLabel(window, player4.score_label, 'assets/Y5.png', initial_position4, 4, boardLayout, pieces)
     image_label4.setScaledContents(True)
     image_label4.set_size_by_percentage(1)
     pieces.append(image_label4)
@@ -229,3 +230,6 @@ if __name__ == '__main__':
     window.show()
 
     sys.exit(app.exec_())
+
+if __name__ == '__main__':
+    startGame()
