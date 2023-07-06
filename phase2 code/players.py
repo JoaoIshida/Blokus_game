@@ -16,7 +16,8 @@ class Turn:
 
 class PlayerPanel(QLabel):
     def __init__(self, colour):
+        super().__init__()
         self.setText("0")
         self.setAlignment(Qt.AlignRight | Qt.AlignTop)
         self.setStyleSheet(
-            "font-size: 24px; padding: 10px; color: black; background-color: {colour};")
+            f"font-size: 24px; padding: 10px; color: black; background-color: {colour};")

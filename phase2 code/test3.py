@@ -12,6 +12,7 @@ class Player:
         self.is_ai = is_ai
         self.is_turn = is_turn
         self.name = name
+        
 class Turn:
     def __init__(self, turn):
         self.turn = turn

@@ -1,3 +1,4 @@
+import sys
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -31,7 +32,7 @@ class Board(QMainWindow):
         self.centralWidget.setLayout(self.gridLayout)
         self.setCentralWidget(self.centralWidget)
 
-        # Create the board
+        # # Create the board
         self.initBoard()
 
     # Create a 20x20 board with each tile being a QFrame
@@ -40,5 +41,3 @@ class Board(QMainWindow):
             for col in range(20):
                 # Creates a tile with the given row and column then adds the tile to the board
                 self.gridLayout.addWidget(tile(row, col), row+1, col+1)
-
-
