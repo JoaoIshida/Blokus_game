@@ -35,11 +35,12 @@ def confirm_placement(pieces):
             piece.last_confirmed_position = piece.new_position
             piece.new_position = None
 
+
 class gameInterface(QWidget):
     def __init__(self):
         super().__init__()
-        pieceList = []
-        playerList = []
+        self.pieceList = []
+        self.playerList = []
         self.setWindowTitle("Game")
         self.setGeometry(100, 50, 900, 900)
         self.setStyleSheet("background-color: rgb(139, 69, 19);")
@@ -50,11 +51,11 @@ class gameInterface(QWidget):
         exit_button.clicked.connect(on_exit_clicked)
 
         pass_button = QPushButton('Pass', self)
-        pass_button.clicked.connect(lambda: next_player_clicked(playerList, turn))
+        pass_button.clicked.connect(lambda: next_player_clicked(self.playerList, turn))
 
         confirm_button = QPushButton('Confirm', self)
-        confirm_button.clicked.connect(lambda: confirm_placement(pieceList))
-        confirm_button.clicked.connect(lambda: next_player_clicked(playerList, turn))
+        confirm_button.clicked.connect(lambda: confirm_placement(self.pieceList))
+        confirm_button.clicked.connect(lambda: next_player_clicked(self.playerList, turn))
         layout.addWidget(confirm_button)
 
         boardLayout = board.Board()
@@ -85,10 +86,10 @@ class gameInterface(QWidget):
         layout.addWidget(playerPanel4)
         player4 = players.Player(playerPanel4, name = "Player 4")
 
-        playerList.append(player1)
-        playerList.append(player2)
-        playerList.append(player3)
-        playerList.append(player4)
+        self.playerList.append(player1)
+        self.playerList.append(player2)
+        self.playerList.append(player3)
+        self.playerList.append(player4)
         
         # Show whose turn is it
         player_text = QLabel("Player 1", self)
@@ -98,26 +99,33 @@ class gameInterface(QWidget):
 
         # Player 1's Pieces - RED
         initial_position1 = QPoint(200, playerPanel1.height() + 250)
-        image_label1 = pieces.Piece(self, player1.score_label, 'assets/X5.png', initial_position1, 5, boardLayout, pieceList)
-        pieceList.append(image_label1)
+        image_label1 = pieces.Piece(self, player1.score_label, 'assets/X5.png', initial_position1, 5, boardLayout, self.pieceList)
+        self.pieceList.append(image_label1)
 
         # Player 2's Pieces - GREEN
         initial_position2 = QPoint(200, playerPanel2.height() + 150)
-        image_label2 = pieces.Piece(self, player2.score_label, 'assets/L5.png', initial_position2, 5, boardLayout, pieceList)
-        pieceList.append(image_label2)
+        image_label2 = pieces.Piece(self, player2.score_label, 'assets/L5.png', initial_position2, 5, boardLayout, self.pieceList)
+        self.pieceList.append(image_label2)
 
         # Player 3's Pieces - BLUE
         initial_position3 = QPoint(50, playerPanel3.height() + 150)
-        image_label3 = pieces.Piece(self, player3.score_label, 'assets/Z5.png', initial_position3, 2, boardLayout, pieceList)
-        pieceList.append(image_label3)
+        image_label3 = pieces.Piece(self, player3.score_label, 'assets/Z5.png', initial_position3, 2, boardLayout, self.pieceList)
+        self.pieceList.append(image_label3)
 
         # Player 4's Pieces -YELLOW
         initial_position4 = QPoint(350, playerPanel4.height() + 250)
-        image_label4 = pieces.Piece(self, player4.score_label, 'assets/Y5.png', initial_position4, 4, boardLayout, pieceList)
-        pieceList.append(image_label4)
+        image_label4 = pieces.Piece(self, player4.score_label, 'assets/Y5.png', initial_position4, 4, boardLayout, self.pieceList)
+        self.pieceList.append(image_label4)
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter:
+            confirm_placement(self.pieceList)
 
 def startGame():
     app = QApplication(sys.argv)
     window = gameInterface()
     window.show()
     sys.exit(app.exec_())
+
+if __name__ == '__main__':
+    startGame()
