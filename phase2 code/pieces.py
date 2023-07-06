@@ -1,0 +1,110 @@
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
+
+class Piece(QLabel):
+    def __init__(self, parent, score_label, pixmap_path, initial_position, weight, Layout, pieces):
+        super().__init__(parent)
+        self.pixmap = QPixmap(pixmap_path) #PIXMAP IS SO THAT THE PYQT CAN IDENTIFY THE COLORED PART OF THE PIECES
+        self.setPixmap(self.pixmap)        # LIKE THE L OR T SHAPED
+        self.setAlignment(Qt.AlignCenter)
+        self.Layout = Layout
+        self.pieces = pieces
+        self.dragging = False
+        self.offset = QPoint()
+        self.score_label = score_label
+        self.initial_position = initial_position
+        self.onboard = False
+        self.weight = weight
+
+        self.last_confirmed_position = self.initial_position
+        self.new_position = None
+
+        self.move(self.initial_position)
+        self.setScaledContents(True)
+        self.set_size_by_percentage(1)
+        # Create a mask from the alpha channel of the image
+        mask = QBitmap(self.pixmap.createMaskFromColor(Qt.transparent))
+        self.setMask(mask)
+
+    def set_size_by_percentage(self, percentage):
+        original_size = self.pixmap.size()
+        new_width = int(original_size.width() * percentage)
+        new_height = int(original_size.height() * percentage)
+        self.setFixedSize(new_width, new_height)
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            if not self.onboard:  # Only allow dragging if the piece is not on the board
+                self.dragging = True #IF PIECE IS ON THE BOARD, THE PIECE IS NOT DRAGGED ANYMORE
+                self.offset = event.pos()
+            else:
+                self.dragging = False
+                self.move(self.last_confirmed_position)  # Move the piece back to the last confirmed position
+
+    def mouseMoveEvent(self, event):
+        if self.dragging:
+            current_pos = event.windowPos().toPoint()
+            new_pos = current_pos - self.offset
+
+            new_pos.setX(max(0, min(new_pos.x(), self.parent().width() - self.width())))
+            new_pos.setY(max(0, min(new_pos.y(), self.parent().height() - self.height())))
+
+            self.move(new_pos)
+
+            # Check if the move is possible and update the color overlay accordingly
+            if self.geometry().intersects(self.Layout.geometry()) and not self.check_collision(self.pieces):
+                self.set_color_overlay(Qt.green) #MEANS THAT THE PIECE CAN BE PLACED AND COUNTS THE POINTS
+            else:
+                self.set_color_overlay(Qt.red) #PIECE CANNOT BE PLACED
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.dragging = False
+            if not self.onboard and self.geometry().intersects(self.Layout.geometry()) and not self.check_collision(self.pieces):
+                # Store the new position but don't confirm it yet
+                self.new_position = self.pos()
+            # After dropping the piece, reset the color overlay to transparent
+            self.set_color_overlay(Qt.transparent)
+    #OVERLAY FOR THE GREEN AND RED
+    def set_color_overlay(self, color):
+        overlay_pixmap = QPixmap(self.pixmap.size())
+        overlay_pixmap.fill(Qt.transparent)
+        painter = QPainter(overlay_pixmap)
+        painter.setCompositionMode(QPainter.CompositionMode_SourceOver)
+        painter.drawPixmap(0, 0, self.pixmap)
+        painter.setCompositionMode(QPainter.CompositionMode_SourceAtop)
+        painter.fillRect(overlay_pixmap.rect(), color)
+        painter.end()
+
+        self.setPixmap(overlay_pixmap)
+
+    #SELF EXPLANATORY
+    def check_collision(self, pieces):
+        for piece in pieces:
+            if piece != self and piece.onboard and self.pixel_collision(piece):
+                return True
+        return False
+
+    def pixel_collision(self, other_piece):
+        # Convert the pieces' pixmaps to QImages for pixel-level collision check
+        image1 = self.pixmap.toImage()
+        image2 = other_piece.pixmap.toImage()
+
+        # Calculate the intersection area between the pieces' geometries
+        intersection = self.geometry().intersected(other_piece.geometry())
+
+        # Iterate over the pixels within the intersection area
+        for x in range(intersection.x(), intersection.x() + intersection.width()):
+            for y in range(intersection.y(), intersection.y() + intersection.height()):
+                # Calculate the corresponding positions within the images
+                img1_x = x - self.geometry().x()
+                img1_y = y - self.geometry().y()
+                img2_x = x - other_piece.geometry().x()
+                img2_y = y - other_piece.geometry().y()
+
+                # Check if the corresponding pixels are both opaque
+                if image1.pixelColor(img1_x, img1_y).alpha() > 0 and image2.pixelColor(img2_x, img2_y).alpha() > 0:
+                    return True
+
+        return False
