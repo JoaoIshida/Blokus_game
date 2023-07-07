@@ -80,7 +80,7 @@ class MainWindow(QMainWindow):
     def startGame(self):
         self.game = gameInterface()
         self.setCentralWidget(self.game)
-
+        self.game.setFocus(Qt.OtherFocusReason)
 
 def draw_menu():
     app = QApplication(sys.argv)
