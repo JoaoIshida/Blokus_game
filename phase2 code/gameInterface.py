@@ -33,12 +33,18 @@ def ai_move(players, turn, player_index):
     # Check for each piece of the player if they are on the board or not
     for piece in players[player_index].pieces:
         # If they are not on the board, find a position to place them
+        # print(piece.Layout.geometry())
         if not piece.onboard:
             # right now the AI can only place the piece at top left corner
-            piece.last_confirmed_position = QPoint(14, 90)
-            piece.move(piece.last_confirmed_position)
-            piece.onboard = True
-            break # break -> only place 1 piece
+            for i in range(15,250,25):
+                for j in range(90, 250):
+                    piece.last_confirmed_position = QPoint(i, j)  # 14, 90
+                    piece.move(piece.last_confirmed_position)
+                    if not piece.check_collision(piece.pieces):
+                        piece.onboard = True
+                        break
+                    # print(piece.check_collision(piece.pieces))
+
     next_player_clicked(players,turn)
 
 
@@ -111,7 +117,7 @@ class gameInterface(QWidget):
 
         # Player 4 - YELLOW
         layout.addWidget(playerPanel4)
-        player4 = players.Player(playerPanel4, name = "Player 4")
+        player4 = players.Player(playerPanel4, is_ai=True, name = "Player 4")
 
         self.playerList.append(player1)
         self.playerList.append(player2)
