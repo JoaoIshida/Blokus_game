@@ -19,10 +19,28 @@ def next_player_clicked(players, turn):
             if i+1 >= len(players):
                 players[0].is_turn = True
                 turn.turn.setText(players[0].name)
+                if players[0].is_ai:
+                    ai_move(players, turn, 0)
             else:
                 players[i+1].is_turn = True
                 turn.turn.setText(players[i+1].name)
+                if players[i+1].is_ai:
+                    ai_move(players, turn, i+1)
             break
+
+#right now the AI can only place the piece at top left corner
+def ai_move(players, turn, player_index):
+    # Check for each piece of the player if they are on the board or not
+    for piece in players[player_index].pieces:
+        # If they are not on the board, find a position to place them
+        if not piece.onboard:
+            # right now the AI can only place the piece at top left corner
+            piece.last_confirmed_position = QPoint(14, 90)
+            piece.move(piece.last_confirmed_position)
+            piece.onboard = True
+            break # break -> only place 1 piece
+    next_player_clicked(players,turn)
+
 
 def confirm_placement(pieces):
     for piece in pieces:
@@ -85,11 +103,11 @@ class gameInterface(QWidget):
 
         # Player 2 - GREEN
         layout.addWidget(playerPanel2)
-        player2 = players.Player(playerPanel2, is_ai=True, name = "AI")
+        player2 = players.Player(playerPanel2, is_ai=True, name = "Player 2: AI1")
 
         # Player 3 - BLUE
         layout.addWidget(playerPanel3)
-        player3 = players.Player(playerPanel3, name = "Player 3")
+        player3 = players.Player(playerPanel3, is_ai = True, name = "Player 3: AI2")
 
         # Player 4 - YELLOW
         layout.addWidget(playerPanel4)
@@ -103,6 +121,7 @@ class gameInterface(QWidget):
         # Show whose turn is it
         player_text = QLabel("Player 1", self)
         turn = players.Turn(player_text)
+        layout.addWidget(QLabel("Current player's turn:", self))
         layout.addWidget(player_text)
 
 
@@ -110,21 +129,25 @@ class gameInterface(QWidget):
         initial_position1 = QPoint(200, playerPanel1.height() + 250)
         image_label1 = pieces.Piece(self, player1.score_label, 'assets/red/X5.png', initial_position1, 5, boardLayout, self.pieceList)
         self.pieceList.append(image_label1)
+        player1.pieces.append(image_label1)
 
         # Player 2's Pieces - GREEN
         initial_position2 = QPoint(200, playerPanel2.height() + 150)
         image_label2 = pieces.Piece(self, player2.score_label, 'assets/green/L5.png', initial_position2, 5, boardLayout, self.pieceList)
         self.pieceList.append(image_label2)
+        player2.pieces.append(image_label2) # add the piece to list of player's pieces
 
         # Player 3's Pieces - BLUE
         initial_position3 = QPoint(50, playerPanel3.height() + 150)
         image_label3 = pieces.Piece(self, player3.score_label, 'assets/blue/Z5.png', initial_position3, 2, boardLayout, self.pieceList)
         self.pieceList.append(image_label3)
+        player3.pieces.append(image_label3)
 
         # Player 4's Pieces -YELLOW
         initial_position4 = QPoint(350, playerPanel4.height() + 250)
         image_label4 = pieces.Piece(self, player4.score_label, 'assets/yellow/Y5.png', initial_position4, 4, boardLayout, self.pieceList)
         self.pieceList.append(image_label4)
+        player4.pieces.append(image_label4)
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter:
