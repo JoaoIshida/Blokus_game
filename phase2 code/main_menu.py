@@ -66,6 +66,7 @@ class MainWindow(QMainWindow):
         self.clearLayout(layout=self.layout_container)
         self.startGame()
         self.setStyleSheet("background-color: rgb(139, 69, 19);")
+        self.showFullScreen()
 
     def clearLayout(self, layout):
         if layout is not None:

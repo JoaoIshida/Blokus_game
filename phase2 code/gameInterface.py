@@ -30,27 +30,33 @@ def next_player_clicked(players, turn):
 
 #right now the AI can only place the piece at top left corner
 def ai_move(players, turn, player_index):
-    # Check for each piece of the player if they are on the board or not
+    # Find the first piece that is not already on the board
+    piece_to_place = None
     for piece in players[player_index].pieces:
-        # If they are not on the board, find a position to place them
-        # print(piece.Layout.geometry())
         if not piece.onboard:
-            # right now the AI can only place the piece at top left corner
-            for i in range(15,250,25):
-                for j in range(90, 250):
-                    piece.last_confirmed_position = QPoint(i, j)  # 14, 90
-                    piece.move(piece.last_confirmed_position)
-                    if not piece.check_collision(piece.pieces):
-                        piece.onboard = True
-                        break
-                    # print(piece.check_collision(piece.pieces))
+            piece_to_place = piece
+            break
 
-    next_player_clicked(players,turn)
+    if piece_to_place:
+        # Find a valid position to place the piece
+        for i in range(15, 250, 25):
+            for j in range(90, 250):
+                piece_to_place.last_confirmed_position = QPoint(i, j)
+                piece_to_place.move(piece_to_place.last_confirmed_position)
+                if not piece_to_place.check_collision(piece_to_place.pieces):
+                    piece_to_place.onboard = True
+                    break
 
+        # Update the score count only if the piece is successfully placed
+        if piece_to_place.onboard:
+            # Update the score count
+            piece_to_place.score_label.setText(str(piece_to_place.weight))
+
+    next_player_clicked(players, turn)
 
 def confirm_placement(pieces):
     for piece in pieces:
-        if piece.new_position is not None:
+        if piece.new_position is not None and not piece.onboard:  # Add condition to check if the piece is not already on the board
             # Update the score count
             piece.score_label.setText(str(int(piece.score_label.text()) + piece.weight))
             # Mark the piece as on the board
@@ -59,14 +65,13 @@ def confirm_placement(pieces):
             piece.last_confirmed_position = piece.new_position
             piece.new_position = None
 
-
 class gameInterface(QWidget):
     def __init__(self):
         super().__init__()
         self.pieceList = []
         self.playerList = []
         self.setWindowTitle("Game")
-        self.setGeometry(100, 50, 1200, 900)
+        #self.setGeometry(200, 0, 1200, 900)
         self.setStyleSheet("background-color: rgb(139, 69, 19);")
 
         layout = QVBoxLayout(self)
@@ -97,11 +102,16 @@ class gameInterface(QWidget):
         layout.addLayout(board_text_layout)
         paragraph_text.setStyleSheet("font-size: 20px; color: white;")
 
+        # Show whose turn is it
+        player_text = QLabel("Player 1", self)
+        turn = players.Turn(player_text)
+        layout.addWidget(QLabel("Current player's turn:", self))
+        layout.addWidget(player_text)
+
         playerPanel1 = players.PlayerPanel("red")
         playerPanel2 = players.PlayerPanel("green")
         playerPanel3 = players.PlayerPanel("blue")
         playerPanel4 = players.PlayerPanel("yellow")
-
 
         # Player 1 - RED
         layout.addWidget(playerPanel1)
@@ -113,47 +123,113 @@ class gameInterface(QWidget):
 
         # Player 3 - BLUE
         layout.addWidget(playerPanel3)
-        player3 = players.Player(playerPanel3, is_ai = True, name = "Player 3: AI2")
+        player3 = players.Player(playerPanel3, is_ai = False, name = "Player 3")
 
         # Player 4 - YELLOW
         layout.addWidget(playerPanel4)
-        player4 = players.Player(playerPanel4, is_ai=True, name = "Player 4")
+        player4 = players.Player(playerPanel4, is_ai=True, name = "Player 4: AI2")
 
         self.playerList.append(player1)
         self.playerList.append(player2)
         self.playerList.append(player3)
         self.playerList.append(player4)
         
-        # Show whose turn is it
-        player_text = QLabel("Player 1", self)
-        turn = players.Turn(player_text)
-        layout.addWidget(QLabel("Current player's turn:", self))
-        layout.addWidget(player_text)
+        player_pieces = [
+            #SO FAR, EVERY SCORE IS AFTER 70, AND DISTANCE IS AROUND 50
+            #RED
+        { 
+            'player': player1,'image': 'assets/red/1.png','weight': 1,
+            'initial_position': QPoint(50, playerPanel1.height() + 300), 
+        },
+        { 
+            'player': player1,'image': 'assets/red/2.png','weight': 2,
+            'initial_position': QPoint(100, playerPanel1.height() + 300), 
+        },
+        { 
+            'player': player1,'image': 'assets/red/L3.png','weight': 3,
+            'initial_position': QPoint(150, playerPanel1.height() + 300), 
+        },
+        { 
+            'player': player1,'image': 'assets/red/Z5.png','weight': 5,
+            'initial_position': QPoint(220, playerPanel1.height() + 300), 
+        },
+        { 
+            'player': player1,'image': 'assets/red/X5.png','weight': 5,
+            'initial_position': QPoint(350, playerPanel1.height() + 300), 
+        },
+            #GREEN
+         { 
+            'player': player2,'image': 'assets/green/1.png','weight': 1,
+            'initial_position': QPoint(50, playerPanel1.height() + 370), 
+        },
+        { 
+            'player': player2,'image': 'assets/green/2.png','weight': 2,
+            'initial_position': QPoint(100, playerPanel1.height() + 370), 
+        },
+        { 
+            'player': player2,'image': 'assets/green/L3.png','weight': 3,
+            'initial_position': QPoint(150, playerPanel1.height() + 370), 
+        },
+        { 
+            'player': player2,'image': 'assets/green/Z5.png','weight': 5,
+            'initial_position': QPoint(220, playerPanel1.height() + 370), 
+        },
+        { 
+            'player': player2,'image': 'assets/green/X5.png','weight': 5,
+            'initial_position': QPoint(350, playerPanel1.height() + 370), 
+        },
+            #BLUE
+         { 
+            'player': player3,'image': 'assets/blue/1.png','weight': 1,
+            'initial_position': QPoint(50, playerPanel1.height() + 440), 
+        },
+        { 
+            'player': player3,'image': 'assets/blue/2.png','weight': 2,
+            'initial_position': QPoint(100, playerPanel1.height() + 440), 
+        },
+        { 
+            'player': player3,'image': 'assets/blue/L3.png','weight': 3,
+            'initial_position': QPoint(150, playerPanel1.height() + 440), 
+        },
+        { 
+            'player': player3,'image': 'assets/blue/Z5.png','weight': 5,
+            'initial_position': QPoint(220, playerPanel1.height() + 440), 
+        },
+        { 
+            'player': player3,'image': 'assets/blue/X5.png','weight': 5,
+            'initial_position': QPoint(350, playerPanel1.height() + 440), 
+        },
+            #YELLOW
+         { 
+            'player': player4,'image': 'assets/yellow/1.png','weight': 1,
+            'initial_position': QPoint(50, playerPanel1.height() + 510), 
+        },
+        { 
+            'player': player4,'image': 'assets/yellow/2.png','weight': 2,
+            'initial_position': QPoint(100, playerPanel1.height() + 510), 
+        },
+        { 
+            'player': player4,'image': 'assets/yellow/L3.png','weight': 3,
+            'initial_position': QPoint(150, playerPanel1.height() + 510), 
+        },
+        { 
+            'player': player4,'image': 'assets/yellow/Z5.png','weight': 5,
+            'initial_position': QPoint(220, playerPanel1.height() + 510), 
+        },
+        { 
+            'player': player4,'image': 'assets/yellow/X5.png','weight': 5,
+            'initial_position': QPoint(350, playerPanel1.height() + 510), 
+        },
+        ]
+        for piece_data in player_pieces:
+            player = piece_data['player']
+            image_label = pieces.Piece(
+                self, player.score_label, piece_data['image'], piece_data['initial_position'],
+                piece_data['weight'], boardLayout, self.pieceList
+            )
+            self.pieceList.append(image_label)
+            player.pieces.append(image_label)
 
-
-        # Player 1's Pieces - RED
-        initial_position1 = QPoint(200, playerPanel1.height() + 250)
-        image_label1 = pieces.Piece(self, player1.score_label, 'assets/red/X5.png', initial_position1, 5, boardLayout, self.pieceList)
-        self.pieceList.append(image_label1)
-        player1.pieces.append(image_label1)
-
-        # Player 2's Pieces - GREEN
-        initial_position2 = QPoint(200, playerPanel2.height() + 150)
-        image_label2 = pieces.Piece(self, player2.score_label, 'assets/green/L5.png', initial_position2, 5, boardLayout, self.pieceList)
-        self.pieceList.append(image_label2)
-        player2.pieces.append(image_label2) # add the piece to list of player's pieces
-
-        # Player 3's Pieces - BLUE
-        initial_position3 = QPoint(50, playerPanel3.height() + 150)
-        image_label3 = pieces.Piece(self, player3.score_label, 'assets/blue/Z5.png', initial_position3, 2, boardLayout, self.pieceList)
-        self.pieceList.append(image_label3)
-        player3.pieces.append(image_label3)
-
-        # Player 4's Pieces -YELLOW
-        initial_position4 = QPoint(350, playerPanel4.height() + 250)
-        image_label4 = pieces.Piece(self, player4.score_label, 'assets/yellow/Y5.png', initial_position4, 4, boardLayout, self.pieceList)
-        self.pieceList.append(image_label4)
-        player4.pieces.append(image_label4)
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter:
@@ -163,7 +239,9 @@ def startGame():
     app = QApplication(sys.argv)
     window = gameInterface()
     window.show()
+    window.showFullScreen()
     sys.exit(app.exec_())
+    
 
 if __name__ == '__main__':
     startGame()
