@@ -18,7 +18,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Blokus")
-        self.setFixedSize(900, 900)
+        self.setGeometry(100, 50, 900, 900)
 
         self.widget = QWidget()
 
@@ -80,7 +80,7 @@ class MainWindow(QMainWindow):
     def startGame(self):
         self.game = gameInterface()
         self.setCentralWidget(self.game)
-
+        self.game.setFocus(Qt.OtherFocusReason)
 
 def draw_menu():
     app = QApplication(sys.argv)
