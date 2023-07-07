@@ -25,7 +25,7 @@ class MainWindow(QMainWindow):
         self.logo = QLabel(self)
         self.logo_pixmap = QPixmap('assets/Blokus.png')
         self.logo.setPixmap(self.logo_pixmap)
-        self.resize(self.logo_pixmap.width(), self.logo_pixmap.height())
+        self.logo.setAlignment(Qt.AlignCenter)
 
         self.newGame_button = QPushButton("NEW GAME")
         self.newGame_button.setFixedSize(400, 100)
@@ -43,11 +43,6 @@ class MainWindow(QMainWindow):
         self.tutorial_button.setStyleSheet(
             "font-size: 24px; padding: 10px; color: white; background-color: rgb(102, 73, 81);")
         self.tutorial_button.setEnabled(False)
-
-        self.logo = QLabel(self)
-        self.logo_pixmap = QPixmap('assets/blokus.png')
-        self.logo.setPixmap(self.logo_pixmap)
-        self.resize(self.logo_pixmap.width(), self.logo_pixmap.height())
 
         self.layout_container = QHBoxLayout()
         self.widget.setLayout(self.layout_container)

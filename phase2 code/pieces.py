@@ -3,10 +3,22 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
 class Piece(QLabel):
+    # Shared flyweight pixmap object
+    pixmap_cache = {}
+
     def __init__(self, parent, score_label, pixmap_path, initial_position, weight, Layout, pieces):
         super().__init__(parent)
-        self.pixmap = QPixmap(pixmap_path) #PIXMAP IS SO THAT THE PYQT CAN IDENTIFY THE COLORED PART OF THE PIECES
-        self.setPixmap(self.pixmap)        # LIKE THE L OR T SHAPED
+        
+        # Check if the pixmap is already in the cache
+        if pixmap_path in Piece.pixmap_cache:
+            self.pixmap = Piece.pixmap_cache[pixmap_path]
+        else:
+            # Load the pixmap and store it in the cache
+            self.pixmap = QPixmap(pixmap_path)
+            Piece.pixmap_cache[pixmap_path] = self.pixmap
+
+        # Rest of the code...
+        self.setPixmap(self.pixmap)
         self.setAlignment(Qt.AlignCenter)
         self.Layout = Layout
         self.pieces = pieces

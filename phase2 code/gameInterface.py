@@ -42,7 +42,7 @@ class gameInterface(QWidget):
         self.pieceList = []
         self.playerList = []
         self.setWindowTitle("Game")
-        self.setGeometry(100, 50, 900, 900)
+        self.setGeometry(100, 50, 1200, 900)
         self.setStyleSheet("background-color: rgb(139, 69, 19);")
 
         layout = QVBoxLayout(self)
@@ -60,16 +60,25 @@ class gameInterface(QWidget):
 
         boardLayout = board.Board()
         boardLayout.setFixedSize(560, 560)
-        boardLayout.setStyleSheet("background-color: rgb(255, 255, 255);")
-
-
+        boardLayout.setStyleSheet("background-color: rgb(255, 255, 255);")        
+    
         layout.addWidget(exit_button)
         layout.addWidget(pass_button)
         layout.addWidget(boardLayout)
+
+        board_text_layout = QHBoxLayout()
+        board_text_layout.addWidget(boardLayout)
+        paragraph_text = QLabel("Drag the piece to the board when is your turn. \nCorfirm piece location by pressing confirm or \"enter\" on your keyboard")
+        board_text_layout.addWidget(paragraph_text)
+        layout.addLayout(board_text_layout)
+        paragraph_text.setStyleSheet("font-size: 20px; color: white;")
+
         playerPanel1 = players.PlayerPanel("red")
         playerPanel2 = players.PlayerPanel("green")
         playerPanel3 = players.PlayerPanel("blue")
         playerPanel4 = players.PlayerPanel("yellow")
+
+
         # Player 1 - RED
         layout.addWidget(playerPanel1)
         player1 = players.Player(playerPanel1, is_turn = True, name = "Player 1")
@@ -99,22 +108,22 @@ class gameInterface(QWidget):
 
         # Player 1's Pieces - RED
         initial_position1 = QPoint(200, playerPanel1.height() + 250)
-        image_label1 = pieces.Piece(self, player1.score_label, 'assets/X5.png', initial_position1, 5, boardLayout, self.pieceList)
+        image_label1 = pieces.Piece(self, player1.score_label, 'assets/red/X5.png', initial_position1, 5, boardLayout, self.pieceList)
         self.pieceList.append(image_label1)
 
         # Player 2's Pieces - GREEN
         initial_position2 = QPoint(200, playerPanel2.height() + 150)
-        image_label2 = pieces.Piece(self, player2.score_label, 'assets/L5.png', initial_position2, 5, boardLayout, self.pieceList)
+        image_label2 = pieces.Piece(self, player2.score_label, 'assets/green/L5.png', initial_position2, 5, boardLayout, self.pieceList)
         self.pieceList.append(image_label2)
 
         # Player 3's Pieces - BLUE
         initial_position3 = QPoint(50, playerPanel3.height() + 150)
-        image_label3 = pieces.Piece(self, player3.score_label, 'assets/Z5.png', initial_position3, 2, boardLayout, self.pieceList)
+        image_label3 = pieces.Piece(self, player3.score_label, 'assets/blue/Z5.png', initial_position3, 2, boardLayout, self.pieceList)
         self.pieceList.append(image_label3)
 
         # Player 4's Pieces -YELLOW
         initial_position4 = QPoint(350, playerPanel4.height() + 250)
-        image_label4 = pieces.Piece(self, player4.score_label, 'assets/Y5.png', initial_position4, 4, boardLayout, self.pieceList)
+        image_label4 = pieces.Piece(self, player4.score_label, 'assets/yellow/Y5.png', initial_position4, 4, boardLayout, self.pieceList)
         self.pieceList.append(image_label4)
 
     def keyPressEvent(self, event):
