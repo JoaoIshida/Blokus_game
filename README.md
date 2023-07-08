@@ -1,3 +1,6 @@
+#Eft
+This is a python project built with PyQt5
+
 # Eft-Phase-1
 The game we are making is Blokus!
 # This is the branch feature --joao
