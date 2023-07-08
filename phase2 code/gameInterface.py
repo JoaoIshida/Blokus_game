@@ -80,11 +80,11 @@ class gameInterface(QWidget):
         exit_button.clicked.connect(on_exit_clicked)
 
         pass_button = QPushButton('Pass', self)
-        pass_button.clicked.connect(lambda: next_player_clicked(self.playerList, turn))
+        pass_button.clicked.connect(lambda: next_player_clicked(self.playerList, self.turn))
 
         confirm_button = QPushButton('Confirm', self)
         confirm_button.clicked.connect(lambda: confirm_placement(self.pieceList))
-        confirm_button.clicked.connect(lambda: next_player_clicked(self.playerList, turn))
+        confirm_button.clicked.connect(lambda: next_player_clicked(self.playerList, self.turn))
         layout.addWidget(confirm_button)
 
         boardLayout = board.Board()
@@ -104,7 +104,7 @@ class gameInterface(QWidget):
 
         # Show whose turn is it
         player_text = QLabel("Player 1", self)
-        turn = players.Turn(player_text)
+        self.turn = players.Turn(player_text)
         layout.addWidget(QLabel("Current player's turn:", self))
         layout.addWidget(player_text)
 
@@ -234,6 +234,7 @@ class gameInterface(QWidget):
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter:
             confirm_placement(self.pieceList)
+            next_player_clicked(self.playerList, self.turn)
 
 def startGame():
     app = QApplication(sys.argv)
