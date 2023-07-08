@@ -40,7 +40,7 @@ def ai_move(players, turn, player_index):
     if piece_to_place:
         # Find a valid position to place the piece
         for i in range(15, 250, 25):
-            for j in range(90, 250):
+            for j in range(145, 680):
                 piece_to_place.last_confirmed_position = QPoint(i, j)
                 piece_to_place.move(piece_to_place.last_confirmed_position)
                 if not piece_to_place.check_collision(piece_to_place.pieces):
