@@ -50,7 +50,7 @@ def ai_move(players, turn, player_index):
         # Update the score count only if the piece is successfully placed
         if piece_to_place.onboard:
             # Update the score count
-            piece_to_place.score_label.setText(str(piece_to_place.weight))
+            piece_to_place.score_label.setText(str(piece_to_place.weight + int(players[player_index].score_label.text())))
 
     next_player_clicked(players, turn)
 
