@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
 class Player:
-    def __init__(self, score_label, is_ai=False, is_turn=False, name="Player", ):
+    def __init__(self, score_label, is_ai=False, is_turn=False, name="Player"):
         self.score_label = score_label
         self.pieces = []
         self.is_ai = is_ai

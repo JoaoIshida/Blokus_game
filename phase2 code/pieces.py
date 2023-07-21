@@ -124,8 +124,3 @@ class Piece(QLabel):
 
         return False
     
-    def get_tile_position_from_pixel(self, x, y):
-        # Calculate the row and column of the tile based on pixel coordinates
-        row = (y - self.boardLayout.y() - 30) // 30
-        col = (x - self.boardLayout.x() - 30) // 30
-        return row, col
