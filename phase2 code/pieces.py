@@ -6,7 +6,7 @@ class Piece(QLabel):
     # Shared flyweight pixmap object
     pixmap_cache = {}
 
-    def __init__(self, parent, score_label, pixmap_path, initial_position, weight, Layout, pieces):
+    def __init__(self, parent, score_label, pixmap_path, initial_position, weight, Layout, pieces, shape, colour):
         super().__init__(parent)
         
         # Check if the pixmap is already in the cache
@@ -16,12 +16,14 @@ class Piece(QLabel):
             # Load the pixmap and store it in the cache
             self.pixmap = QPixmap(pixmap_path)
             Piece.pixmap_cache[pixmap_path] = self.pixmap
-
+        
         # Rest of the code...
         self.setPixmap(self.pixmap)
         self.setAlignment(Qt.AlignCenter)
         self.Layout = Layout
+        self.colour = colour
         self.pieces = pieces
+        self.shape = shape
         self.dragging = False
         self.offset = QPoint()
         self.score_label = score_label
@@ -78,6 +80,7 @@ class Piece(QLabel):
                 self.new_position = self.pos()
             # After dropping the piece, reset the color overlay to transparent
             self.set_color_overlay(Qt.transparent)
+
     #OVERLAY FOR THE GREEN AND RED
     def set_color_overlay(self, color):
         overlay_pixmap = QPixmap(self.pixmap.size())
@@ -120,3 +123,9 @@ class Piece(QLabel):
                     return True
 
         return False
+    
+    def get_tile_position_from_pixel(self, x, y):
+        # Calculate the row and column of the tile based on pixel coordinates
+        row = (y - self.boardLayout.y() - 30) // 30
+        col = (x - self.boardLayout.x() - 30) // 30
+        return row, col
