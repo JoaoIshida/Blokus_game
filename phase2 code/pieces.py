@@ -49,13 +49,15 @@ class Piece(QLabel):
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
+            # set last pressed piece
+            self.parent().last_pressed_piece = self
             if not self.onboard:  # Only allow dragging if the piece is not on the board
                 self.dragging = True #IF PIECE IS ON THE BOARD, THE PIECE IS NOT DRAGGED ANYMORE
                 self.offset = event.pos()
             else:
                 self.dragging = False
                 self.move(self.last_confirmed_position)  # Move the piece back to the last confirmed position
-
+    
     def mouseMoveEvent(self, event):
         if self.dragging:
             current_pos = event.windowPos().toPoint()

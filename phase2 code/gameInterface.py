@@ -53,7 +53,6 @@ def ai_move(players, turn, player_index):
 
     next_player_clicked(players, turn)
 
-
 def confirm_placement(pieces, board):
     for piece in pieces:
         if piece.new_position is not None and not piece.onboard:
@@ -84,7 +83,6 @@ def confirm_placement(pieces, board):
                 # Update the score count
                 piece.score_label.setText(str(int(piece.score_label.text()) + piece.weight))
 
-
 class gameInterface(QWidget):
     def __init__(self):
         super().__init__()
@@ -93,24 +91,33 @@ class gameInterface(QWidget):
         self.setWindowTitle("Game")
         #self.setGeometry(200, 0, 1200, 900)
         self.setStyleSheet("background-color: rgb(139, 69, 19);")
-
+        self.last_pressed_piece = None  # Initialize the last pressed piece as None
+        
         layout = QVBoxLayout(self)
         self.boardLayout = board.Board()
         self.boardLayout.setFixedSize(560, 560)
         self.boardLayout.setStyleSheet("background-color: rgb(255, 255, 255);")
-
+        
+        #CREATE EXIT
         exit_button = QPushButton('Exit', self)
         exit_button.clicked.connect(on_exit_clicked)
-
+        
+        #CREATE PASS
         pass_button = QPushButton('Pass', self)
         pass_button.clicked.connect(lambda: next_player_clicked(self.playerList, self.turn))
 
+        #CREATE CONFIRM
         confirm_button = QPushButton('Confirm', self)
         confirm_button.clicked.connect(lambda: confirm_placement(self.pieceList, self.boardLayout))
         confirm_button.clicked.connect(lambda: next_player_clicked(self.playerList, self.turn))
-        layout.addWidget(confirm_button)     
-    
+
+        #CREATE ROTATE
+        rotate_button = QPushButton('Rotate', self)
+        rotate_button.clicked.connect(self.rotate_piece)
+
         layout.addWidget(exit_button)
+        layout.addWidget(confirm_button) 
+        layout.addWidget(rotate_button)    
         layout.addWidget(pass_button)
         layout.addWidget(self.boardLayout)
 
@@ -259,9 +266,34 @@ class gameInterface(QWidget):
             self.pieceList.append(image_label)
             player.pieces.append(image_label)
 
+    def rotate_piece(self):
+        # Find the last pressed piece
+        active_piece = self.last_pressed_piece
 
+        if not active_piece:
+            return
 
+        #rotate shape and recreate pixmap
+        rotated_shape = list(zip(*reversed(active_piece.shape)))
+        rotated_pixmap = active_piece.pixmap.transformed(QTransform().rotate(90))
 
+        new_pixmap = QPixmap(rotated_pixmap.size())
+        new_pixmap.fill(Qt.transparent)
+        painter = QPainter(new_pixmap)
+        painter.drawPixmap(0, 0, rotated_pixmap)
+        painter.end()
+
+        active_piece.shape = rotated_shape
+        active_piece.pixmap = new_pixmap
+
+        active_piece.setPixmap(active_piece.pixmap)
+
+        active_piece.setFixedSize(rotated_pixmap.size())
+
+        mask = QBitmap(active_piece.pixmap.createMaskFromColor(Qt.transparent))
+        active_piece.setMask(mask)
+
+        active_piece.move(active_piece.pos())
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter:
