@@ -24,8 +24,8 @@ class tile(QFrame):
     def tilePosition(self):
         return self.x, self.y
     
-    def changeColour(self):
-        self.setStyleSheet(f"background-color: red; border: 1px solid black;")
+    def changeColour(self, colour):
+        self.setStyleSheet(f"background-color: {colour}; border: 1px solid black;")
     
 
 # Game Window

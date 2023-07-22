@@ -30,6 +30,7 @@ class Piece(QLabel):
         self.initial_position = initial_position
         self.onboard = False
         self.weight = weight
+        self.player = None
 
         self.last_confirmed_position = self.initial_position
         self.new_position = None
