@@ -99,7 +99,6 @@ class gameInterface(QWidget):
         self.pieceList = []
         self.playerList = []
         self.setWindowTitle("Game")
-        #self.setGeometry(200, 0, 1200, 900)
         self.setStyleSheet("background-color: rgb(139, 69, 19);")
         self.last_pressed_piece = None  # Initialize the last pressed piece as None
         
@@ -348,7 +347,7 @@ class gameInterface(QWidget):
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter:
-            confirm_placement(self.pieceList, self.boardLayout)
+            confirm_placement(self.pieceList, self.boardLayout,self.playerList, self.turn)
             next_player_clicked(self.playerList, self.turn)
 
 def startGame():
