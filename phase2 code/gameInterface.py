@@ -57,9 +57,7 @@ def ai_move(players, turn, player_index):
 def confirm_placement(pieces, board):
     for piece in pieces:
         if piece.new_position is not None and not piece.onboard:
-            # Update the score count
-            piece.score_label.setText(str(int(piece.score_label.text()) + piece.weight))
-
+            
             # Calculate the starting position for the piece's shape within the tile
             startX = int((piece.new_position.x() - board.x() + board.tileSize // 2) / board.tileSize)
             startY = int((piece.new_position.y() - board.y() + board.tileSize // 2) / board.tileSize)
@@ -77,6 +75,15 @@ def confirm_placement(pieces, board):
                 piece.last_confirmed_position = piece.new_position
                 board.firstMove = False
                 piece.new_position = None
+                piece.onboard = True
+
+                #Remove pice from screen
+                piece.setParent(None)
+                piece.hide()
+
+                # Update the score count
+                piece.score_label.setText(str(int(piece.score_label.text()) + piece.weight))
+
 
 class gameInterface(QWidget):
     def __init__(self):
