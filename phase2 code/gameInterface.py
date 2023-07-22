@@ -101,24 +101,34 @@ class gameInterface(QWidget):
         #CREATE EXIT
         exit_button = QPushButton('Exit', self)
         exit_button.clicked.connect(on_exit_clicked)
-        
+        exit_button.setStyleSheet("QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
+
         #CREATE PASS
         pass_button = QPushButton('Pass', self)
         pass_button.clicked.connect(lambda: next_player_clicked(self.playerList, self.turn))
+        pass_button.setStyleSheet("QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
 
         #CREATE CONFIRM
         confirm_button = QPushButton('Confirm', self)
         confirm_button.clicked.connect(lambda: confirm_placement(self.pieceList, self.boardLayout))
         confirm_button.clicked.connect(lambda: next_player_clicked(self.playerList, self.turn))
+        confirm_button.setStyleSheet("QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
 
         #CREATE ROTATE
         rotate_button = QPushButton('Rotate', self)
         rotate_button.clicked.connect(self.rotate_piece)
+        rotate_button.setStyleSheet("QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
 
-        layout.addWidget(exit_button)
-        layout.addWidget(confirm_button) 
-        layout.addWidget(rotate_button)    
-        layout.addWidget(pass_button)
+        # Create a horizontal layout to hold the buttons
+        buttons_layout = QHBoxLayout()
+        buttons_layout.addWidget(exit_button)
+        buttons_layout.addWidget(confirm_button)
+        buttons_layout.addWidget(rotate_button)
+        buttons_layout.addWidget(pass_button)
+        buttons_layout.setContentsMargins(20, 0, 20, 0)
+        buttons_layout.setSpacing(20)
+        
+        layout.addLayout(buttons_layout)
         layout.addWidget(self.boardLayout)
 
         board_text_layout = QHBoxLayout()
