@@ -24,8 +24,8 @@ class tile(QFrame):
     def tilePosition(self):
         return self.x, self.y
     
-    def changeColour(self, colour):
-        self.setStyleSheet(f"background-color: {colour}; border: 1px solid black;")
+    def changeColour(self, color):
+        self.setStyleSheet(f"background-color: {color}; border: 1px solid black;")
     
 
 # Game Window
@@ -62,7 +62,7 @@ class Board(QMainWindow):
     def inBounds(self, x, y):
         return 0 <= x < 20 and 0 <= y < 20
 
-    def canPlacePiece(self, pieceShape, tileX, tileY):
+    def canPlacePiece(self, pieceShape, tileX, tileY, piece_colour):
         pieceHeight = len(pieceShape)
         pieceWidth = len(pieceShape[0])
 
@@ -73,7 +73,8 @@ class Board(QMainWindow):
         if self.firstMove:
             return True
         else:
-            cornerTouching = False  # Initialize a variable to track if there is any corner touching
+            #cornerTouching = False  # Initialize a variable to track if there is any corner touching
+            sameColourCorner = False
 
             for row in range(pieceHeight):
                 for col in range(pieceWidth):
@@ -90,14 +91,15 @@ class Board(QMainWindow):
                         # Check if any corner tiles are filled
                         cornerTiles = [(x - 1, y - 1), (x + 1, y - 1), (x - 1, y + 1), (x + 1, y + 1)]
                         for cornerX, cornerY in cornerTiles:
-                            if self.inBounds(cornerX, cornerY) and not self.tileList[cornerY][cornerX].isEmpty():
-                                cornerTouching = True
+                            if self.inBounds(cornerX, cornerY) and not self.tileList[cornerY][cornerX].isEmpty() and self.tileList[cornerY][cornerX].tileColor == piece_colour:
+                                sameColourCorner = True
                                 break
-                        if cornerTouching:
+
+                        if sameColourCorner:
                             break
-                if cornerTouching:
+                if sameColourCorner:
                     break
-            if not cornerTouching:
+            if not sameColourCorner:
                 return False
 
             # Check if any side tiles are filled

@@ -81,7 +81,7 @@ def confirm_placement(pieces, board, player_list, turn):
             startY = int((piece.new_position.y() - board.y() + board.tileSize // 2) / board.tileSize)
 
             # Check if the piece can be placed according to Blokus rules
-            if board.canPlacePiece(piece.shape, startX, startY):
+            if board.canPlacePiece(piece.shape, startX, startY, piece.colour):
                 # Loop through the piece shape and update the tile colors accordingly
                 for row in range(len(piece.shape)):
                     for col in range(len(piece.shape[row])):
@@ -315,7 +315,7 @@ class gameInterface(QWidget):
             'initial_position': QPoint(325, playerPanel1.height() + 510), 
             'shape': [[1,1,1,0],[0,0,1,1]], 'colour': 'yellow'
         },
-                { 
+        { 
             'player': player4,'image': 'assets/yellow/X5.png','weight': 5,
             'initial_position': QPoint(450, playerPanel1.height() + 510),
             'shape': [[0,1,0],[1,1,1],[0,1,0]], 'colour': 'yellow'

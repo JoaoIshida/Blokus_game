@@ -6,7 +6,7 @@ class Piece(QLabel):
     # Shared flyweight pixmap object
     pixmap_cache = {}
 
-    def __init__(self, parent, score_label, pixmap_path, initial_position, weight, Layout, pieces, shape, colour):
+    def __init__(self, parent, score_label, pixmap_path, initial_position, weight, board, pieces, shape, colour):
         super().__init__(parent)
         
         # Check if the pixmap is already in the cache
@@ -20,7 +20,7 @@ class Piece(QLabel):
         # Rest of the code...
         self.setPixmap(self.pixmap)
         self.setAlignment(Qt.AlignCenter)
-        self.Layout = Layout
+        self.Layout = board
         self.colour = colour
         self.pieces = pieces
         self.shape = shape
@@ -30,7 +30,8 @@ class Piece(QLabel):
         self.initial_position = initial_position
         self.onboard = False
         self.weight = weight
-        self.player = None
+        self.player = parent
+        self.board = board
 
         self.last_confirmed_position = self.initial_position
         self.new_position = None
@@ -68,9 +69,12 @@ class Piece(QLabel):
             new_pos.setY(max(0, min(new_pos.y(), self.parent().height() - self.height())))
 
             self.move(new_pos)
-
-            # Check if the move is possible and update the color overlay accordingly
-            if self.geometry().intersects(self.Layout.geometry()) and not self.check_collision(self.pieces):
+            start_x = int((self.x() - self.board.x() + self.board.tileSize // 2) / self.board.tileSize)
+            start_y = int((self.y() - self.board.y() + self.board.tileSize // 2) / self.board.tileSize)
+            can_be_placed = self.board.canPlacePiece(self.shape, start_x, start_y, self.colour)
+        
+            # Check if the move is possible and update the color overlay accordingly 
+            if self.geometry().intersects(self.Layout.geometry()) and not self.check_collision(self.pieces) and can_be_placed:
                 self.set_color_overlay(Qt.green) #MEANS THAT THE PIECE CAN BE PLACED AND COUNTS THE POINTS
             else:
                 self.set_color_overlay(Qt.red) #PIECE CANNOT BE PLACED
