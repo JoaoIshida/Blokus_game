@@ -9,12 +9,26 @@ import pieces
 import players
 import board
 
+def display_achievements(player):
+    achievement_text = ""
+    if player.score_label.text() == "21":
+        if player.is_ai:
+            achievement_text += "The Terminator: AI has shown dominance!\n"
+        else:
+            achievement_text += "Artificial Infant: Human outsmarted the AI!\n"
+    if achievement_text:
+        msg = QMessageBox()
+        msg.setWindowTitle("Achievements Unlocked!")
+        msg.setText(achievement_text)
+        msg.exec_()
+
 def on_exit_clicked():
     QApplication.quit()
 
 def next_player_clicked(players, turn):
     for i in range(len(players)):
         if players[i].is_turn:
+            display_achievements(players[i])
             players[i].is_turn = False
             if i+1 >= len(players):
                 players[0].is_turn = True
