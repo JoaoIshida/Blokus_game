@@ -6,7 +6,7 @@ class Piece(QLabel):
     # Shared flyweight pixmap object
     pixmap_cache = {}
 
-    def __init__(self, parent, score_label, pixmap_path, initial_position, weight, board, pieces, shape, colour):
+    def __init__(self, parent, score_label, pixmap_path, initial_position, weight, board, pieces, shape, colour, player):
         super().__init__(parent)
         
         # Check if the pixmap is already in the cache
@@ -30,7 +30,7 @@ class Piece(QLabel):
         self.initial_position = initial_position
         self.onboard = False
         self.weight = weight
-        self.player = parent
+        self.player = player
         self.board = board
 
         self.last_confirmed_position = self.initial_position
@@ -71,7 +71,7 @@ class Piece(QLabel):
             self.move(new_pos)
             start_x = int((self.x() - self.board.x() + self.board.tileSize // 2) / self.board.tileSize)
             start_y = int((self.y() - self.board.y() + self.board.tileSize // 2) / self.board.tileSize)
-            can_be_placed = self.board.canPlacePiece(self.shape, start_x, start_y, self.colour)
+            can_be_placed = self.board.canPlacePiece(self.shape, start_x, start_y, self)
         
             # Check if the move is possible and update the color overlay accordingly 
             if self.geometry().intersects(self.Layout.geometry()) and not self.check_collision(self.pieces) and can_be_placed:

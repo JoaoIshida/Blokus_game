@@ -12,6 +12,7 @@ class tile(QFrame):
         self.x = x
         self.y = y
         self.isTileEmpty = True
+        self.tileColor = 'white'
         self.setStyleSheet(f"background-color: white; border: 1px solid black;")
     
     # Checks if the tile is empty
@@ -25,6 +26,7 @@ class tile(QFrame):
         return self.x, self.y
     
     def changeColour(self, color):
+        self.tileColor = color
         self.setStyleSheet(f"background-color: {color}; border: 1px solid black;")
     
 
@@ -62,15 +64,16 @@ class Board(QMainWindow):
     def inBounds(self, x, y):
         return 0 <= x < 20 and 0 <= y < 20
 
-    def canPlacePiece(self, pieceShape, tileX, tileY, piece_colour):
+    def canPlacePiece(self, pieceShape, tileX, tileY, piece):
         pieceHeight = len(pieceShape)
         pieceWidth = len(pieceShape[0])
+        piece_colour = piece.colour
 
         # Check if the piece is within the bounds of the board
         if not (0 <= tileX < 20 and 0 <= tileY < 20):
             return False
 
-        if self.firstMove:
+        if piece.player.first_move:
             return True
         else:
             #cornerTouching = False  # Initialize a variable to track if there is any corner touching

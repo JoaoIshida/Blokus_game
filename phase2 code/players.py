@@ -9,6 +9,7 @@ class Player:
         self.is_ai = is_ai
         self.is_turn = is_turn
         self.name = name
+        self.first_move = True
 
 class Turn:
     def __init__(self, turn):
