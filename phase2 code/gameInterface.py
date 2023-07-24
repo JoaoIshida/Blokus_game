@@ -11,6 +11,8 @@ import board
 
 def display_achievements(player):
     achievement_text = ""
+    if player.first_move == True:
+        achievement_text += "player first move\n"
     if player.score_label.text() == "21":
         if player.is_ai:
             achievement_text += "The Terminator: AI has shown dominance!\n"
@@ -21,11 +23,12 @@ def display_achievements(player):
         msg.setWindowTitle("Achievements Unlocked!")
         msg.setText(achievement_text)
         msg.exec_()
+        achievement_text = ""
 
 def on_exit_clicked():
     QApplication.quit()
 
-def next_player_clicked(players, turn):
+def next_player_clicked(players, turn, board):
     for i in range(len(players)):
         if players[i].is_turn:
             display_achievements(players[i])
@@ -34,16 +37,16 @@ def next_player_clicked(players, turn):
                 players[0].is_turn = True
                 turn.turn.setText(players[0].name)
                 if players[0].is_ai:
-                    ai_move(players, turn, 0)
+                    ai_move(players, turn, 0, board)
             else:
                 players[i+1].is_turn = True
                 turn.turn.setText(players[i+1].name)
                 if players[i+1].is_ai:
-                    ai_move(players, turn, i+1)
+                    ai_move(players, turn, i+1, board)
             break
 
 #right now the AI can only place the piece at top left corner
-def ai_move(players, turn, player_index):
+def ai_move(players, turn, player_index, board):
     # Find the first piece that is not already on the board
     piece_to_place = None
     for piece in players[player_index].pieces:
@@ -56,7 +59,6 @@ def ai_move(players, turn, player_index):
         for i in range(15, 250, 25):
             for j in range(145, 680):
                 piece_to_place.last_confirmed_position = QPoint(i, j)
-                piece_to_place.move(piece_to_place.last_confirmed_position)
                 if not piece_to_place.check_collision(piece_to_place.pieces):
                     piece_to_place.onboard = True
                     break
@@ -66,9 +68,27 @@ def ai_move(players, turn, player_index):
             # Update the score count
             piece_to_place.score_label.setText(str(piece_to_place.weight + int(players[player_index].score_label.text())))
 
-    time.sleep(1)
-    
-    next_player_clicked(players, turn)
+            # Slowly move the piece to the destination
+            start_pos = piece_to_place.pos()
+            end_pos = piece_to_place.last_confirmed_position
+            num_steps = 100  # Adjust the number of steps for slower or faster movement
+            step_x = (end_pos.x() - start_pos.x()) / num_steps
+            step_y = (end_pos.y() - start_pos.y()) / num_steps
+
+            def move_piece():
+                nonlocal start_pos, num_steps
+
+                start_pos.setX(round(start_pos.x() + step_x))  # Round the x position to an integer
+                start_pos.setY(round(start_pos.y() + step_y))  # Round the y position to an integer
+                piece_to_place.move(start_pos)
+
+                num_steps -= 1
+                if num_steps == 0:
+                    next_player_clicked(players, turn, board)
+                else:
+                    QTimer.singleShot(10, move_piece)  # Adjust the delay for smoother movement
+
+            move_piece()
 
 def confirm_placement(pieces, board, player_list, turn):
     piece_placed = False    
@@ -107,7 +127,7 @@ def confirm_placement(pieces, board, player_list, turn):
                     if piece.player.first_move:
                             piece.player.first_move = False
                     if turn:
-                        next_player_clicked(player_list, turn)
+                        next_player_clicked(player_list, turn, board)
 
 class gameInterface(QWidget):
     def __init__(self):
@@ -130,7 +150,7 @@ class gameInterface(QWidget):
 
         #CREATE PASS
         pass_button = QPushButton('Pass', self)
-        pass_button.clicked.connect(lambda: next_player_clicked(self.playerList, self.turn))
+        pass_button.clicked.connect(lambda: next_player_clicked(self.playerList, self.turn, self.boardLayout))
         pass_button.setStyleSheet("QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
 
         #CREATE CONFIRM
@@ -364,7 +384,7 @@ class gameInterface(QWidget):
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter:
             confirm_placement(self.pieceList, self.boardLayout,self.playerList, self.turn)
-            next_player_clicked(self.playerList, self.turn)
+            next_player_clicked(self.playerList, self.turn, self.boardLayout)
 
 def startGame():
     app = QApplication(sys.argv)
