@@ -31,16 +31,24 @@ def on_exit_clicked():
 def next_player_clicked(players, turn, board):
     for i in range(len(players)):
         if players[i].is_turn:
-            display_achievements(players[i])
+            # display_achievements(players[i])
             players[i].is_turn = False
-            if i+1 >= len(players):
+            # make all pieces of player i not movable
+            for piece in players[i].pieces:
+                piece.movable = False
+            if i+1 >= len(players): # loop back to player 1
                 players[0].is_turn = True
-                turn.turn.setText(players[0].name)
+                turn.turn.setText(players[0].name) # set the text to display on screen
+                # make all pieces of player 1 become movable
+                for piece in players[0].pieces:
+                    piece.movable = True
                 if players[0].is_ai:
                     ai_move(players, turn, 0, board)
             else:
                 players[i+1].is_turn = True
                 turn.turn.setText(players[i+1].name)
+                for piece in players[i+1].pieces:
+                    piece.movable = True
                 if players[i+1].is_ai:
                     ai_move(players, turn, i+1, board)
             break
@@ -352,6 +360,10 @@ class gameInterface(QWidget):
             self.pieceList.append(image_label)
             player.pieces.append(image_label)
 
+        # Make player 1's pieces movable since that's the first player
+        for piece in player1.pieces:
+            piece.movable = True
+
     def rotate_piece(self):
         # Find the last pressed piece
         active_piece = self.last_pressed_piece
@@ -391,6 +403,7 @@ def startGame():
     window = gameInterface()
     window.show()
     window.showFullScreen()
+    # window.showMaximized()
     sys.exit(app.exec_())
     
 

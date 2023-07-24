@@ -29,6 +29,7 @@ class Piece(QLabel):
         self.score_label = score_label
         self.initial_position = initial_position
         self.onboard = False
+        self.movable = False #So that by default pieces are not movable
         self.weight = weight
         self.player = player
         self.board = board
@@ -53,7 +54,7 @@ class Piece(QLabel):
         if event.button() == Qt.LeftButton:
             # set last pressed piece
             self.parent().last_pressed_piece = self
-            if not self.onboard:  # Only allow dragging if the piece is not on the board
+            if not self.onboard and self.movable:  # Only allow dragging if the piece is not on the board
                 self.dragging = True #IF PIECE IS ON THE BOARD, THE PIECE IS NOT DRAGGED ANYMORE
                 self.offset = event.pos()
             else:
