@@ -39,7 +39,6 @@ def next_player_clicked(players, turn, board):
                 piece.set_color_overlay(Qt.gray)
             if i+1 >= len(players): # loop back to player 1
                 players[0].is_turn = True
-                turn.turn.setText(players[0].name) # set the text to display on screen
                 # make all pieces of player 1 become movable
                 for piece in players[0].pieces:
                     piece.movable = True
@@ -48,12 +47,13 @@ def next_player_clicked(players, turn, board):
                     ai_move(players, turn, 0, board)
             else:
                 players[i+1].is_turn = True
-                turn.turn.setText(players[i+1].name)
+                
                 for piece in players[i+1].pieces:
                     piece.movable = True
                     piece.set_color_overlay(Qt.transparent)
                 if players[i+1].is_ai:
                     ai_move(players, turn, i+1, board)
+            turn.turn.setText(f"Current player({piece.colour}): {players[i].name}")
             break
 
 #right now the AI can only place the piece at top left corner
@@ -210,16 +210,16 @@ class gameInterface(QWidget):
         layout.addLayout(board_text_layout)
         paragraph_text.setStyleSheet("font-size: 20px; color: white;")
 
-        # Show whose turn is it
-        player_text = QLabel("Player 1", self)
-        self.turn = players.Turn(player_text)
-        layout.addWidget(QLabel("Current player's turn:", self))
-        layout.addWidget(player_text)
-
         playerPanel1 = players.PlayerPanel("red")
         playerPanel2 = players.PlayerPanel("green")
         playerPanel3 = players.PlayerPanel("blue")
         playerPanel4 = players.PlayerPanel("yellow")
+
+        # Show whose turn is it
+        self.current_player_label = QLabel("Current player (red): Player 1", self)
+        self.current_player_label.setStyleSheet("font-size: 30px; font-weight: bold; color: black; background-color: rgb(255, 150, 100);")
+        self.turn = players.Turn(self.current_player_label)
+        layout.addWidget(self.current_player_label)
 
         # Player 1 - RED
         layout.addWidget(playerPanel1)
@@ -414,8 +414,15 @@ class gameInterface(QWidget):
         active_piece.move(active_piece.pos())
 
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter:
-            confirm_placement(self.pieceList, self.boardLayout,self.playerList, self.turn)
+        key = event.key()
+        if key == Qt.Key_Escape:  # "ESC" key for exiting
+            on_exit_clicked()
+        elif key == Qt.Key_R:  # "R" key for rotation
+            self.rotate_piece()
+        elif key == Qt.Key_P:  # "P" key for passing
+            next_player_clicked(self.playerList, self.turn, self.boardLayout)
+        elif key == Qt.Key_Return or key == Qt.Key_Enter:
+            confirm_placement(self.pieceList, self.boardLayout, self.playerList, self.turn)
             next_player_clicked(self.playerList, self.turn, self.boardLayout)
 
 def startGame():
