@@ -36,12 +36,14 @@ def next_player_clicked(players, turn, board):
             # make all pieces of player i not movable
             for piece in players[i].pieces:
                 piece.movable = False
+                piece.set_color_overlay(Qt.gray)
             if i+1 >= len(players): # loop back to player 1
                 players[0].is_turn = True
                 turn.turn.setText(players[0].name) # set the text to display on screen
                 # make all pieces of player 1 become movable
                 for piece in players[0].pieces:
                     piece.movable = True
+                    piece.set_color_overlay(Qt.transparent)
                 if players[0].is_ai:
                     ai_move(players, turn, 0, board)
             else:
@@ -49,6 +51,7 @@ def next_player_clicked(players, turn, board):
                 turn.turn.setText(players[i+1].name)
                 for piece in players[i+1].pieces:
                     piece.movable = True
+                    piece.set_color_overlay(Qt.transparent)
                 if players[i+1].is_ai:
                     ai_move(players, turn, i+1, board)
             break
@@ -283,7 +286,7 @@ class gameInterface(QWidget):
             'shape': [[1,1,1,0],[0,0,1,1]], 'colour': 'green' 
         },
         { 
-            'player': player3,'image': 'assets/green/X5.png','weight': 5,
+            'player': player2,'image': 'assets/green/X5.png','weight': 5,
             'initial_position': QPoint(450, playerPanel1.height() + 370),
             'shape': [[0,1,0],[1,1,1],[0,1,0]], 'colour': 'green'
         },
@@ -363,6 +366,7 @@ class gameInterface(QWidget):
         # Make player 1's pieces movable since that's the first player
         for piece in player1.pieces:
             piece.movable = True
+            piece.set_color_overlay(Qt.transparent)
 
     def rotate_piece(self):
         # Find the last pressed piece

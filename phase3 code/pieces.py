@@ -40,6 +40,8 @@ class Piece(QLabel):
         self.move(self.initial_position)
         self.setScaledContents(True)
         self.set_size_by_percentage(1)
+
+        self.set_color_overlay(Qt.gray)
         # Create a mask from the alpha channel of the image
         mask = QBitmap(self.pixmap.createMaskFromColor(Qt.transparent))
         self.setMask(mask)
@@ -92,15 +94,26 @@ class Piece(QLabel):
     #OVERLAY FOR THE GREEN AND RED
     def set_color_overlay(self, color):
         overlay_pixmap = QPixmap(self.pixmap.size())
-        overlay_pixmap.fill(Qt.transparent)
-        painter = QPainter(overlay_pixmap)
-        painter.setCompositionMode(QPainter.CompositionMode_SourceOver)
-        painter.drawPixmap(0, 0, self.pixmap)
-        painter.setCompositionMode(QPainter.CompositionMode_SourceAtop)
-        painter.fillRect(overlay_pixmap.rect(), color)
-        painter.end()
+
+        if self.movable:
+            painter = QPainter(overlay_pixmap)
+            painter.setCompositionMode(QPainter.CompositionMode_SourceOver)
+            painter.drawPixmap(0, 0, self.pixmap)
+            painter.setCompositionMode(QPainter.CompositionMode_SourceAtop)
+            painter.fillRect(overlay_pixmap.rect(), color)
+            overlay_pixmap.fill(Qt.transparent)
+            painter.end()
+        else:
+            painter = QPainter(overlay_pixmap)
+            painter.setCompositionMode(QPainter.CompositionMode_SourceOver)
+            painter.drawPixmap(0, 0, self.pixmap)
+            painter.setOpacity(0.8)  # Set the opacity to 0.7 for non-movable pieces
+            painter.setCompositionMode(QPainter.CompositionMode_SourceAtop)
+            painter.fillRect(overlay_pixmap.rect(), color)
+            painter.end()
 
         self.setPixmap(overlay_pixmap)
+
 
     #SELF EXPLANATORY
     def check_collision(self, pieces):
