@@ -37,42 +37,43 @@ def next_player_clicked(players, turn, board):
             for piece in players[i].pieces:
                 piece.movable = False
                 piece.set_color_overlay(Qt.gray)
-            if i+1 >= len(players): # loop back to player 1
-                players[0].is_turn = True
-                # make all pieces of player 1 become movable
-                for piece in players[0].pieces:
-                    piece.movable = True
-                    piece.set_color_overlay(Qt.transparent)
-                if players[0].is_ai:
-                    ai_move(players, turn, 0, board)
+            if i + 1 >= len(players):
+                next_player_index = 0
             else:
-                players[i+1].is_turn = True
-                
-                for piece in players[i+1].pieces:
-                    piece.movable = True
-                    piece.set_color_overlay(Qt.transparent)
-                if players[i+1].is_ai:
-                    ai_move(players, turn, i+1, board)
-            turn.turn.setText(f"Current player({piece.colour}): {players[i].name}")
+                next_player_index = i+1
+            players[next_player_index].is_turn = True
+            # make all pieces of player 1 become movable
+            for piece in players[next_player_index].pieces:
+                piece.movable = True
+                piece.set_color_overlay(Qt.transparent)
+            if players[next_player_index].is_ai:
+                ai_move(players, turn, next_player_index, board)
+
+            turn.turn.setText(f"Current player({players[next_player_index].pieces[0].colour}): {players[next_player_index].name}")
             break
 
-#right now the AI can only place the piece at top left corner
+#for some reason only yellow works :/
 def ai_move(players, turn, player_index, board):
     # get piece not onboard
     piece_to_place = None
     for piece in players[player_index].pieces:
         if not piece.onboard:
             piece_to_place = piece
+            print(piece_to_place.shape)
+            print(piece_to_place.colour)
             break
 
     if piece_to_place:
         # find valid position
-        for i in range(15, 250, 25):
-            for j in range(145, 680):
-                piece_to_place.last_confirmed_position = QPoint(i, j)
+        for i in range(14, 1000, 20):
+            for j in range(90, 1000,20):
+                piece_to_place.new_position = QPoint(i, j)
                 if not piece_to_place.check_collision(piece_to_place.pieces):
-                    piece_to_place.onboard = True
-                    break
+                    # piece_to_place.onboard = True
+                    # break
+                    confirm_placement(players[player_index].pieces, board, players, turn)
+                    if piece_to_place.onboard:
+                        return
 
         # if the piece is successfully placed
         if piece_to_place.onboard:
@@ -89,7 +90,7 @@ def ai_move(players, turn, player_index, board):
                 nonlocal start_pos, num_steps
 
                 start_pos.setX(round(start_pos.x() + step_x)) #round x and y
-                start_pos.setY(round(start_pos.y() + step_y))  
+                start_pos.setY(round(start_pos.y() + step_y))
                 piece_to_place.move(start_pos)
 
                 num_steps -= 1
@@ -119,41 +120,42 @@ def ai_move(players, turn, player_index, board):
 
 def confirm_placement(pieces, board, player_list, turn):
     piece_placed = False    
+    for player in player_list:
+        if player.is_turn:
+            for piece in player.pieces:
+                if piece.new_position is not None and not piece.onboard:
 
-    for piece in pieces:
-        if piece.new_position is not None and not piece.onboard:
-            
-            # Calculate the starting position for the piece's shape within the tile
-            startX = int((piece.new_position.x() - board.x() + board.tileSize // 2) / board.tileSize)
-            startY = int((piece.new_position.y() - board.y() + board.tileSize // 2) / board.tileSize)
+                    # Calculate the starting position for the piece's shape within the tile
+                    startX = int((piece.new_position.x() - board.x() + board.tileSize // 2) / board.tileSize)
+                    startY = int((piece.new_position.y() - board.y() + board.tileSize // 2) / board.tileSize)
 
-            # Check if the piece can be placed according to Blokus rules
-            if board.canPlacePiece(piece.shape, startX, startY, piece):
-                # Loop through the piece shape and update the tile colors accordingly
-                for row in range(len(piece.shape)):
-                    for col in range(len(piece.shape[row])):
-                        if piece.shape[row][col] == 1:
-                            board.tileList[startY + row][startX + col].changeColour(piece.colour)
-                            board.tileList[startY + row][startX + col].changeState()
+                    # Check if the piece can be placed according to Blokus rules
+                    if board.canPlacePiece(piece.shape, startX, startY, piece):
+                        # Loop through the piece shape and update the tile colors accordingly
+                        for row in range(len(piece.shape)):
+                            for col in range(len(piece.shape[row])):
+                                if piece.shape[row][col] == 1:
+                                    board.tileList[startY + row][startX + col].changeColour(piece.colour)
+                                    board.tileList[startY + row][startX + col].changeState()
 
-                # Mark the piece as on the board
-                piece.last_confirmed_position = piece.new_position
-                piece.new_position = None
-                piece.onboard = True
-                piece_placed = True
+                        # Mark the piece as on the board
+                        piece.last_confirmed_position = piece.new_position
+                        piece.new_position = None
+                        piece.onboard = True
+                        piece_placed = True
 
-                #Remove pice from screen
-                piece.setParent(None)
-                piece.hide()
+                        #Remove pice from screen
+                        piece.setParent(None)
+                        piece.hide()
 
-                # Update the score count
-                piece.score_label.setText(str(int(piece.score_label.text()) + piece.weight))
-                
-                if piece_placed:
-                    if piece.player.first_move:
-                            piece.player.first_move = False
-                    if turn:
-                        next_player_clicked(player_list, turn, board)
+                        # Update the score count
+                        piece.score_label.setText(str(int(piece.score_label.text()) + piece.weight))
+
+                        if piece_placed:
+                            if piece.player.first_move:
+                                    piece.player.first_move = False
+                            if turn:
+                                next_player_clicked(player_list, turn, board)
 
 class gameInterface(QWidget):
     def __init__(self):
