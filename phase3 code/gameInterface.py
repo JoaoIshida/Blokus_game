@@ -58,7 +58,7 @@ def next_player_clicked(players, turn, board):
 
 #right now the AI can only place the piece at top left corner
 def ai_move(players, turn, player_index, board):
-    # Find the first piece that is not already on the board
+    # get piece not onboard
     piece_to_place = None
     for piece in players[player_index].pieces:
         if not piece.onboard:
@@ -66,7 +66,7 @@ def ai_move(players, turn, player_index, board):
             break
 
     if piece_to_place:
-        # Find a valid position to place the piece
+        # find valid position
         for i in range(15, 250, 25):
             for j in range(145, 680):
                 piece_to_place.last_confirmed_position = QPoint(i, j)
@@ -74,30 +74,46 @@ def ai_move(players, turn, player_index, board):
                     piece_to_place.onboard = True
                     break
 
-        # Update the score count only if the piece is successfully placed
+        # if the piece is successfully placed
         if piece_to_place.onboard:
-            # Update the score count
             piece_to_place.score_label.setText(str(piece_to_place.weight + int(players[player_index].score_label.text())))
 
             # Slowly move the piece to the destination
             start_pos = piece_to_place.pos()
             end_pos = piece_to_place.last_confirmed_position
-            num_steps = 100  # Adjust the number of steps for slower or faster movement
+            num_steps = 100  # make slower or faster animation
             step_x = (end_pos.x() - start_pos.x()) / num_steps
             step_y = (end_pos.y() - start_pos.y()) / num_steps
 
             def move_piece():
                 nonlocal start_pos, num_steps
 
-                start_pos.setX(round(start_pos.x() + step_x))  # Round the x position to an integer
-                start_pos.setY(round(start_pos.y() + step_y))  # Round the y position to an integer
+                start_pos.setX(round(start_pos.x() + step_x)) #round x and y
+                start_pos.setY(round(start_pos.y() + step_y))  
                 piece_to_place.move(start_pos)
 
                 num_steps -= 1
                 if num_steps == 0:
+                    startX = int((end_pos.x() - board.x() + board.tileSize // 2) / board.tileSize)
+                    startY = int((end_pos.y() - board.y() + board.tileSize // 2) / board.tileSize)
+
+                    # loop through the piece and update color tiles
+                    for row in range(len(piece_to_place.shape)):
+                        for col in range(len(piece_to_place.shape[row])):
+                            if piece_to_place.shape[row][col] == 1:
+                                board.tileList[startY + row][startX + col].changeColour(piece_to_place.colour)
+                                board.tileList[startY + row][startX + col].changeState()
+
+                    # mark pieces
+                    piece_to_place.movable = False
+                    piece_to_place.set_color_overlay(Qt.gray)
+
+                    # hiide piece
+                    piece_to_place.hide()
+
                     next_player_clicked(players, turn, board)
                 else:
-                    QTimer.singleShot(10, move_piece)  # Adjust the delay for smoother movement
+                    QTimer.singleShot(10, move_piece)  # adjust for smoother movement
 
             move_piece()
 
