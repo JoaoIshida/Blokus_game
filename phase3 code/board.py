@@ -37,7 +37,6 @@ class Board(QMainWindow):
         self.tileSize = 28
         self.setWindowTitle("Blokus")
         self.centralWidget = QWidget()
-        self.firstMove = True
         self.tileList = [[]]
         # Configure the Layout of Board
         self.gridLayout = QGridLayout(self.centralWidget)
@@ -76,7 +75,6 @@ class Board(QMainWindow):
         if piece.player.first_move:
             return True
         else:
-            #cornerTouching = False  # Initialize a variable to track if there is any corner touching
             sameColourCorner = False
 
             for row in range(pieceHeight):
@@ -117,7 +115,7 @@ class Board(QMainWindow):
                         
                         sideTiles = [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]
                         for sideX, sideY in sideTiles:
-                            if self.inBounds(sideX, sideY) and not self.tileList[sideY][sideX].isEmpty():
+                            if self.inBounds(sideX, sideY) and not self.tileList[sideY][sideX].isEmpty() and self.tileList[sideY][sideX].tileColor == piece_colour:
                                 return False
             return True
 

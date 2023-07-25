@@ -138,7 +138,6 @@ def confirm_placement(pieces, board, player_list, turn):
 
                 # Mark the piece as on the board
                 piece.last_confirmed_position = piece.new_position
-                board.firstMove = False
                 piece.new_position = None
                 piece.onboard = True
                 piece_placed = True
