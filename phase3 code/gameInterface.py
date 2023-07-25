@@ -182,7 +182,6 @@ class gameInterface(QWidget):
         #CREATE CONFIRM
         confirm_button = QPushButton('Confirm', self)
         confirm_button.clicked.connect(lambda: confirm_placement(self.pieceList, self.boardLayout, self.playerList, self.turn))
-        #confirm_button.clicked.connect(lambda: next_player_clicked(self.playerList, self.turn))
         confirm_button.setStyleSheet("QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
 
         #CREATE ROTATE
@@ -422,7 +421,6 @@ class gameInterface(QWidget):
             next_player_clicked(self.playerList, self.turn, self.boardLayout)
         elif key == Qt.Key_Return or key == Qt.Key_Enter:
             confirm_placement(self.pieceList, self.boardLayout, self.playerList, self.turn)
-            next_player_clicked(self.playerList, self.turn, self.boardLayout)
 
 def startGame():
     app = QApplication(sys.argv)
