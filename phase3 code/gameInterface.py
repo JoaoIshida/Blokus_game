@@ -59,16 +59,25 @@ def ai_move(players, turn, player_index, board):
     for piece in players[player_index].pieces:
         if not piece.onboard:
             piece_to_place = piece
-            print(piece_to_place.shape)
-            print(piece_to_place.colour)
             break
 
-    if piece_to_place:
+    if piece_to_place and piece_to_place.colour=='green':
         # find valid position
         for i in range(14, 1000, 20):
-            for j in range(90, 1000,20):
+            for j in range(90, 1000, 20):
                 piece_to_place.new_position = QPoint(i, j)
-                if not piece_to_place.check_collision(piece_to_place.pieces):
+                if not piece_to_place.check_collision(piece_to_place.pieces) and not board.check_collision(piece_to_place):
+                    # piece_to_place.onboard = True
+                    # break
+                    confirm_placement(players[player_index].pieces, board, players, turn)
+                    if piece_to_place.onboard:
+                        return
+    else:
+        # find valid position
+        for i in range(1000, 14, -20):
+            for j in range(90, 1000, 20):
+                piece_to_place.new_position = QPoint(i, j)
+                if not piece_to_place.check_collision(piece_to_place.pieces) and not board.check_collision(piece_to_place):
                     # piece_to_place.onboard = True
                     # break
                     confirm_placement(players[player_index].pieces, board, players, turn)
@@ -109,7 +118,7 @@ def ai_move(players, turn, player_index, board):
                     piece_to_place.movable = False
                     piece_to_place.set_color_overlay(Qt.gray)
 
-                    # hiide piece
+                    # hide piece
                     piece_to_place.hide()
 
                     next_player_clicked(players, turn, board)
@@ -117,6 +126,7 @@ def ai_move(players, turn, player_index, board):
                     QTimer.singleShot(10, move_piece)  # adjust for smoother movement
 
             move_piece()
+
 
 def confirm_placement(pieces, board, player_list, turn):
     piece_placed = False    

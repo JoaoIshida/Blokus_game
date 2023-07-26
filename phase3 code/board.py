@@ -118,4 +118,30 @@ class Board(QMainWindow):
                             if self.inBounds(sideX, sideY) and not self.tileList[sideY][sideX].isEmpty() and self.tileList[sideY][sideX].tileColor == piece_colour:
                                 return False
             return True
+        
+    def check_collision(self, piece):
+        """
+        Check if the given piece collides with colored tiles on the board.
+        """
+        startX = int((piece.new_position.x() - self.x() + self.tileSize // 2) / self.tileSize)
+        startY = int((piece.new_position.y() - self.y() + self.tileSize // 2) / self.tileSize)
+
+        numTilesX = self.width() // self.tileSize
+        numTilesY = self.height() // self.tileSize
+
+        for row in range(len(piece.shape)):
+            for col in range(len(piece.shape[row])):
+                if piece.shape[row][col] == 1:
+                    tile_x = startX + col
+                    tile_y = startY + row
+
+                    if not (0 <= tile_x < numTilesX and 0 <= tile_y < numTilesY):
+                        # Piece is out of bounds of the board
+                        return True
+
+                    if not self.tileList[tile_y][tile_x].isEmpty():
+                        # There's already a colored tile on the board at the same position
+                        return True
+
+        return False
 
