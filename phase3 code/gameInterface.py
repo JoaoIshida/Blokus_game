@@ -46,10 +46,9 @@ def next_player_clicked(players, turn, board):
             for piece in players[next_player_index].pieces:
                 piece.movable = True
                 piece.set_color_overlay(Qt.transparent)
+            turn.turn.setText(f"Current player({players[next_player_index].pieces[0].colour}): {players[next_player_index].name}")
             if players[next_player_index].is_ai:
                 ai_move(players, turn, next_player_index, board)
-
-            turn.turn.setText(f"Current player({players[next_player_index].pieces[0].colour}): {players[next_player_index].name}")
             break
 
 #for some reason only yellow works :/
@@ -61,25 +60,21 @@ def ai_move(players, turn, player_index, board):
             piece_to_place = piece
             break
 
-    if piece_to_place and piece_to_place.colour=='green':
+    if piece_to_place and piece_to_place.colour == 'green':
         # find valid position
         for i in range(14, 1000, 20):
             for j in range(90, 1000, 20):
                 piece_to_place.new_position = QPoint(i, j)
                 if not piece_to_place.check_collision(piece_to_place.pieces) and not board.check_collision(piece_to_place):
-                    # piece_to_place.onboard = True
-                    # break
                     confirm_placement(players[player_index].pieces, board, players, turn)
                     if piece_to_place.onboard:
                         return
-    else:
+    if piece_to_place and piece_to_place.colour == 'yellow':
         # find valid position
         for i in range(1000, 14, -20):
             for j in range(90, 1000, 20):
                 piece_to_place.new_position = QPoint(i, j)
                 if not piece_to_place.check_collision(piece_to_place.pieces) and not board.check_collision(piece_to_place):
-                    # piece_to_place.onboard = True
-                    # break
                     confirm_placement(players[player_index].pieces, board, players, turn)
                     if piece_to_place.onboard:
                         return
@@ -88,45 +83,15 @@ def ai_move(players, turn, player_index, board):
         if piece_to_place.onboard:
             piece_to_place.score_label.setText(str(piece_to_place.weight + int(players[player_index].score_label.text())))
 
-            # Slowly move the piece to the destination
-            start_pos = piece_to_place.pos()
-            end_pos = piece_to_place.last_confirmed_position
-            num_steps = 100  # make slower or faster animation
-            step_x = (end_pos.x() - start_pos.x()) / num_steps
-            step_y = (end_pos.y() - start_pos.y()) / num_steps
+            startX = int((piece_to_place.new_position.x() - board.x() + board.tileSize // 2) / board.tileSize)
+            startY = int((piece_to_place.new_position.y() - board.y() + board.tileSize // 2) / board.tileSize)
 
-            def move_piece():
-                nonlocal start_pos, num_steps
-
-                start_pos.setX(round(start_pos.x() + step_x)) #round x and y
-                start_pos.setY(round(start_pos.y() + step_y))
-                piece_to_place.move(start_pos)
-
-                num_steps -= 1
-                if num_steps == 0:
-                    startX = int((end_pos.x() - board.x() + board.tileSize // 2) / board.tileSize)
-                    startY = int((end_pos.y() - board.y() + board.tileSize // 2) / board.tileSize)
-
-                    # loop through the piece and update color tiles
-                    for row in range(len(piece_to_place.shape)):
-                        for col in range(len(piece_to_place.shape[row])):
-                            if piece_to_place.shape[row][col] == 1:
-                                board.tileList[startY + row][startX + col].changeColour(piece_to_place.colour)
-                                board.tileList[startY + row][startX + col].changeState()
-
-                    # mark pieces
-                    piece_to_place.movable = False
-                    piece_to_place.set_color_overlay(Qt.gray)
-
-                    # hide piece
-                    piece_to_place.hide()
-
-                    next_player_clicked(players, turn, board)
-                else:
-                    QTimer.singleShot(10, move_piece)  # adjust for smoother movement
-
-            move_piece()
-
+            # loop through the piece and update color tiles
+            for row in range(len(piece_to_place.shape)):
+                for col in range(len(piece_to_place.shape[row])):
+                    if piece_to_place.shape[row][col] == 1:
+                        board.tileList[startY + row][startX + col].changeColour(piece_to_place.colour)
+                        board.tileList[startY + row][startX + col].changeState()
 
 def confirm_placement(pieces, board, player_list, turn):
     piece_placed = False    
@@ -166,7 +131,7 @@ def confirm_placement(pieces, board, player_list, turn):
                                     piece.player.first_move = False
                             if turn:
                                 next_player_clicked(player_list, turn, board)
-
+                                     
 class gameInterface(QWidget):
     def __init__(self):
         super().__init__()

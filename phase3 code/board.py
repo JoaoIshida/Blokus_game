@@ -120,9 +120,6 @@ class Board(QMainWindow):
             return True
         
     def check_collision(self, piece):
-        """
-        Check if the given piece collides with colored tiles on the board.
-        """
         startX = int((piece.new_position.x() - self.x() + self.tileSize // 2) / self.tileSize)
         startY = int((piece.new_position.y() - self.y() + self.tileSize // 2) / self.tileSize)
 
