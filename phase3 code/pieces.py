@@ -89,7 +89,8 @@ class Piece(QLabel):
                 # Store the new position but don't confirm it yet
                 self.new_position = self.pos()
             # After dropping the piece, reset the color overlay to transparent
-            self.set_color_overlay(Qt.transparent)
+            if self.movable:
+                self.set_color_overlay(Qt.transparent)
 
     #OVERLAY FOR THE GREEN AND RED
     def set_color_overlay(self, color):
