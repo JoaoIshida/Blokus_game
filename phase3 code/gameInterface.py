@@ -232,64 +232,94 @@ class gameInterface(QWidget):
             #RED
         { 
             'player': player1,'image': 'assets/red/1.png','weight': 1,
-            'initial_position': QPoint(50, playerPanel1.height() + 300), 
+            'initial_position': QPoint(50, playerPanel1.height() + 270), 
             'shape': [[1]], 'colour': 'red'
         },
         { 
             'player': player1,'image': 'assets/red/2.png','weight': 2,
-            'initial_position': QPoint(100, playerPanel1.height() + 300),
+            'initial_position': QPoint(100, playerPanel1.height() + 270),
             'shape': [[1],[1]], 'colour': 'red'
         },
         { 
             'player': player1,'image': 'assets/red/F5.png','weight': 5,
-            'initial_position': QPoint(150, playerPanel1.height() + 300),
+            'initial_position': QPoint(150, playerPanel1.height() + 270),
             'shape': [[0,1,1],[1,1,0],[0,1,0]], 'colour': 'red'
         },
         { 
             'player': player1,'image': 'assets/red/L3.png','weight': 3,
-            'initial_position': QPoint(250, playerPanel1.height() + 300), 
+            'initial_position': QPoint(250, playerPanel1.height() + 270), 
             'shape': [[1,0],[1,1]], 'colour': 'red'
         },
         { 
             'player': player1,'image': 'assets/red/Z5.png','weight': 5,
-            'initial_position': QPoint(325, playerPanel1.height() + 300),
+            'initial_position': QPoint(325, playerPanel1.height() + 270),
             'shape': [[1,1,1,0],[0,0,1,1]], 'colour': 'red'
         },
         { 
             'player': player1,'image': 'assets/red/X5.png','weight': 5,
-            'initial_position': QPoint(450, playerPanel1.height() + 300),
+            'initial_position': QPoint(450, playerPanel1.height() + 270),
             'shape': [[0,1,0],[1,1,1],[0,1,0]], 'colour': 'red'
+        },
+        { 
+            'player': player1,'image': 'assets/red/T4.png','weight': 4,
+            'initial_position': QPoint(540, playerPanel1.height() + 270), 
+            'shape': [[1,1,1],[0,1,0]], 'colour': 'red'
+        },
+        { 
+            'player': player1,'image': 'assets/red/P5.png','weight': 5,
+            'initial_position': QPoint(625, playerPanel1.height() + 270), 
+            'shape': [[1,1],[1,1],[1,0]], 'colour': 'red'
+        },
+        { 
+            'player': player1,'image': 'assets/red/W5.png','weight': 5,
+            'initial_position': QPoint(700, playerPanel1.height() + 270), 
+            'shape': [[1,0,0],[1,1,0],[0,1,1]], 'colour': 'red'
         },
             #GREEN
          { 
             'player': player2,'image': 'assets/green/1.png','weight': 1,
-            'initial_position': QPoint(50, playerPanel1.height() + 370),
+            'initial_position': QPoint(50, playerPanel1.height() + 350),
             'shape': [[1]], 'colour': 'green' 
         },
         { 
             'player': player2,'image': 'assets/green/2.png','weight': 2,
-            'initial_position': QPoint(100, playerPanel1.height() + 370), 
+            'initial_position': QPoint(100, playerPanel1.height() + 350), 
             'shape': [[1],[1]], 'colour': 'green'
         },
         { 
             'player': player2,'image': 'assets/green/F5.png','weight': 5,
-            'initial_position': QPoint(150, playerPanel1.height() + 370), 
+            'initial_position': QPoint(150, playerPanel1.height() + 350), 
             'shape': [[0,1,1],[1,1,0],[0,1,0]], 'colour': 'green'
         },
         { 
             'player': player2,'image': 'assets/green/L3.png','weight': 3,
-            'initial_position': QPoint(250, playerPanel1.height() + 370), 
+            'initial_position': QPoint(250, playerPanel1.height() + 350), 
             'shape': [[1,0],[1,1]], 'colour': 'green'
         },
         { 
             'player': player2,'image': 'assets/green/Z5.png','weight': 5,
-            'initial_position': QPoint(325, playerPanel1.height() + 370),
+            'initial_position': QPoint(325, playerPanel1.height() + 350),
             'shape': [[1,1,1,0],[0,0,1,1]], 'colour': 'green' 
         },
         { 
             'player': player2,'image': 'assets/green/X5.png','weight': 5,
-            'initial_position': QPoint(450, playerPanel1.height() + 370),
+            'initial_position': QPoint(450, playerPanel1.height() + 350),
             'shape': [[0,1,0],[1,1,1],[0,1,0]], 'colour': 'green'
+        },
+        { 
+            'player': player2,'image': 'assets/green/T4.png','weight': 4,
+            'initial_position': QPoint(540, playerPanel1.height() + 350), 
+            'shape': [[1,1,1],[0,1,0]], 'colour': 'green'
+        },
+        { 
+            'player': player2,'image': 'assets/green/P5.png','weight': 5,
+            'initial_position': QPoint(625, playerPanel1.height() + 350), 
+            'shape': [[1,1],[1,1],[1,0]], 'colour': 'green'
+        },
+        { 
+            'player': player2,'image': 'assets/green/W5.png','weight': 5,
+            'initial_position': QPoint(700, playerPanel1.height() + 350), 
+            'shape': [[1,0,0],[1,1,0],[0,1,1]], 'colour': 'green'
         },
             #BLUE
          {  
@@ -322,6 +352,21 @@ class gameInterface(QWidget):
             'initial_position': QPoint(450, playerPanel1.height() + 440),
             'shape': [[0,1,0],[1,1,1],[0,1,0]], 'colour': 'blue'
         },
+        { 
+            'player': player3,'image': 'assets/blue/T4.png','weight': 4,
+            'initial_position': QPoint(540, playerPanel1.height() + 440), 
+            'shape': [[1,1,1],[0,1,0]], 'colour': 'blue'
+        },
+        { 
+            'player': player3,'image': 'assets/blue/P5.png','weight': 5,
+            'initial_position': QPoint(625, playerPanel1.height() + 440), 
+            'shape': [[1,1],[1,1],[1,0]], 'colour': 'blue'
+        },
+        { 
+            'player': player3,'image': 'assets/blue/W5.png','weight': 5,
+            'initial_position': QPoint(700, playerPanel1.height() + 440), 
+            'shape': [[1,0,0],[1,1,0],[0,1,1]], 'colour': 'blue'
+        },
             #YELLOW
         {             
              
@@ -353,6 +398,21 @@ class gameInterface(QWidget):
             'player': player4,'image': 'assets/yellow/X5.png','weight': 5,
             'initial_position': QPoint(450, playerPanel1.height() + 510),
             'shape': [[0,1,0],[1,1,1],[0,1,0]], 'colour': 'yellow'
+        },
+        { 
+            'player': player4,'image': 'assets/yellow/T4.png','weight': 4,
+            'initial_position': QPoint(540, playerPanel1.height() + 510), 
+            'shape': [[1,1,1],[0,1,0]], 'colour': 'yellow'
+        },
+        { 
+            'player': player4,'image': 'assets/yellow/P5.png','weight': 5,
+            'initial_position': QPoint(625, playerPanel1.height() + 510), 
+            'shape': [[1,1],[1,1],[1,0]], 'colour': 'yellow'
+        },
+        { 
+            'player': player4,'image': 'assets/yellow/W5.png','weight': 5,
+            'initial_position': QPoint(700, playerPanel1.height() + 510), 
+            'shape': [[1,0,0],[1,1,0],[0,1,1]], 'colour': 'yellow'
         },
         ]
         for piece_data in player_pieces:
