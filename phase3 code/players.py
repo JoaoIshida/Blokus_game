@@ -11,9 +11,26 @@ class Player:
         self.name = name
         self.first_move = True
 
+    # I have to do this since I cannot pickle PyQt objects
+    def __getstate__(self):
+        d = self.__dict__
+        self_dict = {'score': d['score_label'].text(), 'is_ai':d['is_ai'], 'is_turn':d['is_turn'], 'name':d['name'], 'first_move':d['first_move']}
+        return self_dict
+
+    def __setstate__(self, state):
+        self.__dict__ = state
+
 class Turn:
     def __init__(self, turn):
         self.turn = turn
+
+    def __getstate__(self):
+        d = self.__dict__
+        self_dict = {'turnText': d['turn'].text()}
+        return self_dict
+
+    def __setstate__(self, state):
+        self.__dict__ = state
 
 class PlayerPanel(QLabel):
     def __init__(self, colour):
