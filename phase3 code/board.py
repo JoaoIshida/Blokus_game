@@ -1,4 +1,5 @@
 import sys
+import math
 from PyQt5 import QtGui
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -7,10 +8,11 @@ from PyQt5.QtCore import *
 # Tile Class
 class tile(QFrame):
     # Sets the initial state of the tile
-    def __init__(self, x ,y):
+    def __init__(self, x ,y, value):
         super().__init__()
         self.x = x
         self.y = y
+        self.value = value
         self.isTileEmpty = True
         self.tileColor = 'white'
         self.setStyleSheet(f"background-color: white; border: 1px solid black;")
@@ -55,27 +57,32 @@ class Board(QMainWindow):
             
         for row in range(20):
             for col in range(20):
+                center = 10
+                distance_to_center = math.sqrt((row - center)**2 + (col - center)**2)
+                # Calculate the value based on the linear gradient and scale to integers
+                value = int(100 * (1 - distance_to_center / center))
                 # Creates a tile with the given row and column then adds the tile to the board
-                tileObject = tile(row,col)
+                tileObject = tile(row,col,value)
+                # Creates a tile with the given row and column then adds the tile to the board
                 self.tileList[row].append(tileObject)
                 self.gridLayout.addWidget(tileObject, row+1, col+1)
 
     def inBounds(self, x, y):
         return 0 <= x < 20 and 0 <= y < 20
 
-    def canPlacePiece(self, pieceShape, tileX, tileY, piece):
-        pieceHeight = len(pieceShape)
-        pieceWidth = len(pieceShape[0])
+    def canPlacePiece(self, tileX, tileY, piece):
+        pieceHeight = len(piece.shape)
+        pieceWidth = len(piece.shape[0])
         piece_colour = piece.colour
 
         # Check if the piece is within the bounds of the board
         if not (0 <= tileX < 20 and 0 <= tileY < 20):
             return False
-
+        
         if piece.player.first_move:
             for row in range(pieceHeight):
                 for col in range(pieceWidth):
-                    if self.inBounds(tileX + col, tileY + row) == False:
+                    if self.inBounds(tileX + col, tileY + row) == False or self.tileList[tileY + row][tileX + col].isEmpty() == False:
                         return False
             return True
         else:
@@ -83,7 +90,7 @@ class Board(QMainWindow):
 
             for row in range(pieceHeight):
                 for col in range(pieceWidth):
-                    if pieceShape[row][col] == 1:
+                    if piece.shape[row][col] == 1:
                         x, y = tileX + col, tileY + row
 
                         # Check if the piece is within the bounds of the board
@@ -110,7 +117,7 @@ class Board(QMainWindow):
             # Check if any side tiles are filled
             for row in range(pieceHeight):
                 for col in range(pieceWidth):
-                    if pieceShape[row][col] == 1:
+                    if piece.shape[row][col] == 1:
                         x, y = tileX + col, tileY + row
 
                         # Check if the piece is within the bounds of the board
@@ -146,3 +153,22 @@ class Board(QMainWindow):
 
         return False
 
+    def getValue(self, x , y, piece):
+        pieceHeight = len(piece.shape)
+        pieceWidth = len(piece.shape[0])
+        value = 0
+        if self.canPlacePiece(x, y, piece) == True:
+            for row in range(pieceHeight):
+                for col in range(pieceWidth):
+                    if piece.shape[row][col] == 1:
+                        value += self.tileList[y + row][x + col].value
+        return value
+
+    def aiCollision(self,x, y, piece):
+        for row in range(len(piece.shape)):
+            for col in range(len(piece.shape[row])):
+                if piece.shape[row][col] == 1:
+                    if self.tileList[y + row][x + col].isEmpty() == False:
+                        return True
+                    
+        return False

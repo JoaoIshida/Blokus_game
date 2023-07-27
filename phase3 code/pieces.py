@@ -74,7 +74,7 @@ class Piece(QLabel):
             self.move(new_pos)
             start_x = int((self.x() - self.board.x() + self.board.tileSize // 2) / self.board.tileSize)
             start_y = int((self.y() - self.board.y() + self.board.tileSize // 2) / self.board.tileSize)
-            can_be_placed = self.board.canPlacePiece(self.shape, start_x, start_y, self)
+            can_be_placed = self.board.canPlacePiece(start_x, start_y, self)
         
             # Check if the move is possible and update the color overlay accordingly 
             if self.geometry().intersects(self.Layout.geometry()) and not self.check_collision(self.pieces) and can_be_placed:

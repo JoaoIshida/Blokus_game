@@ -51,49 +51,51 @@ def next_player_clicked(players, turn, board):
                 ai_move(players, turn, next_player_index, board)
             break
 
-#for some reason only yellow works :/
-def ai_move(players, turn, player_index, board):
-    # get piece not onboard
-    piece_to_place = None
-    for piece in players[player_index].pieces:
+def ai_move(players, turn, playerIndex, board):
+    placeablePieces = []
+    validPositions = []
+    for piece in players[playerIndex].pieces:
         if not piece.onboard:
-            piece_to_place = piece
-            break
+            placeablePieces.append(piece)
 
-    if piece_to_place and piece_to_place.colour == 'green':
-        # find valid position
-        for i in range(14, 1000, 20):
-            for j in range(90, 1000, 20):
-                piece_to_place.new_position = QPoint(i, j)
-                if not piece_to_place.check_collision(piece_to_place.pieces) and not board.check_collision(piece_to_place):
-                    confirm_placement(players[player_index].pieces, board, players, turn)
-                    if piece_to_place.onboard:
-                        return
-    if piece_to_place and piece_to_place.colour == 'yellow':
-        # find valid position
-        for i in range(1000, 14, -20):
-            for j in range(90, 1000, 20):
-                piece_to_place.new_position = QPoint(i, j)
-                if not piece_to_place.check_collision(piece_to_place.pieces) and not board.check_collision(piece_to_place):
-                    confirm_placement(players[player_index].pieces, board, players, turn)
-                    if piece_to_place.onboard:
-                        return
+    if len(placeablePieces) != 0:
+        for piece in placeablePieces:
+            for row in range(0, 20):
+                for col in range(0, 20):
+                    if board.canPlacePiece(col, row, piece) and not board.aiCollision(col, row, piece):
+                        value = board.getValue(col, row, piece)
+                        validPositions.append((col, row, piece, value))
 
-        # if the piece is successfully placed
-        if piece_to_place.onboard:
-            piece_to_place.score_label.setText(str(piece_to_place.weight + int(players[player_index].score_label.text())))
+    if len(validPositions) != 0:
+        maxValue = max(validPositions, key=lambda x: x[3])
+        if board.canPlacePiece(maxValue[0], maxValue[1], maxValue[2]):
+            for row in range(len(maxValue[2].shape)):
+                for col in range(len(maxValue[2].shape[row])):
+                    if maxValue[2].shape[row][col] == 1:
+                        board.tileList[maxValue[1] + row][maxValue[0] + col].changeColour(maxValue[2].colour)
+                        board.tileList[maxValue[1] + row][maxValue[0] + col].changeState()
+                        # Mark the piece as on the board
+            maxValue[2].last_confirmed_position = maxValue[2].new_position
+            maxValue[2].new_position = None
+            maxValue[2].onboard = True
+            piece_placed = True
 
-            startX = int((piece_to_place.new_position.x() - board.x() + board.tileSize // 2) / board.tileSize)
-            startY = int((piece_to_place.new_position.y() - board.y() + board.tileSize // 2) / board.tileSize)
+            # Remove piece from screen
+            maxValue[2].setParent(None)
+            maxValue[2].hide()
 
-            # loop through the piece and update color tiles
-            for row in range(len(piece_to_place.shape)):
-                for col in range(len(piece_to_place.shape[row])):
-                    if piece_to_place.shape[row][col] == 1:
-                        board.tileList[startY + row][startX + col].changeColour(piece_to_place.colour)
-                        board.tileList[startY + row][startX + col].changeState()
+            # Update the score count
+            maxValue[2].score_label.setText(str(int(maxValue[2].score_label.text()) + maxValue[2].weight))
 
-def confirm_placement(pieces, board, player_list, turn):
+            if piece_placed:
+                if maxValue[2].player.first_move:
+                    maxValue[2].player.first_move = False
+                if turn:
+                    next_player_clicked(players, turn, board)
+    else:
+        next_player_clicked(players, turn, board)
+
+def confirm_placement(board, player_list, turn):
     piece_placed = False    
     for player in player_list:
         if player.is_turn:
@@ -105,7 +107,7 @@ def confirm_placement(pieces, board, player_list, turn):
                     startY = int((piece.new_position.y() - board.y() + board.tileSize // 2) / board.tileSize)
 
                     # Check if the piece can be placed according to Blokus rules
-                    if board.canPlacePiece(piece.shape, startX, startY, piece):
+                    if board.canPlacePiece(startX, startY, piece):
                         # Loop through the piece shape and update the tile colors accordingly
                         for row in range(len(piece.shape)):
                             for col in range(len(piece.shape[row])):
@@ -158,7 +160,7 @@ class gameInterface(QWidget):
 
         #CREATE CONFIRM
         confirm_button = QPushButton('Confirm', self)
-        confirm_button.clicked.connect(lambda: confirm_placement(self.pieceList, self.boardLayout, self.playerList, self.turn))
+        confirm_button.clicked.connect(lambda: confirm_placement(self.boardLayout, self.playerList, self.turn))
         confirm_button.setStyleSheet("QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
 
         #CREATE ROTATE
@@ -397,7 +399,7 @@ class gameInterface(QWidget):
         elif key == Qt.Key_P:  # "P" key for passing
             next_player_clicked(self.playerList, self.turn, self.boardLayout)
         elif key == Qt.Key_Return or key == Qt.Key_Enter:
-            confirm_placement(self.pieceList, self.boardLayout, self.playerList, self.turn)
+            confirm_placement(self.boardLayout, self.playerList, self.turn)
 
 def startGame():
     app = QApplication(sys.argv)
