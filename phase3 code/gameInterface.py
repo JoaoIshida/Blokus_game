@@ -190,7 +190,7 @@ class gameInterface(QWidget):
 
         board_text_layout = QHBoxLayout()
         board_text_layout.addWidget(self.boardLayout)
-        paragraph_text = QLabel("Drag the piece to the board when is your turn. \nCorfirm piece location by pressing confirm or \"enter\" on your keyboard")
+        paragraph_text = QLabel("Drag the piece to the board when is your turn. \nCorfirm piece location by pressing Confirm or \"enter\" on your keyboard\nRotate piece location by pressing Rotate or \"R\" on your keyboard\nPass turn by pressing Pass or \"P\" on your keyboard\nExit game by pressing Exit or \"Esc\" on your keyboard\nSave the game state by pressing Save")
         board_text_layout.addWidget(paragraph_text)
         layout.addLayout(board_text_layout)
         paragraph_text.setStyleSheet("font-size: 20px; color: white;")
