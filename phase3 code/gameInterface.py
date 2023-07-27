@@ -14,7 +14,7 @@ def display_achievements(player):
     achievement_text = ""
     #if player.first_move == True:
     #    achievement_text += "player first move\n"
-    if player.score_label.text() == "21":
+    if player.score_label.text() == "35":
         if player.is_ai:
             achievement_text += "The Terminator: AI has shown dominance!\n"
         else:
