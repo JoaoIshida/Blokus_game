@@ -35,8 +35,10 @@ class MainWindow(QMainWindow):
         self.load_button = QPushButton("LOAD GAME (WIP)")
         self.load_button.setFixedSize(400, 100)
         self.load_button.setStyleSheet(
-            "font-size: 24px; padding: 10px; color: white; background-color: rgb(102, 73, 81);")
-        self.load_button.setEnabled(False)
+            "font-size: 24px; padding: 10px; color: black; background-color: rgb(224, 166, 181);")
+        # self.load_button.setStyleSheet(
+        #     "font-size: 24px; padding: 10px; color: white; background-color: rgb(102, 73, 81);")
+        # self.load_button.setEnabled(False)
 
         self.tutorial_button = QPushButton("TUTORIAL (WIP)")
         self.tutorial_button.setFixedSize(400, 100)
@@ -55,6 +57,7 @@ class MainWindow(QMainWindow):
         self.layout.addWidget(self.tutorial_button, alignment=Qt.AlignCenter)
 
         self.newGame_button.clicked.connect(self.on_newGame_button_press)
+        self.load_button.clicked.connect(self.on_loadGame_button_press)
 
         self.layout_container.addLayout(self.layout)
         self.setCentralWidget(self.widget)
@@ -67,6 +70,11 @@ class MainWindow(QMainWindow):
         self.startGame()
         self.setStyleSheet("background-color: rgb(139, 69, 19);")
         self.showFullScreen()
+
+    # It just starts a new game and overwrite with the data from the saved files
+    def on_loadGame_button_press(self):
+        self.on_newGame_button_press()
+        self.game.loadGame()
 
     def clearLayout(self, layout):
         if layout is not None:

@@ -30,7 +30,14 @@ class tile(QFrame):
     def changeColour(self, color):
         self.tileColor = color
         self.setStyleSheet(f"background-color: {color}; border: 1px solid black;")
-    
+
+    def __getstate__(self):
+        d = self.__dict__
+        self_dict = {'x': d['x'], 'y': d['y'],'isTileEmpty': d['isTileEmpty'], 'tileColor': d['tileColor']}
+        return self_dict
+
+    def __setstate__(self, state):
+        self.__dict__ = state
 
 # Game Window
 class Board(QMainWindow):
@@ -172,3 +179,11 @@ class Board(QMainWindow):
                         return True
                     
         return False
+
+    def __getstate__(self):
+        d = self.__dict__
+        self_dict = {'tileList': d['tileList']}
+        return self_dict
+
+    def __setstate__(self, state):
+        self.__dict__ = state

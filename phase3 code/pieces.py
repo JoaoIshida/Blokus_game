@@ -134,4 +134,15 @@ class Piece(QLabel):
                     return True
 
         return False
-    
+
+    #order of pieces are the same, only need the values that changes with each move?
+    def __getstate__(self):
+        d = self.__dict__
+        self_dict = {'dragging': d['dragging'], 'offset': d['offset'],
+                     'onboard': d['onboard'], 'movable': d['movable'],
+                     'last_confirmed_position': d['last_confirmed_position'],
+                     'new_position':d['new_position']}
+        return self_dict
+
+    def __setstate__(self, state):
+        self.__dict__ = state

@@ -1,5 +1,6 @@
 import sys
 import time
+import pickle
 from PyQt5 import QtCore
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -168,12 +169,19 @@ class gameInterface(QWidget):
         rotate_button.clicked.connect(self.rotate_piece)
         rotate_button.setStyleSheet("QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
 
+        # CREATE SAVE
+        save_button = QPushButton('Save', self)
+        save_button.clicked.connect(self.saveGame)  # under development
+        save_button.setStyleSheet(
+            "QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
+
         # Create a horizontal layout to hold the buttons
         buttons_layout = QHBoxLayout()
         buttons_layout.addWidget(exit_button)
         buttons_layout.addWidget(confirm_button)
         buttons_layout.addWidget(rotate_button)
         buttons_layout.addWidget(pass_button)
+        buttons_layout.addWidget(save_button)
         buttons_layout.setContentsMargins(20, 0, 20, 0)
         buttons_layout.setSpacing(20)
         
@@ -401,6 +409,65 @@ class gameInterface(QWidget):
         elif key == Qt.Key_Return or key == Qt.Key_Enter:
             confirm_placement(self.boardLayout, self.playerList, self.turn)
 
+    def saveGame(self):
+        # print(json.dumps(self.playerList[0].pieces))
+        with open("savePlayer.pkl", 'wb') as file:
+            pickle.dump(self.playerList, file)
+        with open("saveTurn.pkl", 'wb') as file:
+            pickle.dump(self.turn, file)
+        with open("saveBoard.pkl", 'wb') as file:
+            pickle.dump(self.boardLayout, file)
+        with open("savePieces.pkl", 'wb') as file:
+            pickle.dump(self.pieceList, file)
+
+    def loadGame(self):
+        with open("saveTurn.pkl", "rb") as file:
+            self.turn.turn.setText(pickle.load(file).turnText)
+        with open("saveBoard.pkl", "rb") as file:
+            Board = pickle.load(file)
+
+            #iterate through each square on the board. Is there any better way to do this?
+            for i in range(20):
+                for j in range(20):
+                    self.boardLayout.tileList[i][j].tileColor = Board.tileList[i][j].tileColor
+                    self.boardLayout.tileList[i][j].changeColour(Board.tileList[i][j].tileColor)
+                    self.boardLayout.tileList[i][j].isTileEmpty = Board.tileList[i][j].isTileEmpty
+                    # do we need to set x & y as well or they will be unchanged?
+
+        with open("savePieces.pkl", 'rb') as file:
+            Pieces = pickle.load(file)
+            for i in range(len(self.pieceList)):
+                self.pieceList[i].dragging = Pieces[i].dragging
+                self.pieceList[i].offset = Pieces[i].offset
+                self.pieceList[i].onboard = Pieces[i].onboard
+                self.pieceList[i].movable = Pieces[i].movable
+                self.pieceList[i].last_confirmed_position = Pieces[i].last_confirmed_position
+                self.pieceList[i].new_position = Pieces[i].new_position
+
+                # Update QLabels accordingly
+                if self.pieceList[i].onboard:
+                    self.pieceList[i].hide()
+
+                # Set overlay to gray as default, we will update it in the next step
+                self.pieceList[i].set_color_overlay(Qt.gray)
+
+        with open("savePlayer.pkl", "rb") as file:
+            # load the saved player data file
+            playerData = pickle.load(file)
+
+            #set the score label for each player
+            for i in range(len(self.playerList)):
+                text = playerData[i].score
+                self.playerList[i].score_label.setText(text)
+                self.playerList[i].is_ai = playerData[i].is_ai
+                self.playerList[i].is_turn = playerData[i].is_turn
+                self.playerList[i].name = playerData[i].name
+                self.playerList[i].first_move = playerData[i].first_move
+
+            # Now the players are updates, update QLabel overlay accordingly
+                if self.playerList[i].is_turn:
+                    for piece in self.playerList[i].pieces:
+                        piece.set_color_overlay(Qt.transparent)
 def startGame():
     app = QApplication(sys.argv)
     window = gameInterface()
