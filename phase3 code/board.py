@@ -73,6 +73,10 @@ class Board(QMainWindow):
             return False
 
         if piece.player.first_move:
+            for row in range(pieceHeight):
+                for col in range(pieceWidth):
+                    if self.inBounds(tileX + col, tileY + row) == False:
+                        return False
             return True
         else:
             sameColourCorner = False
