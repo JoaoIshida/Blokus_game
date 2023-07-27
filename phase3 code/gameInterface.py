@@ -11,8 +11,8 @@ import board
 
 def display_achievements(player):
     achievement_text = ""
-    if player.first_move == True:
-        achievement_text += "player first move\n"
+    #if player.first_move == True:
+    #    achievement_text += "player first move\n"
     if player.score_label.text() == "21":
         if player.is_ai:
             achievement_text += "The Terminator: AI has shown dominance!\n"
@@ -31,7 +31,7 @@ def on_exit_clicked():
 def next_player_clicked(players, turn, board):
     for i in range(len(players)):
         if players[i].is_turn:
-            # display_achievements(players[i])
+            display_achievements(players[i])
             players[i].is_turn = False
             # make all pieces of player i not movable
             for piece in players[i].pieces:
