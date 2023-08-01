@@ -1,3 +1,4 @@
+import os
 import sys
 import time
 import pickle
@@ -28,6 +29,7 @@ def display_achievements(player):
 
 def on_exit_clicked():
     QApplication.quit()
+    # QApplication.exit()
 
 def next_player_clicked(players, turn, board):
     for i in range(len(players)):
@@ -134,7 +136,7 @@ def confirm_placement(board, player_list, turn):
                                     piece.player.first_move = False
                             if turn:
                                 next_player_clicked(player_list, turn, board)
-                                     
+
 class gameInterface(QWidget):
     def __init__(self):
         super().__init__()
@@ -169,11 +171,13 @@ class gameInterface(QWidget):
         rotate_button.clicked.connect(self.rotate_piece)
         rotate_button.setStyleSheet("QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
 
-        # CREATE SAVE
-        save_button = QPushButton('Save', self)
-        save_button.clicked.connect(self.saveGame)  # under development
-        save_button.setStyleSheet(
-            "QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
+        # # CREATE SAVE
+        # save_button = QPushButton('Save', self)
+        # # save_button.clicked.connect(self.saveGame)  # under development
+        # self.saveMenu = saveMenu(parent=self, boardLayout=self.boardLayout, turn = self.turn, playerList=self.playerList, pieceList=self.pieceList)  #popup menu to choose save destination
+        # save_button.clicked.connect(self.saveMenu.show)
+        # save_button.setStyleSheet(
+        #     "QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
 
         # Create a horizontal layout to hold the buttons
         buttons_layout = QHBoxLayout()
@@ -181,7 +185,7 @@ class gameInterface(QWidget):
         buttons_layout.addWidget(confirm_button)
         buttons_layout.addWidget(rotate_button)
         buttons_layout.addWidget(pass_button)
-        buttons_layout.addWidget(save_button)
+        # buttons_layout.addWidget(save_button)
         buttons_layout.setContentsMargins(20, 0, 20, 0)
         buttons_layout.setSpacing(20)
         
@@ -429,6 +433,14 @@ class gameInterface(QWidget):
             piece.movable = True
             piece.set_color_overlay(Qt.transparent)
 
+        # CREATE SAVE BUTTON
+        save_button = QPushButton('Save', self)
+        self.saveMenu = saveMenu(boardLayout=self.boardLayout, turn=self.turn,
+                            playerList=self.playerList,pieceList=self.pieceList)  # popup menu to choose save destination
+        save_button.clicked.connect(self.saveMenu.show)
+        save_button.setStyleSheet("QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
+        buttons_layout.addWidget(save_button)
+
     def rotate_piece(self):
         # Find the last pressed piece
         active_piece = self.last_pressed_piece
@@ -469,21 +481,11 @@ class gameInterface(QWidget):
         elif key == Qt.Key_Return or key == Qt.Key_Enter:
             confirm_placement(self.boardLayout, self.playerList, self.turn)
 
-    def saveGame(self):
-        # print(json.dumps(self.playerList[0].pieces))
-        with open("savePlayer.pkl", 'wb') as file:
-            pickle.dump(self.playerList, file)
-        with open("saveTurn.pkl", 'wb') as file:
-            pickle.dump(self.turn, file)
-        with open("saveBoard.pkl", 'wb') as file:
-            pickle.dump(self.boardLayout, file)
-        with open("savePieces.pkl", 'wb') as file:
-            pickle.dump(self.pieceList, file)
-
-    def loadGame(self):
-        with open("saveTurn.pkl", "rb") as file:
+    def loadGame(self, filename="File 2"):
+        f = f"Save/{filename}/"
+        with open(f"{f}saveTurn.pkl", "rb") as file:
             self.turn.turn.setText(pickle.load(file).turnText)
-        with open("saveBoard.pkl", "rb") as file:
+        with open(f"{f}saveBoard.pkl", "rb") as file:
             Board = pickle.load(file)
 
             #iterate through each square on the board. Is there any better way to do this?
@@ -494,7 +496,7 @@ class gameInterface(QWidget):
                     self.boardLayout.tileList[i][j].isTileEmpty = Board.tileList[i][j].isTileEmpty
                     # do we need to set x & y as well or they will be unchanged?
 
-        with open("savePieces.pkl", 'rb') as file:
+        with open(f"{f}savePieces.pkl", 'rb') as file:
             Pieces = pickle.load(file)
             for i in range(len(self.pieceList)):
                 self.pieceList[i].dragging = Pieces[i].dragging
@@ -511,7 +513,7 @@ class gameInterface(QWidget):
                 # Set overlay to gray as default, we will update it in the next step
                 self.pieceList[i].set_color_overlay(Qt.gray)
 
-        with open("savePlayer.pkl", "rb") as file:
+        with open(f"{f}savePlayer.pkl", "rb") as file:
             # load the saved player data file
             playerData = pickle.load(file)
 
@@ -528,6 +530,85 @@ class gameInterface(QWidget):
                 if self.playerList[i].is_turn:
                     for piece in self.playerList[i].pieces:
                         piece.set_color_overlay(Qt.transparent)
+
+class saveMenu(QWidget):
+    def __init__(self, playerList, turn, boardLayout, pieceList):
+        super().__init__()
+
+        self.playerList = playerList
+        self.turn = turn
+        self.boardLayout = boardLayout
+        self.pieceList = pieceList
+
+        self.setWindowTitle("Choose Saving Destination")
+        self.setStyleSheet("background-color: rgb(139, 69, 19);")
+        self.setGeometry(500, 200, 500, 500)
+
+        #Button for each file
+        self.file1_button = self.makeFileButton("File 1")
+        self.file2_button = self.makeFileButton("File 2")
+        self.file3_button = self.makeFileButton("File 3")
+        self.file4_button = self.makeFileButton("File 4")
+        self.file5_button = self.makeFileButton("File 5")
+
+        self.cancel_button = QPushButton("Cancel")
+        self.cancel_button.setFixedSize(200, 50)
+        self.cancel_button.setStyleSheet(
+            "font-size: 24px; padding: 10px; color: black; background-color: rgb(224, 166, 181);")
+        # theButton.setEnabled(False)
+        self.cancel_button.clicked.connect(self.close)
+
+        #Buttons formatting
+        self.layout = QVBoxLayout(self)
+        self.layout.setAlignment(Qt.AlignCenter)
+        self.layout.addWidget(self.file1_button, alignment=Qt.AlignCenter)
+        self.layout.addWidget(self.file2_button, alignment=Qt.AlignCenter)
+        self.layout.addWidget(self.file3_button, alignment=Qt.AlignCenter)
+        self.layout.addWidget(self.file4_button, alignment=Qt.AlignCenter)
+        self.layout.addWidget(self.file5_button, alignment=Qt.AlignCenter)
+        self.layout.addWidget(self.cancel_button, alignment=Qt.AlignCenter)
+
+    def makeFileButton(self, filename):
+        theButton = QPushButton(filename)
+        theButton.setFixedSize(400, 100)
+        theButton.setStyleSheet(
+            "font-size: 24px; padding: 10px; color: black; background-color: rgb(224, 166, 181);")
+        # theButton.setEnabled(False)
+        theButton.clicked.connect(lambda: self.check_existing_save(filename))
+        return theButton
+
+    def check_existing_save(self, filename):
+        if len(os.listdir( f"Save/{filename}/")) > 1: # there is a .DS_Store file so condition is >1
+            save_msg = QMessageBox()
+            save_msg.setWindowTitle("Older saved file existed!")
+            save_msg.setText("Another saved file already existed. Overwrite the old file?")
+
+            saveButton = save_msg.addButton("Save", save_msg.ActionRole)
+            saveButton.clicked.connect(lambda: self.saveGame(filename))
+            save_msg.addButton("Cancel", save_msg.RejectRole)
+            # cancelButton.clicked.connect(self.close)
+            save_msg.exec_()
+        else:
+            self.saveGame(filename)
+
+    def saveGame(self, filename):
+        self.close()
+        f = f"Save/{filename}/"
+        with open(f"{f}savePlayer.pkl", 'wb') as file:
+            pickle.dump(self.playerList, file)
+        with open(f"{f}saveTurn.pkl", 'wb') as file:
+            pickle.dump(self.turn, file)
+        with open(f"{f}saveBoard.pkl", 'wb') as file:
+            pickle.dump(self.boardLayout, file)
+        with open(f"{f}savePieces.pkl", 'wb') as file:
+            pickle.dump(self.pieceList, file)
+        #another messagebox saying the game was saved successfully
+        msg = QMessageBox()
+        msg.setWindowTitle("Save Success")
+        msg.setText(f"Game saved successfully to {filename}")
+        msg.exec_()
+
+
 def startGame():
     app = QApplication(sys.argv)
     window = gameInterface()

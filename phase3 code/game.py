@@ -1,4 +1,6 @@
 import sys
+import os
+import pickle
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
 
@@ -19,6 +21,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("Blokus")
         self.setGeometry(100, 50, 900, 900)
+        self.setStyleSheet("background-color: rgb(196, 59, 93);")
 
         self.widget = QWidget()
 
@@ -62,19 +65,27 @@ class MainWindow(QMainWindow):
         self.layout_container.addLayout(self.layout)
         self.setCentralWidget(self.widget)
 
+
     def on_newGame_button_press(self):
         self.newGame_button.setText("You already clicked me.")
         self.newGame_button.setEnabled(False)
         self.newGame_button.setVisible(False)
         self.clearLayout(layout=self.layout_container)
         self.startGame()
-        self.setStyleSheet("background-color: rgb(139, 69, 19);")
-        self.showFullScreen()
+        # self.setStyleSheet("background-color: rgb(139, 69, 19);")
+        # self.showFullScreen()
+
+    def on_loadGame_button_press(self):
+        #open a new window to choose the file
+        self.loadMenu = loadMenu()
+        self.close()
+        self.loadMenu.show()
+
 
     # It just starts a new game and overwrite with the data from the saved files
-    def on_loadGame_button_press(self):
+    def load_chosen_file(self, filename):
         self.on_newGame_button_press()
-        self.game.loadGame()
+        self.game.loadGame(filename)
 
     def clearLayout(self, layout):
         if layout is not None:
@@ -87,14 +98,79 @@ class MainWindow(QMainWindow):
                     self.clearLayout(item.layout())
 
     def startGame(self):
+        self.close()
         self.game = gameInterface()
-        self.setCentralWidget(self.game)
+        self.game.showFullScreen()
+        self.game.setFocus(Qt.OtherFocusReason)
+
+
+class loadMenu(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Choose Saving Destination")
+        self.setStyleSheet("background-color: rgb(196, 59, 93);")
+        # self.setGeometry(500, 200, 500, 500)
+        self.setGeometry(100, 50, 900, 900)
+
+        #Button for each file
+        self.file1_button = self.makeFileButton("File 1")
+        self.file2_button = self.makeFileButton("File 2")
+        self.file3_button = self.makeFileButton("File 3")
+        self.file4_button = self.makeFileButton("File 4")
+        self.file5_button = self.makeFileButton("File 5")
+
+        self.back_button = QPushButton("Back")
+        self.back_button.setFixedSize(200, 50)
+        self.back_button.setStyleSheet(
+            "font-size: 24px; padding: 10px; color: black; background-color: rgb(224, 166, 181);")
+
+        self.back_button.clicked.connect(self.go_back_main_menu)
+        #Buttons formatting
+        self.layout = QVBoxLayout(self)
+        self.layout.setAlignment(Qt.AlignCenter)
+        self.layout.addWidget(self.file1_button, alignment=Qt.AlignCenter)
+        self.layout.addWidget(self.file2_button, alignment=Qt.AlignCenter)
+        self.layout.addWidget(self.file3_button, alignment=Qt.AlignCenter)
+        self.layout.addWidget(self.file4_button, alignment=Qt.AlignCenter)
+        self.layout.addWidget(self.file5_button, alignment=Qt.AlignCenter)
+        self.layout.addWidget(self.back_button, alignment=Qt.AlignCenter)
+
+
+    def makeFileButton(self, filename):
+        theButton = QPushButton(filename)
+        theButton.setFixedSize(400, 100)
+        if len(os.listdir(f"Save/{filename}/")) < 2:
+            theButton.setStyleSheet(
+                "font-size: 24px; padding: 10px; color: white; background-color: rgb(102, 73, 81);")
+            theButton.setEnabled(False)
+        else:
+            theButton.setStyleSheet(
+            "font-size: 24px; padding: 10px; color: black; background-color: rgb(224, 166, 181);")
+            theButton.clicked.connect(lambda: self.load_the_file(filename))
+        return theButton
+
+
+    def load_the_file(self, filename):
+        # Start new game
+        self.close()
+        # self.destroy()
+        self.startGame()
+        self.game.loadGame(filename)
+
+    def go_back_main_menu(self):
+        self.close()
+        self.mainMenu = MainWindow()
+        self.mainMenu.show()
+
+    def startGame(self):
+        self.game = gameInterface()
+        self.game.showFullScreen()
         self.game.setFocus(Qt.OtherFocusReason)
 
 def draw_menu():
     app = QApplication(sys.argv)
     window = MainWindow()
-    window.setStyleSheet("background-color: rgb(196, 59, 93);")
     window.show()
     sys.exit(app.exec_())
 
