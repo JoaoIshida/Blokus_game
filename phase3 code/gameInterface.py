@@ -190,6 +190,19 @@ class gameInterface(QWidget):
         buttons_layout.setSpacing(20)
         
         layout.addLayout(buttons_layout)
+        layout.addWidget(self.boardLayout)
+
+        board_text_layout = QHBoxLayout()
+        board_text_layout.addWidget(self.boardLayout)
+        paragraph_text = QLabel("Drag the piece to the board when is your turn. \nCorfirm piece location by pressing Confirm or \"enter\" on your keyboard\nRotate piece location by pressing Rotate or \"R\" on your keyboard\nPass turn by pressing Pass or \"P\" on your keyboard\nExit game by pressing Exit or \"Esc\" on your keyboard\nSave the game state by pressing Save")
+        board_text_layout.addWidget(paragraph_text)
+        layout.addLayout(board_text_layout)
+        paragraph_text.setStyleSheet("font-size: 20px; color: white;")
+
+        playerPanel1 = players.PlayerPanel("red")
+        playerPanel2 = players.PlayerPanel("green")
+        playerPanel3 = players.PlayerPanel("blue")
+        playerPanel4 = players.PlayerPanel("yellow")
 
         # Show whose turn is it
         self.current_player_label = QLabel("Current player (red): Player 1", self)
@@ -197,67 +210,22 @@ class gameInterface(QWidget):
         self.turn = players.Turn(self.current_player_label)
         layout.addWidget(self.current_player_label)
 
-        # Show the board
-        layout.addWidget(self.boardLayout)
-        self.board_container = QWidget(self)
-        self.board_container.setFixedSize(560, 560)
-        self.board_container.move(650, 200)  # Set the initial position of the board container
-        container_layout = QVBoxLayout(self.board_container)
-        container_layout.addWidget(self.boardLayout)
-        container_layout.setContentsMargins(0, 0, 0, 0)
-        container_layout.setAlignment(Qt.AlignCenter)
-        
-        #board_text_layout = QHBoxLayout()
-        #board_text_layout.addWidget(self.boardLayout)
-        #paragraph_text = QLabel("Drag the piece to the board when is your turn. \nCorfirm piece location by pressing Confirm or \"enter\" on your keyboard\nRotate piece location by pressing Rotate or \"R\" on your keyboard\nPass turn by pressing Pass or \"P\" on your keyboard\nExit game by pressing Exit or \"Esc\" on your keyboard\nSave the game state by pressing Save")
-        #board_text_layout.addWidget(paragraph_text)
-        #layout.addLayout(board_text_layout)
-        #paragraph_text.setStyleSheet("font-size: 20px; color: white;")
-
-        self.player_containers = []
-        for i in range(4):
-            player_container = QWidget(self)
-            player_container.setFixedSize(400, 400)
-            player_layout = QVBoxLayout(player_container)
-
-            # Add player panel content (replace the following line with your player panel content)
-            label = QLabel(f"Player {i+1} Panel", player_container)
-            label.setAlignment(Qt.AlignLeft)
-            label.setStyleSheet("font-size: 30px; font-weight: bold; color: black; background-color: rgb(255, 150, 100);")
-            
-            player_layout.addWidget(label)
-            player_layout.setContentsMargins(0, 0, 0, 0)
-            player_layout.setAlignment(Qt.AlignCenter)
-
-            self.player_containers.append(player_container)
-
-        #set locations & colors
-        self.player_containers[0].move(100, 150)
-        self.player_containers[0].setStyleSheet("background-color: rgb(255, 100, 100); border-radius: 50px;")
-        self.player_containers[1].move(1400, 150)
-        self.player_containers[1].setStyleSheet("background-color: rgb(100, 255, 100);  border-radius: 50px;")
-        self.player_containers[2].move(100, 600)
-        self.player_containers[2].setStyleSheet("background-color: rgb(100, 100, 255);  border-radius: 50px;")
-        self.player_containers[3].move(1400, 600)
-        self.player_containers[3].setStyleSheet("background-color: rgb(255, 255, 100);  border-radius: 50px;")
-
-        playerPanel1 = self.player_containers[0]
-        playerPanel2 = self.player_containers[1]
-        playerPanel3 = self.player_containers[2]
-        playerPanel4 = self.player_containers[3]
-
         # Player 1 - RED
+        layout.addWidget(playerPanel1)
         player1 = players.Player(playerPanel1, is_turn = True, name = "Player 1")
 
         # Player 2 - GREEN
+        layout.addWidget(playerPanel2)
         player2 = players.Player(playerPanel2, is_ai=True, name = "Player 2: AI1")
 
         # Player 3 - BLUE
+        layout.addWidget(playerPanel3)
         player3 = players.Player(playerPanel3, is_ai = False, name = "Player 3")
 
         # Player 4 - YELLOW
+        layout.addWidget(playerPanel4)
         player4 = players.Player(playerPanel4, is_ai=True, name = "Player 4: AI2")
-        
+
         self.playerList.append(player1)
         self.playerList.append(player2)
         self.playerList.append(player3)
@@ -312,7 +280,7 @@ class gameInterface(QWidget):
             'shape': [[1,0,0],[1,1,0],[0,1,1]], 'colour': 'red'
         },
             #GREEN
-        { 
+         { 
             'player': player2,'image': 'assets/green/1.png','weight': 1,
             'initial_position': QPoint(50, playerPanel1.height() + 350),
             'shape': [[1]], 'colour': 'green' 
