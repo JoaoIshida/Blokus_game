@@ -136,6 +136,10 @@ class Piece(QLabel):
 
         return False
 
+    def rotateShape(self):
+        self.shape = list(zip(*reversed(self.shape)))
+
+
     #order of pieces are the same, only need the values that changes with each move?
     def __getstate__(self):
         d = self.__dict__

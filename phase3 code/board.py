@@ -64,10 +64,12 @@ class Board(QMainWindow):
             
         for row in range(20):
             for col in range(20):
+                # Calculate the value of the tiles. Increased in value as the tile is closer to the center
                 center = 10
                 distance_to_center = math.sqrt((row - center)**2 + (col - center)**2)
-                # Calculate the value based on the linear gradient and scale to integers
-                value = int(100 * (1 - distance_to_center / center))
+                max_distance = math.sqrt((0 - center)**2 + (0 - center)**2)
+                value = int(100 * (1 - (distance_to_center / max_distance)**2))
+
                 # Creates a tile with the given row and column then adds the tile to the board
                 tileObject = tile(row,col,value)
                 # Creates a tile with the given row and column then adds the tile to the board
@@ -77,11 +79,23 @@ class Board(QMainWindow):
     def inBounds(self, x, y):
         return 0 <= x < 20 and 0 <= y < 20
 
+    def checkInCorner(self , x , y):
+        if x == 0 and y == 0:
+            return True
+        elif x == 0 and y == 19:
+            return True
+        elif x == 19 and y == 0:
+            return True
+        elif x == 19 and y == 19:
+            return True
+        else:
+            return False
+
     def canPlacePiece(self, tileX, tileY, piece):
         pieceHeight = len(piece.shape)
         pieceWidth = len(piece.shape[0])
         piece_colour = piece.colour
-
+        inCorner = False
         # Check if the piece is within the bounds of the board
         if not (0 <= tileX < 20 and 0 <= tileY < 20):
             return False
@@ -89,9 +103,14 @@ class Board(QMainWindow):
         if piece.player.first_move:
             for row in range(pieceHeight):
                 for col in range(pieceWidth):
+                    if self.checkInCorner(tileX + col, tileY + row) == True and piece.shape[row][col] == 1:
+                        inCorner = True
                     if self.inBounds(tileX + col, tileY + row) == False or self.tileList[tileY + row][tileX + col].isEmpty() == False:
                         return False
-            return True
+            if inCorner == True:
+                return True
+            else:
+                return False
         else:
             sameColourCorner = False
 

@@ -57,20 +57,27 @@ def next_player_clicked(players, turn, board):
 def ai_move(players, turn, playerIndex, board):
     placeablePieces = []
     validPositions = []
+    # Check which pieces are placeable on the board
     for piece in players[playerIndex].pieces:
         if not piece.onboard:
             placeablePieces.append(piece)
 
+    # Check which positions are placeable for each piece
     if len(placeablePieces) != 0:
         for piece in placeablePieces:
-            for row in range(0, 20):
-                for col in range(0, 20):
-                    if board.canPlacePiece(col, row, piece) and not board.aiCollision(col, row, piece):
-                        value = board.getValue(col, row, piece)
-                        validPositions.append((col, row, piece, value))
-
+            for rotation in range(0, 4):
+                for row in range(0, 20):
+                    for col in range(0, 20):
+                        if board.canPlacePiece(col, row, piece) and not board.aiCollision(col, row, piece):
+                            value = board.getValue(col, row, piece)
+                            validPositions.append((col, row, piece, value, rotation))
+                piece.rotateShape()
+    # Place the piece with the highest value
     if len(validPositions) != 0:
         maxValue = max(validPositions, key=lambda x: x[3])
+        print(maxValue)
+        for _ in range(maxValue[4]):
+            maxValue[2].rotateShape()
         if board.canPlacePiece(maxValue[0], maxValue[1], maxValue[2]):
             for row in range(len(maxValue[2].shape)):
                 for col in range(len(maxValue[2].shape[row])):
