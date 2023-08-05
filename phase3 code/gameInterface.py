@@ -75,7 +75,7 @@ def ai_move(players, turn, playerIndex, board):
     # Place the piece with the highest value
     if len(validPositions) != 0:
         maxValue = max(validPositions, key=lambda x: x[3])
-        print(maxValue)
+        
         for _ in range(maxValue[4]):
             maxValue[2].rotateShape()
         if board.canPlacePiece(maxValue[0], maxValue[1], maxValue[2]):
