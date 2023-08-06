@@ -4,17 +4,15 @@ from PyQt5.QtCore import *
 
 def goldman(size=12):
     # Load the font from the font file
-    font_id = QFontDatabase.addApplicationFont("assets/Goldman-Regular.ttf")  # Make sure the font file is in the same directory
+    font_id = QFontDatabase.addApplicationFont("assets/Goldman-Regular.ttf") 
 
     # Get the font family name if the font was loaded successfully
     font_families = QFontDatabase.applicationFontFamilies(font_id)
     if font_families:
         goldman_font_family = font_families[0]
     else:
-        # Fallback to a default font if the font failed to load
         goldman_font_family = "Arial"
 
-    # Create a QFont object with the desired font family and size
     goldman_font = QFont(goldman_font_family, size)
 
     return goldman_font
