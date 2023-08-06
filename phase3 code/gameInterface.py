@@ -11,11 +11,13 @@ import pieces
 import players
 import board
 
+from players import goldman
+
 def display_achievements(player):
     achievement_text = ""
     #if player.first_move == True:
-    #    achievement_text += "player first move\n"
-    if player.score_label.text() == "35":
+    #   achievement_text += f"player first move\n"
+    if player.score_label.text() == "89":
         if player.is_ai:
             achievement_text += "The Terminator: AI has shown dominance!\n"
         else:
@@ -150,13 +152,12 @@ class gameInterface(QWidget):
         self.pieceList = []
         self.playerList = []
         self.setWindowTitle("Game")
-        self.setStyleSheet("background-color: rgb(139, 69, 19);")
-        self.last_pressed_piece = None  # Initialize the last pressed piece as None
+        self.setStyleSheet("background-color: rgb(173, 151, 108);")
         
         layout = QVBoxLayout(self)
+                
         self.boardLayout = board.Board()
         self.boardLayout.setFixedSize(560, 560)
-        self.boardLayout.setStyleSheet("background-color: rgb(255, 255, 255);")
         
         #CREATE EXIT
         exit_button = QPushButton('Exit', self)
@@ -186,6 +187,23 @@ class gameInterface(QWidget):
         # save_button.setStyleSheet(
         #     "QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
 
+        # Show whose turn is it
+        self.current_player_label = QLabel("Current player (red): Player 1", self)
+        self.current_player_label.setStyleSheet("font-size: 30px; font-weight: bold; color: black; background-color: #D9D9D9;")
+        self.turn = players.Turn(self.current_player_label)
+        self.current_player_label.setFixedSize(600,100)
+        self.current_player_label.setContentsMargins(20,0,0,0)
+        self.current_player_label.setFont(goldman(size=12))
+        layout.addWidget(self.current_player_label)
+        #frame
+        frame = QFrame(self)
+        #self.centre_pos = self.boardLayout.pos()
+        frame.setFixedSize(580, 580)
+        frame.setStyleSheet("border: 10px solid black;")
+        frame_layout = QVBoxLayout(frame)
+        frame_layout.setContentsMargins(0,0,0,0)
+        frame.move(670, 266)
+        layout.addWidget(self.boardLayout, alignment=Qt.AlignCenter)
         # Create a horizontal layout to hold the buttons
         buttons_layout = QHBoxLayout()
         buttons_layout.addWidget(exit_button)
@@ -193,250 +211,214 @@ class gameInterface(QWidget):
         buttons_layout.addWidget(rotate_button)
         buttons_layout.addWidget(pass_button)
         # buttons_layout.addWidget(save_button)
-        buttons_layout.setContentsMargins(20, 0, 20, 0)
+        buttons_layout.setContentsMargins(0, 0, 20, 0)
         buttons_layout.setSpacing(20)
-        
         layout.addLayout(buttons_layout)
-        layout.addWidget(self.boardLayout)
 
-        board_text_layout = QHBoxLayout()
-        board_text_layout.addWidget(self.boardLayout)
-        paragraph_text = QLabel("Drag the piece to the board when is your turn. \nCorfirm piece location by pressing Confirm or \"enter\" on your keyboard\nRotate piece location by pressing Rotate or \"R\" on your keyboard\nPass turn by pressing Pass or \"P\" on your keyboard\nExit game by pressing Exit or \"Esc\" on your keyboard\nSave the game state by pressing Save")
-        board_text_layout.addWidget(paragraph_text)
-        layout.addLayout(board_text_layout)
-        paragraph_text.setStyleSheet("font-size: 20px; color: white;")
+        #board_text_layout = QHBoxLayout()
+        #board_text_layout.addWidget(self.boardLayout)
+        # paragraph_text = QLabel("Drag the piece to the board when is your turn. \nCorfirm piece location by pressing Confirm or \"enter\" on your keyboard\nRotate piece location by pressing Rotate or \"R\" on your keyboard\nPass turn by pressing Pass or \"P\" on your keyboard\nExit game by pressing Exit or \"Esc\" on your keyboard\nSave the game state by pressing Save")
+        # board_text_layout.addWidget(paragraph_text)
+        # layout.addLayout(board_text_layout)
+        # paragraph_text.setStyleSheet("font-size: 20px; color: white;")
 
-        playerPanel1 = players.PlayerPanel("red")
-        playerPanel2 = players.PlayerPanel("green")
-        playerPanel3 = players.PlayerPanel("blue")
-        playerPanel4 = players.PlayerPanel("yellow")
+        self.player_containers = []
+        for i in range(4):
+            player_container = QWidget(self)
+            player_container.setFixedSize(420, 420)
+            player_layout = QVBoxLayout(player_container)
 
-        # Show whose turn is it
-        self.current_player_label = QLabel("Current player (red): Player 1", self)
-        self.current_player_label.setStyleSheet("font-size: 30px; font-weight: bold; color: black; background-color: rgb(255, 150, 100);")
-        self.turn = players.Turn(self.current_player_label)
-        layout.addWidget(self.current_player_label)
+            # Add player panel content (replace the following line with your player panel content)
+            label = QLabel(f"Player {i+1} Panel", player_container)
+            label.setAlignment(Qt.AlignBottom)
+            label.setFixedSize(270, 50)
+            label.setContentsMargins(20, 0, 0, 0)
+            label.setStyleSheet("font-size: 30px; font-weight: bold; color: black; border-radius: 50px;")
+            label.setFont(goldman(size=12))
+            
+            player_layout.addWidget(label)
+            player_layout.setContentsMargins(0, 0, 0, 0)
+            player_layout.setAlignment(Qt.AlignTop)
 
-        # Player 1 - RED
-        layout.addWidget(playerPanel1)
-        player1 = players.Player(playerPanel1, is_turn = True, name = "Player 1")
+            self.player_containers.append(player_container)
 
-        # Player 2 - GREEN
-        layout.addWidget(playerPanel2)
-        player2 = players.Player(playerPanel2, is_ai=True, name = "Player 2: AI1")
+        #set locations
+        self.player_containers[0].move(100, 130)
+        self.player_containers[1].move(1400, 130)
+        self.player_containers[2].move(100, 570)        
+        self.player_containers[3].move(1400, 570)
+        #set colors
+        self.player_containers[0].setStyleSheet("background-color: #CE4A4A; border-radius: 50px;")
+        self.player_containers[1].setStyleSheet("background-color: #2EAE52;  border-radius: 50px;")
+        self.player_containers[2].setStyleSheet("background-color: #294FB0;  border-radius: 50px;")
+        self.player_containers[3].setStyleSheet("background-color: #F4FF72;  border-radius: 50px;")
 
-        # Player 3 - BLUE
-        layout.addWidget(playerPanel3)
-        player3 = players.Player(playerPanel3, is_ai = False, name = "Player 3")
+        playerPanel1 = self.player_containers[0]
+        playerPanel2 = self.player_containers[1]
+        playerPanel3 = self.player_containers[2]
+        playerPanel4 = self.player_containers[3]
 
-        # Player 4 - YELLOW
-        layout.addWidget(playerPanel4)
-        player4 = players.Player(playerPanel4, is_ai=True, name = "Player 4: AI2")
+        
+        self.score_container = QWidget(self)
+        self.score_container.setFixedSize(500, 200)
+        self.score_layout = QVBoxLayout(self.score_container)
+        self.score_container.setStyleSheet("background-color:#D9D9D9; border-radius: 50px; padding: black")
+        self.score_container.move(720,50)
+        self.score_container.setFont(goldman(size=12))
+       
+        self.player_scores = [0, 0, 0, 0]
+        
+        # Add QHBoxLayouts for each player's score row
+        # First QHBoxLayout for player 1 and player 2 scores
+        hbox1 = QHBoxLayout()
+        for i in range(2):
+            score_panel = players.ScorePanel(f"Player{i+1}")  # Use the custom ScorePanel widget
+            hbox1.addWidget(score_panel)
+            self.player_scores[i] = score_panel.score_label  # Save the score_label reference
+
+        # Second QHBoxLayout for player 3 and player 4 scores
+        hbox2 = QHBoxLayout()
+        for i in range(2, 4):
+            score_panel = players.ScorePanel(f"Player{i+1}")  # Use the custom ScorePanel widget
+            hbox2.addWidget(score_panel)
+            self.player_scores[i] = score_panel.score_label  # Save the score_label reference
+
+        # Add the two QHBoxLayouts to the QVBoxLayout
+        self.score_layout.addLayout(hbox1)
+        self.score_layout.addLayout(hbox2)
+
+        # create players
+        player1 = players.Player(self.player_scores[0], is_turn=True, name="Player 1", color='red', num="player1")
+        player2 = players.Player(self.player_scores[1], is_ai=True, name="Player 2: AI1", color='green', num="player2")
+        player3 = players.Player(self.player_scores[2], is_ai=False, name="Player 3", color='blue', num="player3")
+        player4 = players.Player(self.player_scores[3], is_ai=True, name="Player 4: AI2", color='yellow', num="player4")
 
         self.playerList.append(player1)
         self.playerList.append(player2)
         self.playerList.append(player3)
         self.playerList.append(player4)
-        
-        player_pieces = [
-            #SO FAR, EVERY SCORE IS AFTER 70, AND DISTANCE IS AROUND 50
-            #RED
-        { 
-            'player': player1,'image': 'assets/red/1.png','weight': 1,
-            'initial_position': QPoint(50, playerPanel1.height() + 270), 
-            'shape': [[1]], 'colour': 'red'
-        },
-        { 
-            'player': player1,'image': 'assets/red/2.png','weight': 2,
-            'initial_position': QPoint(100, playerPanel1.height() + 270),
-            'shape': [[1],[1]], 'colour': 'red'
-        },
-        { 
-            'player': player1,'image': 'assets/red/F5.png','weight': 5,
-            'initial_position': QPoint(150, playerPanel1.height() + 270),
-            'shape': [[0,1,1],[1,1,0],[0,1,0]], 'colour': 'red'
-        },
-        { 
-            'player': player1,'image': 'assets/red/L3.png','weight': 3,
-            'initial_position': QPoint(250, playerPanel1.height() + 270), 
-            'shape': [[1,0],[1,1]], 'colour': 'red'
-        },
-        { 
-            'player': player1,'image': 'assets/red/Z5.png','weight': 5,
-            'initial_position': QPoint(325, playerPanel1.height() + 270),
-            'shape': [[1,1,1,0],[0,0,1,1]], 'colour': 'red'
-        },
-        { 
-            'player': player1,'image': 'assets/red/X5.png','weight': 5,
-            'initial_position': QPoint(450, playerPanel1.height() + 270),
-            'shape': [[0,1,0],[1,1,1],[0,1,0]], 'colour': 'red'
-        },
-        { 
-            'player': player1,'image': 'assets/red/T4.png','weight': 4,
-            'initial_position': QPoint(540, playerPanel1.height() + 270), 
-            'shape': [[1,1,1],[0,1,0]], 'colour': 'red'
-        },
-        { 
-            'player': player1,'image': 'assets/red/P5.png','weight': 5,
-            'initial_position': QPoint(625, playerPanel1.height() + 270), 
-            'shape': [[1,1],[1,1],[1,0]], 'colour': 'red'
-        },
-        { 
-            'player': player1,'image': 'assets/red/W5.png','weight': 5,
-            'initial_position': QPoint(700, playerPanel1.height() + 270), 
-            'shape': [[1,0,0],[1,1,0],[0,1,1]], 'colour': 'red'
-        },
-            #GREEN
-         { 
-            'player': player2,'image': 'assets/green/1.png','weight': 1,
-            'initial_position': QPoint(50, playerPanel1.height() + 350),
-            'shape': [[1]], 'colour': 'green' 
-        },
-        { 
-            'player': player2,'image': 'assets/green/2.png','weight': 2,
-            'initial_position': QPoint(100, playerPanel1.height() + 350), 
-            'shape': [[1],[1]], 'colour': 'green'
-        },
-        { 
-            'player': player2,'image': 'assets/green/F5.png','weight': 5,
-            'initial_position': QPoint(150, playerPanel1.height() + 350), 
-            'shape': [[0,1,1],[1,1,0],[0,1,0]], 'colour': 'green'
-        },
-        { 
-            'player': player2,'image': 'assets/green/L3.png','weight': 3,
-            'initial_position': QPoint(250, playerPanel1.height() + 350), 
-            'shape': [[1,0],[1,1]], 'colour': 'green'
-        },
-        { 
-            'player': player2,'image': 'assets/green/Z5.png','weight': 5,
-            'initial_position': QPoint(325, playerPanel1.height() + 350),
-            'shape': [[1,1,1,0],[0,0,1,1]], 'colour': 'green' 
-        },
-        { 
-            'player': player2,'image': 'assets/green/X5.png','weight': 5,
-            'initial_position': QPoint(450, playerPanel1.height() + 350),
-            'shape': [[0,1,0],[1,1,1],[0,1,0]], 'colour': 'green'
-        },
-        { 
-            'player': player2,'image': 'assets/green/T4.png','weight': 4,
-            'initial_position': QPoint(540, playerPanel1.height() + 350), 
-            'shape': [[1,1,1],[0,1,0]], 'colour': 'green'
-        },
-        { 
-            'player': player2,'image': 'assets/green/P5.png','weight': 5,
-            'initial_position': QPoint(625, playerPanel1.height() + 350), 
-            'shape': [[1,1],[1,1],[1,0]], 'colour': 'green'
-        },
-        { 
-            'player': player2,'image': 'assets/green/W5.png','weight': 5,
-            'initial_position': QPoint(700, playerPanel1.height() + 350), 
-            'shape': [[1,0,0],[1,1,0],[0,1,1]], 'colour': 'green'
-        },
-            #BLUE
-         {  
-            'player': player3,'image': 'assets/blue/1.png','weight': 1,
-            'initial_position': QPoint(50, playerPanel1.height() + 440), 
-            'shape': [[1]], 'colour': 'blue' 
-        },
-        { 
-            'player': player3,'image': 'assets/blue/2.png','weight': 2,
-            'initial_position': QPoint(100, playerPanel1.height() + 440), 
-            'shape': [[1],[1]], 'colour': 'blue'
-        },
-        { 
-            'player': player3,'image': 'assets/blue/F5.png','weight': 5,
-            'initial_position': QPoint(150, playerPanel1.height() + 440), 
-            'shape': [[0,1,1],[1,1,0],[0,1,0]], 'colour': 'blue'
-        },
-        { 
-            'player': player3,'image': 'assets/blue/L3.png','weight': 3,
-            'initial_position': QPoint(250, playerPanel1.height() + 440), 
-            'shape': [[1,0],[1,1]], 'colour': 'blue'
-        },
-        { 
-            'player': player3,'image': 'assets/blue/Z5.png','weight': 5,
-            'initial_position': QPoint(325, playerPanel1.height() + 440), 
-            'shape': [[1,1,1,0],[0,0,1,1]], 'colour': 'blue'
-        },
-        { 
-            'player': player3,'image': 'assets/blue/X5.png','weight': 5,
-            'initial_position': QPoint(450, playerPanel1.height() + 440),
-            'shape': [[0,1,0],[1,1,1],[0,1,0]], 'colour': 'blue'
-        },
-        { 
-            'player': player3,'image': 'assets/blue/T4.png','weight': 4,
-            'initial_position': QPoint(540, playerPanel1.height() + 440), 
-            'shape': [[1,1,1],[0,1,0]], 'colour': 'blue'
-        },
-        { 
-            'player': player3,'image': 'assets/blue/P5.png','weight': 5,
-            'initial_position': QPoint(625, playerPanel1.height() + 440), 
-            'shape': [[1,1],[1,1],[1,0]], 'colour': 'blue'
-        },
-        { 
-            'player': player3,'image': 'assets/blue/W5.png','weight': 5,
-            'initial_position': QPoint(700, playerPanel1.height() + 440), 
-            'shape': [[1,0,0],[1,1,0],[0,1,1]], 'colour': 'blue'
-        },
-            #YELLOW
-        {             
-             
-            'player': player4,'image': 'assets/yellow/1.png','weight': 1,
-            'initial_position': QPoint(50, playerPanel1.height() + 510), 
-            'shape': [[1]], 'colour': 'yellow'
-        },
-        { 
-            'player': player4,'image': 'assets/yellow/2.png','weight': 2,
-            'initial_position': QPoint(100, playerPanel1.height() + 510), 
-            'shape': [[1],[1]], 'colour': 'yellow'
-        },
-        { 
-            'player': player4,'image': 'assets/yellow/F5.png','weight': 5,
-            'initial_position': QPoint(150, playerPanel1.height() + 510), 
-            'shape': [[0,1,1],[1,1,0],[0,1,0]], 'colour': 'yellow'
-        },
-        { 
-            'player': player4,'image': 'assets/yellow/L3.png','weight': 3,
-            'initial_position': QPoint(250, playerPanel1.height() + 510), 
-            'shape': [[1,0],[1,1]], 'colour': 'yellow'
-        },
-        { 
-            'player': player4,'image': 'assets/yellow/Z5.png','weight': 5,
-            'initial_position': QPoint(325, playerPanel1.height() + 510), 
-            'shape': [[1,1,1,0],[0,0,1,1]], 'colour': 'yellow'
-        },
-        { 
-            'player': player4,'image': 'assets/yellow/X5.png','weight': 5,
-            'initial_position': QPoint(450, playerPanel1.height() + 510),
-            'shape': [[0,1,0],[1,1,1],[0,1,0]], 'colour': 'yellow'
-        },
-        { 
-            'player': player4,'image': 'assets/yellow/T4.png','weight': 4,
-            'initial_position': QPoint(540, playerPanel1.height() + 510), 
-            'shape': [[1,1,1],[0,1,0]], 'colour': 'yellow'
-        },
-        { 
-            'player': player4,'image': 'assets/yellow/P5.png','weight': 5,
-            'initial_position': QPoint(625, playerPanel1.height() + 510), 
-            'shape': [[1,1],[1,1],[1,0]], 'colour': 'yellow'
-        },
-        { 
-            'player': player4,'image': 'assets/yellow/W5.png','weight': 5,
-            'initial_position': QPoint(700, playerPanel1.height() + 510), 
-            'shape': [[1,0,0],[1,1,0],[0,1,1]], 'colour': 'yellow'
-        },
-        ]
-        for piece_data in player_pieces:
-            player = piece_data['player']
-            image_label = pieces.Piece(
-                self, player.score_label, piece_data['image'], piece_data['initial_position'],
-                piece_data['weight'], self.boardLayout, self.pieceList, piece_data['shape'], piece_data['colour'], player
-            )
-            self.pieceList.append(image_label)
-            player.pieces.append(image_label)
 
+        player_panels = [playerPanel1, playerPanel2, playerPanel3, playerPanel4]
+
+        for player_index, player in enumerate(self.playerList):
+            player_panel = player_panels[player_index]
+            pieces_data=[
+            { 
+                'player': player.num,'image': f'assets/{player.color}/1.png','weight': 1,
+                'initial_position': QPoint(player_panel.x()+10, player_panel.y()+50), 
+                'shape': [[1]], 'colour': f'{player.color}'
+            },
+            { 
+                'player': player.num,'image': f'assets/{player.color}/2.png','weight': 2,
+                'initial_position': QPoint(player_panel.x()+50, player_panel.y()+50),
+                'shape': [[1],[1]], 'colour': f'{player.color}'
+            },
+            { 
+                'player': player.num,'image': f'assets/{player.color}/3.png','weight': 3,
+                'initial_position': QPoint(player_panel.x()+90, player_panel.y()+50),
+                'shape': [[1,0,0],[1,0,0],[1,0,0]], 'colour': f'{player.color}'
+            },
+            { 
+                'player': player.num,'image': f'assets/{player.color}/4.png','weight': 4,
+                'initial_position': QPoint(player_panel.x()+130, player_panel.y()+50),
+                'shape': [[1,0,0],[1,0,0],[1,0,0],[1,0,0]], 'colour': f'{player.color}'
+            },
+            { 
+                'player': player.num,'image': f'assets/{player.color}/5.png','weight': 5,
+                'initial_position': QPoint(player_panel.x()+170, player_panel.y()+50),
+                'shape': [[1,0,0],[1,0,0],[1,0,0],[1,0,0],[1,0,0]], 'colour': f'{player.color}'
+            },
+            { 
+                'player': player.num,'image': f'assets/{player.color}/F5.png','weight': 5,
+                'initial_position': QPoint(player_panel.x()+190, player_panel.y()+170),
+                'shape': [[0,1,1],[1,1,0],[0,1,0]], 'colour': f'{player.color}'
+            },
+            { 
+                'player': player.num,'image': f'assets/{player.color}/L3.png','weight': 3,
+                'initial_position': QPoint(player_panel.x()+180, player_panel.y()+350), 
+                'shape': [[1,0],[1,1]], 'colour': f'{player.color}'
+            },
+            { 
+                'player': player.num,'image': f'assets/{player.color}/L4.png','weight': 4,
+                'initial_position': QPoint(player_panel.x()+320, player_panel.y()+150), 
+                'shape': [[1,1,1],[0,0,1]], 'colour': f'{player.color}'
+            },
+            { 
+                'player': player.num,'image': f'assets/{player.color}/L5.png','weight': 5,
+                'initial_position': QPoint(player_panel.x()+60, player_panel.y()+300), 
+                'shape': [[1,1,1,1],[0,0,0,1]], 'colour': f'{player.color}'
+            },
+            { 
+                'player': player.num,'image': f'assets/{player.color}/O4.png','weight': 4,
+                'initial_position': QPoint(player_panel.x()+285, player_panel.y()+50), 
+                'shape': [[1,1],[1,1]], 'colour': f'{player.color}'
+            },
+            { 
+                'player': player.num,'image': f'assets/{player.color}/P5.png','weight': 5,
+                'initial_position': QPoint(player_panel.x()+210, player_panel.y()+50),
+                'shape': [[1,1],[1,1],[1,0]], 'colour': f'{player.color}'
+            },
+            { 
+                'player': player.num,'image': f'assets/{player.color}/S5.png','weight': 5,
+                'initial_position': QPoint(player_panel.x()+100, player_panel.y()+170),
+                'shape': [[1,1,0],[0,1,0],[0,1,1]], 'colour': f'{player.color}'
+            },
+            { 
+                'player': player.num,'image': f'assets/{player.color}/T4.png','weight': 4,
+                'initial_position': QPoint(player_panel.x()+190, player_panel.y()+270),
+                'shape': [[1,1,1],[0,1,0]], 'colour': f'{player.color}'
+            },
+            { 
+                'player': player.num,'image': f'assets/{player.color}/T5.png','weight': 5,
+                'initial_position': QPoint(player_panel.x()+255, player_panel.y()+110),
+                'shape': [[1,1,1],[0,1,0],[0,1,0]], 'colour': f'{player.color}'
+            },
+            { 
+                'player': player.num,'image': f'assets/{player.color}/U5.png','weight': 5,
+                'initial_position': QPoint(player_panel.x()+350, player_panel.y()+50),
+                'shape': [[1,1],[1,0],[1,1]], 'colour': f'{player.color}'
+            },
+            { 
+                'player': player.num,'image': f'assets/{player.color}/V5.png','weight': 5,
+                'initial_position': QPoint(player_panel.x()+10, player_panel.y()+300),
+                'shape': [[1,0,0],[1,0,0],[1,1,1]], 'colour': f'{player.color}'
+            },
+            { 
+                'player': player.num,'image': f'assets/{player.color}/W5.png','weight': 5,
+                'initial_position': QPoint(player_panel.x()+10, player_panel.y()+100),
+                'shape': [[1,0,0],[1,1,0],[0,1,1]], 'colour': f'{player.color}'
+            },
+            { 
+                'player': player.num,'image': f'assets/{player.color}/X5.png','weight': 5,
+                'initial_position': QPoint(player_panel.x()+10, player_panel.y()+200),
+                'shape': [[0,1,0],[1,1,1],[0,1,0]], 'colour': f'{player.color}'
+            },
+            { 
+                'player': player.num,'image': f'assets/{player.color}/Y5.png','weight': 5,
+                'initial_position': QPoint(player_panel.x()+300, player_panel.y()+300),
+                'shape': [[1,1,1,1],[0,1,0,0]], 'colour': f'{player.color}'
+            },
+            { 
+                'player': player.num,'image': f'assets/{player.color}/Z4.png','weight': 4,
+                'initial_position': QPoint(player_panel.x()+250, player_panel.y()+350),
+                'shape': [[1,1,0,],[0,1,1]], 'colour': f'{player.color}'
+            },
+            { 
+                'player': player.num,'image': f'assets/{player.color}/Z5.png','weight': 5,
+                'initial_position': QPoint(player_panel.x()+270, player_panel.y()+220),
+                'shape': [[1,1,1,0],[0,0,1,1]], 'colour': f'{player.color}'
+            },            
+            ] 
+            for piece_data in pieces_data:
+                image_label = pieces.Piece(
+                    self, player.score_label, piece_data['image'], piece_data['initial_position'],
+                    piece_data['weight'], self.boardLayout, self.pieceList, piece_data['shape'], piece_data['colour'], player
+                )
+                self.pieceList.append(image_label)
+                player.pieces.append(image_label)
+           
         # Make player 1's pieces movable since that's the first player
-        for piece in player1.pieces:
+        for piece in self.playerList[0].pieces:
             piece.movable = True
             piece.set_color_overlay(Qt.transparent)
 
@@ -446,7 +428,13 @@ class gameInterface(QWidget):
                             playerList=self.playerList,pieceList=self.pieceList)  # popup menu to choose save destination
         save_button.clicked.connect(self.saveMenu.show)
         save_button.setStyleSheet("QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
-        buttons_layout.addWidget(save_button)
+        buttons_layout.addWidget(save_button) 
+
+        # confirm_button.setFixedSize(150,100)
+        # rotate_button.setFixedSize(150,100)
+        # pass_button.setFixedSize(150,100)
+        # exit_button.setFixedSize(150,100)
+        # save_button.setFixedSize(150,100)      
 
     def rotate_piece(self):
         # Find the last pressed piece

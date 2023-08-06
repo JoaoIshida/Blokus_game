@@ -35,7 +35,7 @@ class MainWindow(QMainWindow):
         self.newGame_button.setStyleSheet(
             "font-size: 24px; padding: 10px; color: black; background-color: rgb(224, 166, 181);")
 
-        self.load_button = QPushButton("LOAD GAME (WIP)")
+        self.load_button = QPushButton("LOAD GAME")
         self.load_button.setFixedSize(400, 100)
         self.load_button.setStyleSheet(
             "font-size: 24px; padding: 10px; color: black; background-color: rgb(224, 166, 181);")
