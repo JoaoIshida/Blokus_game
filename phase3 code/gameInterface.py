@@ -148,6 +148,7 @@ class gameInterface(QWidget):
         super().__init__()
         self.pieceList = []
         self.playerList = []
+        self.last_pressed_piece = None
         self.setWindowTitle("Game")
         self.setStyleSheet("background-color: rgb(173, 151, 108);")
         
@@ -469,11 +470,12 @@ class gameInterface(QWidget):
 
     def rotate_piece(self):
         # Find the last pressed piece
-        active_piece = self.last_pressed_piece
-
-        if not active_piece:
+        active_piece = None
+        if self.last_pressed_piece is not None:
+            active_piece = self.last_pressed_piece
+            
+        if active_piece == None:
             return
-
         #rotate shape and recreate pixmap
         rotated_shape = list(zip(*reversed(active_piece.shape)))
         rotated_pixmap = active_piece.pixmap.transformed(QTransform().rotate(90))
