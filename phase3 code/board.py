@@ -113,7 +113,12 @@ class Board(QMainWindow):
                 return False
         else:
             sameColourCorner = False
-
+            
+            for row in range(pieceHeight):
+                for col in range(pieceWidth):
+                    if self.inBounds(tileX + col, tileY + row) == False or self.tileList[tileY + row][tileX + col].isEmpty() == False:
+                        return False
+                    
             for row in range(pieceHeight):
                 for col in range(pieceWidth):
                     if piece.shape[row][col] == 1:
