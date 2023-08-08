@@ -318,17 +318,17 @@ class gameInterface(QWidget):
             { 
                 'player': player.num,'image': f'assets/{player.color}/3.png','weight': 3,
                 'initial_position': QPoint(player_panel.x()+90, player_panel.y()+50),
-                'shape': [[1,0,0],[1,0,0],[1,0,0]], 'colour': f'{player.color}'
+                'shape': [[1],[1],[1]], 'colour': f'{player.color}'
             },
             { 
                 'player': player.num,'image': f'assets/{player.color}/4.png','weight': 4,
                 'initial_position': QPoint(player_panel.x()+130, player_panel.y()+50),
-                'shape': [[1,0,0],[1,0,0],[1,0,0],[1,0,0]], 'colour': f'{player.color}'
+                'shape': [[1],[1],[1],[1]], 'colour': f'{player.color}'
             },
             { 
                 'player': player.num,'image': f'assets/{player.color}/5.png','weight': 5,
                 'initial_position': QPoint(player_panel.x()+170, player_panel.y()+50),
-                'shape': [[1,0,0],[1,0,0],[1,0,0],[1,0,0],[1,0,0]], 'colour': f'{player.color}'
+                'shape': [[1],[1],[1],[1],[1]], 'colour': f'{player.color}'
             },
             { 
                 'player': player.num,'image': f'assets/{player.color}/F5.png','weight': 5,
