@@ -209,7 +209,7 @@ class gameInterface(QWidget):
         frame.setStyleSheet("border: 5px solid black; background-color: transparent;")
         frame_layout = QVBoxLayout(frame)
         frame_layout.setContentsMargins(0,0,0,0)
-        frame.move(675, 391)
+        frame.move(675, 396)
         layout.addWidget(self.boardLayout, alignment=Qt.AlignCenter)
         # Create a horizontal layout to hold the buttons
         buttons_layout = QHBoxLayout()
