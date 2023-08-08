@@ -4,7 +4,7 @@ from PyQt5.QtGui import QPixmap
 import pickle
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
-
+from PyQt5.QtWidgets import QMessageBox
 import gameInterface
 from pieces import *
 
@@ -17,12 +17,25 @@ class Color(QWidget):
         self.setPalette(palette)
 
 class MainWindow(QMainWindow):
+    achievements_file = "achievements.pkl"
 
-    achievements = {
-        "FirstBlood": False,
-        "Peace Agreement": False,
-        "Philo-Blokus": False
-    }
+    # Load achievements from file or set default values
+    if os.path.exists(achievements_file):
+        with open(achievements_file, "rb") as f:
+            achievements = pickle.load(f)
+    else:
+        achievements = {
+            "FirstBlood": False,
+            "Peace Agreement": False,
+            "Philo-Blokus": False
+        }
+
+    def show_achievement_message(self, achievement_name):
+        msg = QMessageBox(self)
+        msg.setIcon(QMessageBox.Information)
+        msg.setWindowTitle("Achievement Unlocked!")
+        msg.setText(f"You've unlocked the {achievement_name} achievement!")
+        msg.exec_()
 
     def __init__(self):
         super().__init__()
@@ -87,20 +100,28 @@ class MainWindow(QMainWindow):
         self.startGame()
         # self.setStyleSheet("background-color: rgb(139, 69, 19);")
         # self.showFullScreen()
-        MainWindow.achievements["FirstBlood"] = True
-
+        if not MainWindow.achievements["FirstBlood"]:
+            MainWindow.achievements["FirstBlood"] = True
+            self.save_achievements()
+            self.show_achievement_message("FirstBlood")
     def on_loadGame_button_press(self):
         #open a new window to choose the file
         self.loadMenu = loadMenu()
         self.close()
         self.loadMenu.show()
-        #
-        MainWindow.achievements["Peace Agreement"] = True
+        if not MainWindow.achievements["Peace Agreement"]:
+            MainWindow.achievements["Peace Agreement"] = True
+            self.save_achievements()
+            self.show_achievement_message("Peace Agreement")
 
     def on_achievement_button_press(self):
         self.achievementMenu = achievementMenu(MainWindow.achievements)
         self.close()
         self.achievementMenu.show()
+
+    def save_achievements(self):
+        with open(MainWindow.achievements_file, "wb") as f:
+            pickle.dump(MainWindow.achievements, f)
 
     # It just starts a new game and overwrite with the data from the saved files
     def load_chosen_file(self, filename):
