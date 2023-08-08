@@ -2,6 +2,7 @@ import os
 import sys
 import time
 import pickle
+from PyQt5.QtWidgets import QMessageBox
 from PyQt5 import QtCore
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -16,19 +17,25 @@ from players import goldman
 
 def display_achievements(player):
     achievement_text = ""
-    #if player.first_move == True:
+    # if player.first_move == True:
     #   achievement_text += f"player first move\n"
     if player.score_label.text() == "89":
         if player.is_ai:
             achievement_text += "The Terminator: AI has shown dominance!\n"
+            game.MainWindow.achievements["The Terminator"] = True
         else:
             achievement_text += "Artificial Infant: Human outsmarted the AI!\n"
+            game.MainWindow.achievements["Artificial Infant"] = True
     if achievement_text:
         msg = QMessageBox()
         msg.setWindowTitle("Achievements Unlocked!")
         msg.setText(achievement_text)
         msg.exec_()
         achievement_text = ""
+
+        # Save achievements to file
+        with open(game.MainWindow.achievements_file, "wb") as f:
+            pickle.dump(game.MainWindow.achievements, f)
 
 def next_player_clicked(players, turn, board):
     for i in range(len(players)):
@@ -42,16 +49,18 @@ def next_player_clicked(players, turn, board):
             if i + 1 >= len(players):
                 next_player_index = 0
             else:
-                next_player_index = i+1
+                next_player_index = i + 1
             players[next_player_index].is_turn = True
             # make all pieces of player 1 become movable
             for piece in players[next_player_index].pieces:
                 piece.movable = True
                 piece.set_color_overlay(Qt.transparent)
-            turn.turn.setText(f"  Current player({players[next_player_index].pieces[0].colour}): {players[next_player_index].name}  ")
+            turn.turn.setText(
+                f"  Current player({players[next_player_index].pieces[0].colour}): {players[next_player_index].name}  ")
             if players[next_player_index].is_ai:
                 ai_move(players, turn, next_player_index, board)
             break
+
 
 def ai_move(players, turn, playerIndex, board):
     placeablePieces = []
@@ -74,7 +83,7 @@ def ai_move(players, turn, playerIndex, board):
     # Place the piece with the highest value
     if len(validPositions) != 0:
         maxValue = max(validPositions, key=lambda x: x[3])
-        
+
         for _ in range(maxValue[4]):
             maxValue[2].rotateShape()
         if board.canPlacePiece(maxValue[0], maxValue[1], maxValue[2]):
@@ -104,8 +113,9 @@ def ai_move(players, turn, playerIndex, board):
     else:
         next_player_clicked(players, turn, board)
 
+
 def confirm_placement(board, player_list, turn):
-    piece_placed = False    
+    piece_placed = False
     for player in player_list:
         if player.is_turn:
             for piece in player.pieces:
@@ -130,7 +140,7 @@ def confirm_placement(board, player_list, turn):
                         piece.onboard = True
                         piece_placed = True
 
-                        #Remove pice from screen
+                        # Remove pice from screen
                         piece.setParent(None)
                         piece.hide()
 
@@ -139,9 +149,10 @@ def confirm_placement(board, player_list, turn):
 
                         if piece_placed:
                             if piece.player.first_move:
-                                    piece.player.first_move = False
+                                piece.player.first_move = False
                             if turn:
                                 next_player_clicked(player_list, turn, board)
+
 
 class gameInterface(QWidget):
     def __init__(self):
@@ -151,32 +162,36 @@ class gameInterface(QWidget):
         self.last_pressed_piece = None
         self.setWindowTitle("Game")
         self.setStyleSheet("background-color: rgb(173, 151, 108);")
-        
+
         layout = QVBoxLayout(self)
         layout.setSpacing(40)
-                
+
         self.boardLayout = board.Board()
         self.boardLayout.setFixedSize(560, 560)
-        
-        #CREATE EXIT
+
+        # CREATE EXIT
         exit_button = QPushButton('Main Menu', self)
         exit_button.clicked.connect(self.on_exit_clicked)
-        exit_button.setStyleSheet("QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
+        exit_button.setStyleSheet(
+            "QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
 
-        #CREATE PASS
+        # CREATE PASS
         pass_button = QPushButton('Pass', self)
         pass_button.clicked.connect(lambda: next_player_clicked(self.playerList, self.turn, self.boardLayout))
-        pass_button.setStyleSheet("QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
+        pass_button.setStyleSheet(
+            "QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
 
-        #CREATE CONFIRM
+        # CREATE CONFIRM
         confirm_button = QPushButton('Confirm', self)
         confirm_button.clicked.connect(lambda: confirm_placement(self.boardLayout, self.playerList, self.turn))
-        confirm_button.setStyleSheet("QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
+        confirm_button.setStyleSheet(
+            "QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
 
-        #CREATE ROTATE
+        # CREATE ROTATE
         rotate_button = QPushButton('Rotate', self)
         rotate_button.clicked.connect(self.rotate_piece)
-        rotate_button.setStyleSheet("QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
+        rotate_button.setStyleSheet(
+            "QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
 
         # # CREATE SAVE
         # save_button = QPushButton('Save', self)
@@ -187,33 +202,35 @@ class gameInterface(QWidget):
         #     "QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
         self.endButton = QPushButton('End Game', self)
         self.endButton.clicked.connect(self.endGame)
-        self.endButton.setStyleSheet("QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
+        self.endButton.setStyleSheet(
+            "QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
         line_layout = QHBoxLayout()
         line_layout.setSpacing(20)
         layout.addLayout(line_layout)
         # Show whose turn is it
         self.current_player_label = QLabel("  Current player (red): Player 1  ", self)
-        self.current_player_label.setStyleSheet("font-size: 30px; font-weight: bold; color: black; background-color: #D9D9D9;")
+        self.current_player_label.setStyleSheet(
+            "font-size: 30px; font-weight: bold; color: black; background-color: #D9D9D9;")
         self.turn = players.Turn(self.current_player_label)
         self.current_player_label.setFont(goldman(size=12))
-        #layout.addWidget(self.current_player_label)
+        # layout.addWidget(self.current_player_label)
         line_layout.addWidget(self.current_player_label)
         line_layout.addWidget(self.endButton)
         self.score_container = QWidget(self)
         layout.addWidget(self.score_container, alignment=Qt.AlignCenter)
 
-        #board frame
+        # board frame
         frame = QFrame(self)
-        #self.centre_pos = self.boardLayout.pos()
+        # self.centre_pos = self.boardLayout.pos()
         frame.setFixedSize(570, 570)
         frame.setStyleSheet("border: 5px solid black; background-color: transparent;")
         frame_layout = QVBoxLayout(frame)
-        frame_layout.setContentsMargins(0,0,0,0)
+        frame_layout.setContentsMargins(0, 0, 0, 0)
         frame.move(675, 396)
         layout.addWidget(self.boardLayout, alignment=Qt.AlignCenter)
         # Create a horizontal layout to hold the buttons
         buttons_layout = QHBoxLayout()
-        #buttons_layout.addWidget(exit_button)
+        # buttons_layout.addWidget(exit_button)
         buttons_layout.addWidget(confirm_button)
         buttons_layout.addWidget(rotate_button)
         buttons_layout.addWidget(pass_button)
@@ -222,8 +239,8 @@ class gameInterface(QWidget):
         buttons_layout.setSpacing(20)
         layout.addLayout(buttons_layout)
 
-        #board_text_layout = QHBoxLayout()
-        #board_text_layout.addWidget(self.boardLayout)
+        # board_text_layout = QHBoxLayout()
+        # board_text_layout.addWidget(self.boardLayout)
         # paragraph_text = QLabel("Drag the piece to the board when is your turn. \nCorfirm piece location by pressing Confirm or \"enter\" on your keyboard\nRotate piece location by pressing Rotate or \"R\" on your keyboard\nPass turn by pressing Pass or \"P\" on your keyboard\nExit game by pressing Exit or \"Esc\" on your keyboard\nSave the game state by pressing Save")
         # board_text_layout.addWidget(paragraph_text)
         # layout.addLayout(board_text_layout)
@@ -236,25 +253,25 @@ class gameInterface(QWidget):
             player_layout = QVBoxLayout(player_container)
 
             # Add player panel content (replace the following line with your player panel content)
-            label = QLabel(f"Player {i+1} Panel", player_container)
+            label = QLabel(f"Player {i + 1} Panel", player_container)
             label.setAlignment(Qt.AlignBottom)
             label.setFixedSize(270, 50)
             label.setContentsMargins(20, 0, 0, 0)
             label.setStyleSheet("font-size: 30px; font-weight: bold; color: black; border-radius: 50px;")
             label.setFont(goldman(size=12))
-            
+
             player_layout.addWidget(label)
             player_layout.setContentsMargins(0, 0, 0, 0)
             player_layout.setAlignment(Qt.AlignTop)
 
             self.player_containers.append(player_container)
 
-        #set locations
+        # set locations
         self.player_containers[0].move(100, 130)
         self.player_containers[1].move(1400, 130)
-        self.player_containers[2].move(100, 570)        
+        self.player_containers[2].move(100, 570)
         self.player_containers[3].move(1400, 570)
-        #set colors
+        # set colors
         self.player_containers[0].setStyleSheet("background-color: #CE4A4A; border-radius: 50px;")
         self.player_containers[1].setStyleSheet("background-color: #2EAE52;  border-radius: 50px;")
         self.player_containers[2].setStyleSheet("background-color: #294FB0;  border-radius: 50px;")
@@ -269,21 +286,21 @@ class gameInterface(QWidget):
         self.score_layout = QVBoxLayout(self.score_container)
         self.score_container.setStyleSheet("background-color:#D9D9D9; border-radius: 50px; padding: black;")
         self.score_container.setFont(goldman(size=20))
-       
+
         self.player_scores = [0, 0, 0, 0]
-        
+
         # Add QHBoxLayouts for each player's score row
         # First QHBoxLayout for player 1 and player 2 scores
         hbox1 = QHBoxLayout()
         for i in range(2):
-            score_panel = players.ScorePanel(f"Player{i+1}")  # Use the custom ScorePanel widget
+            score_panel = players.ScorePanel(f"Player{i + 1}")  # Use the custom ScorePanel widget
             hbox1.addWidget(score_panel)
             self.player_scores[i] = score_panel.score_label  # Save the score_label reference
 
         # Second QHBoxLayout for player 3 and player 4 scores
         hbox2 = QHBoxLayout()
         for i in range(2, 4):
-            score_panel = players.ScorePanel(f"Player{i+1}")  # Use the custom ScorePanel widget
+            score_panel = players.ScorePanel(f"Player{i + 1}")  # Use the custom ScorePanel widget
             hbox2.addWidget(score_panel)
             self.player_scores[i] = score_panel.score_label  # Save the score_label reference
 
@@ -306,121 +323,122 @@ class gameInterface(QWidget):
 
         for player_index, player in enumerate(self.playerList):
             player_panel = player_panels[player_index]
-            pieces_data=[
-            { 
-                'player': player.num,'image': f'assets/{player.color}/1.png','weight': 1,
-                'initial_position': QPoint(player_panel.x()+10, player_panel.y()+50), 
-                'shape': [[1]], 'colour': f'{player.color}'
-            },
-            { 
-                'player': player.num,'image': f'assets/{player.color}/2.png','weight': 2,
-                'initial_position': QPoint(player_panel.x()+50, player_panel.y()+50),
-                'shape': [[1],[1]], 'colour': f'{player.color}'
-            },
-            { 
-                'player': player.num,'image': f'assets/{player.color}/3.png','weight': 3,
-                'initial_position': QPoint(player_panel.x()+90, player_panel.y()+50),
-                'shape': [[1],[1],[1]], 'colour': f'{player.color}'
-            },
-            { 
-                'player': player.num,'image': f'assets/{player.color}/4.png','weight': 4,
-                'initial_position': QPoint(player_panel.x()+130, player_panel.y()+50),
-                'shape': [[1],[1],[1],[1]], 'colour': f'{player.color}'
-            },
-            { 
-                'player': player.num,'image': f'assets/{player.color}/5.png','weight': 5,
-                'initial_position': QPoint(player_panel.x()+170, player_panel.y()+50),
-                'shape': [[1],[1],[1],[1],[1]], 'colour': f'{player.color}'
-            },
-            { 
-                'player': player.num,'image': f'assets/{player.color}/F5.png','weight': 5,
-                'initial_position': QPoint(player_panel.x()+190, player_panel.y()+170),
-                'shape': [[0,1,1],[1,1,0],[0,1,0]], 'colour': f'{player.color}'
-            },
-            { 
-                'player': player.num,'image': f'assets/{player.color}/L3.png','weight': 3,
-                'initial_position': QPoint(player_panel.x()+180, player_panel.y()+350), 
-                'shape': [[1,0],[1,1]], 'colour': f'{player.color}'
-            },
-            { 
-                'player': player.num,'image': f'assets/{player.color}/L4.png','weight': 4,
-                'initial_position': QPoint(player_panel.x()+320, player_panel.y()+150), 
-                'shape': [[1,1,1],[0,0,1]], 'colour': f'{player.color}'
-            },
-            { 
-                'player': player.num,'image': f'assets/{player.color}/L5.png','weight': 5,
-                'initial_position': QPoint(player_panel.x()+60, player_panel.y()+300), 
-                'shape': [[1,1,1,1],[0,0,0,1]], 'colour': f'{player.color}'
-            },
-            { 
-                'player': player.num,'image': f'assets/{player.color}/O4.png','weight': 4,
-                'initial_position': QPoint(player_panel.x()+285, player_panel.y()+50), 
-                'shape': [[1,1],[1,1]], 'colour': f'{player.color}'
-            },
-            { 
-                'player': player.num,'image': f'assets/{player.color}/P5.png','weight': 5,
-                'initial_position': QPoint(player_panel.x()+210, player_panel.y()+50),
-                'shape': [[1,1],[1,1],[1,0]], 'colour': f'{player.color}'
-            },
-            { 
-                'player': player.num,'image': f'assets/{player.color}/S5.png','weight': 5,
-                'initial_position': QPoint(player_panel.x()+100, player_panel.y()+170),
-                'shape': [[1,1,0],[0,1,0],[0,1,1]], 'colour': f'{player.color}'
-            },
-            { 
-                'player': player.num,'image': f'assets/{player.color}/T4.png','weight': 4,
-                'initial_position': QPoint(player_panel.x()+190, player_panel.y()+270),
-                'shape': [[1,1,1],[0,1,0]], 'colour': f'{player.color}'
-            },
-            { 
-                'player': player.num,'image': f'assets/{player.color}/T5.png','weight': 5,
-                'initial_position': QPoint(player_panel.x()+255, player_panel.y()+110),
-                'shape': [[1,1,1],[0,1,0],[0,1,0]], 'colour': f'{player.color}'
-            },
-            { 
-                'player': player.num,'image': f'assets/{player.color}/U5.png','weight': 5,
-                'initial_position': QPoint(player_panel.x()+350, player_panel.y()+50),
-                'shape': [[1,1],[1,0],[1,1]], 'colour': f'{player.color}'
-            },
-            { 
-                'player': player.num,'image': f'assets/{player.color}/V5.png','weight': 5,
-                'initial_position': QPoint(player_panel.x()+10, player_panel.y()+300),
-                'shape': [[1,0,0],[1,0,0],[1,1,1]], 'colour': f'{player.color}'
-            },
-            { 
-                'player': player.num,'image': f'assets/{player.color}/W5.png','weight': 5,
-                'initial_position': QPoint(player_panel.x()+10, player_panel.y()+100),
-                'shape': [[1,0,0],[1,1,0],[0,1,1]], 'colour': f'{player.color}'
-            },
-            { 
-                'player': player.num,'image': f'assets/{player.color}/X5.png','weight': 5,
-                'initial_position': QPoint(player_panel.x()+10, player_panel.y()+200),
-                'shape': [[0,1,0],[1,1,1],[0,1,0]], 'colour': f'{player.color}'
-            },
-            { 
-                'player': player.num,'image': f'assets/{player.color}/Y5.png','weight': 5,
-                'initial_position': QPoint(player_panel.x()+300, player_panel.y()+300),
-                'shape': [[1,1,1,1],[0,1,0,0]], 'colour': f'{player.color}'
-            },
-            { 
-                'player': player.num,'image': f'assets/{player.color}/Z4.png','weight': 4,
-                'initial_position': QPoint(player_panel.x()+250, player_panel.y()+350),
-                'shape': [[1,1,0,],[0,1,1]], 'colour': f'{player.color}'
-            },
-            { 
-                'player': player.num,'image': f'assets/{player.color}/Z5.png','weight': 5,
-                'initial_position': QPoint(player_panel.x()+270, player_panel.y()+220),
-                'shape': [[1,1,1,0],[0,0,1,1]], 'colour': f'{player.color}'
-            },            
-            ] 
+            pieces_data = [
+                {
+                    'player': player.num, 'image': f'assets/{player.color}/1.png', 'weight': 1,
+                    'initial_position': QPoint(player_panel.x() + 10, player_panel.y() + 50),
+                    'shape': [[1]], 'colour': f'{player.color}'
+                },
+                {
+                    'player': player.num, 'image': f'assets/{player.color}/2.png', 'weight': 2,
+                    'initial_position': QPoint(player_panel.x() + 50, player_panel.y() + 50),
+                    'shape': [[1], [1]], 'colour': f'{player.color}'
+                },
+                {
+                    'player': player.num, 'image': f'assets/{player.color}/3.png', 'weight': 3,
+                    'initial_position': QPoint(player_panel.x() + 90, player_panel.y() + 50),
+                    'shape': [[1], [1], [1]], 'colour': f'{player.color}'
+                },
+                {
+                    'player': player.num, 'image': f'assets/{player.color}/4.png', 'weight': 4,
+                    'initial_position': QPoint(player_panel.x() + 130, player_panel.y() + 50),
+                    'shape': [[1], [1], [1], [1]], 'colour': f'{player.color}'
+                },
+                {
+                    'player': player.num, 'image': f'assets/{player.color}/5.png', 'weight': 5,
+                    'initial_position': QPoint(player_panel.x() + 170, player_panel.y() + 50),
+                    'shape': [[1], [1], [1], [1], [1]], 'colour': f'{player.color}'
+                },
+                {
+                    'player': player.num, 'image': f'assets/{player.color}/F5.png', 'weight': 5,
+                    'initial_position': QPoint(player_panel.x() + 190, player_panel.y() + 170),
+                    'shape': [[0, 1, 1], [1, 1, 0], [0, 1, 0]], 'colour': f'{player.color}'
+                },
+                {
+                    'player': player.num, 'image': f'assets/{player.color}/L3.png', 'weight': 3,
+                    'initial_position': QPoint(player_panel.x() + 180, player_panel.y() + 350),
+                    'shape': [[1, 0], [1, 1]], 'colour': f'{player.color}'
+                },
+                {
+                    'player': player.num, 'image': f'assets/{player.color}/L4.png', 'weight': 4,
+                    'initial_position': QPoint(player_panel.x() + 320, player_panel.y() + 150),
+                    'shape': [[1, 1, 1], [0, 0, 1]], 'colour': f'{player.color}'
+                },
+                {
+                    'player': player.num, 'image': f'assets/{player.color}/L5.png', 'weight': 5,
+                    'initial_position': QPoint(player_panel.x() + 60, player_panel.y() + 300),
+                    'shape': [[1, 1, 1, 1], [0, 0, 0, 1]], 'colour': f'{player.color}'
+                },
+                {
+                    'player': player.num, 'image': f'assets/{player.color}/O4.png', 'weight': 4,
+                    'initial_position': QPoint(player_panel.x() + 285, player_panel.y() + 50),
+                    'shape': [[1, 1], [1, 1]], 'colour': f'{player.color}'
+                },
+                {
+                    'player': player.num, 'image': f'assets/{player.color}/P5.png', 'weight': 5,
+                    'initial_position': QPoint(player_panel.x() + 210, player_panel.y() + 50),
+                    'shape': [[1, 1], [1, 1], [1, 0]], 'colour': f'{player.color}'
+                },
+                {
+                    'player': player.num, 'image': f'assets/{player.color}/S5.png', 'weight': 5,
+                    'initial_position': QPoint(player_panel.x() + 100, player_panel.y() + 170),
+                    'shape': [[1, 1, 0], [0, 1, 0], [0, 1, 1]], 'colour': f'{player.color}'
+                },
+                {
+                    'player': player.num, 'image': f'assets/{player.color}/T4.png', 'weight': 4,
+                    'initial_position': QPoint(player_panel.x() + 190, player_panel.y() + 270),
+                    'shape': [[1, 1, 1], [0, 1, 0]], 'colour': f'{player.color}'
+                },
+                {
+                    'player': player.num, 'image': f'assets/{player.color}/T5.png', 'weight': 5,
+                    'initial_position': QPoint(player_panel.x() + 255, player_panel.y() + 110),
+                    'shape': [[1, 1, 1], [0, 1, 0], [0, 1, 0]], 'colour': f'{player.color}'
+                },
+                {
+                    'player': player.num, 'image': f'assets/{player.color}/U5.png', 'weight': 5,
+                    'initial_position': QPoint(player_panel.x() + 350, player_panel.y() + 50),
+                    'shape': [[1, 1], [1, 0], [1, 1]], 'colour': f'{player.color}'
+                },
+                {
+                    'player': player.num, 'image': f'assets/{player.color}/V5.png', 'weight': 5,
+                    'initial_position': QPoint(player_panel.x() + 10, player_panel.y() + 300),
+                    'shape': [[1, 0, 0], [1, 0, 0], [1, 1, 1]], 'colour': f'{player.color}'
+                },
+                {
+                    'player': player.num, 'image': f'assets/{player.color}/W5.png', 'weight': 5,
+                    'initial_position': QPoint(player_panel.x() + 10, player_panel.y() + 100),
+                    'shape': [[1, 0, 0], [1, 1, 0], [0, 1, 1]], 'colour': f'{player.color}'
+                },
+                {
+                    'player': player.num, 'image': f'assets/{player.color}/X5.png', 'weight': 5,
+                    'initial_position': QPoint(player_panel.x() + 10, player_panel.y() + 200),
+                    'shape': [[0, 1, 0], [1, 1, 1], [0, 1, 0]], 'colour': f'{player.color}'
+                },
+                {
+                    'player': player.num, 'image': f'assets/{player.color}/Y5.png', 'weight': 5,
+                    'initial_position': QPoint(player_panel.x() + 300, player_panel.y() + 300),
+                    'shape': [[1, 1, 1, 1], [0, 1, 0, 0]], 'colour': f'{player.color}'
+                },
+                {
+                    'player': player.num, 'image': f'assets/{player.color}/Z4.png', 'weight': 4,
+                    'initial_position': QPoint(player_panel.x() + 250, player_panel.y() + 350),
+                    'shape': [[1, 1, 0, ], [0, 1, 1]], 'colour': f'{player.color}'
+                },
+                {
+                    'player': player.num, 'image': f'assets/{player.color}/Z5.png', 'weight': 5,
+                    'initial_position': QPoint(player_panel.x() + 270, player_panel.y() + 220),
+                    'shape': [[1, 1, 1, 0], [0, 0, 1, 1]], 'colour': f'{player.color}'
+                },
+            ]
             for piece_data in pieces_data:
                 image_label = pieces.Piece(
                     self, player.score_label, piece_data['image'], piece_data['initial_position'],
-                    piece_data['weight'], self.boardLayout, self.pieceList, piece_data['shape'], piece_data['colour'], player
+                    piece_data['weight'], self.boardLayout, self.pieceList, piece_data['shape'], piece_data['colour'],
+                    player
                 )
                 self.pieceList.append(image_label)
                 player.pieces.append(image_label)
-           
+
         # Make player 1's pieces movable since that's the first player
         for piece in self.playerList[0].pieces:
             piece.movable = True
@@ -429,17 +447,20 @@ class gameInterface(QWidget):
         # CREATE SAVE BUTTON
         save_button = QPushButton('Save', self)
         self.saveMenu = saveMenu(boardLayout=self.boardLayout, turn=self.turn,
-                            playerList=self.playerList,pieceList=self.pieceList)  # popup menu to choose save destination
+                                 playerList=self.playerList,
+                                 pieceList=self.pieceList)  # popup menu to choose save destination
         save_button.clicked.connect(self.saveMenu.show)
-        save_button.setStyleSheet("QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
-        #buttons_layout.addWidget(save_button) 
+        save_button.setStyleSheet(
+            "QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
+        # buttons_layout.addWidget(save_button)
         line_layout.addWidget(exit_button)
         line_layout.addWidget(save_button)
         # confirm_button.setFixedSize(150,100)
         # rotate_button.setFixedSize(150,100)
         # pass_button.setFixedSize(150,100)
         # exit_button.setFixedSize(150,100)
-        # save_button.setFixedSize(150,100)      
+        # save_button.setFixedSize(150,100)
+
     def endGame(self):
         player_scores = {}  # Dictionary to store player scores
         for player in self.playerList:  # Assuming you have a list of player objects
@@ -467,16 +488,15 @@ class gameInterface(QWidget):
         msg_box.setFont(goldman(size=20))
         msg_box.exec_()
 
-
     def rotate_piece(self):
         # Find the last pressed piece
         active_piece = None
         if self.last_pressed_piece is not None:
             active_piece = self.last_pressed_piece
-            
+
         if active_piece == None:
             return
-        #rotate shape and recreate pixmap
+        # rotate shape and recreate pixmap
         rotated_shape = list(zip(*reversed(active_piece.shape)))
         rotated_pixmap = active_piece.pixmap.transformed(QTransform().rotate(90))
 
@@ -515,7 +535,7 @@ class gameInterface(QWidget):
         with open(f"{f}saveBoard.pkl", "rb") as file:
             Board = pickle.load(file)
 
-            #iterate through each square on the board. Is there any better way to do this?
+            # iterate through each square on the board. Is there any better way to do this?
             for i in range(20):
                 for j in range(20):
                     self.boardLayout.tileList[i][j].tileColor = Board.tileList[i][j].tileColor
@@ -544,7 +564,7 @@ class gameInterface(QWidget):
             # load the saved player data file
             playerData = pickle.load(file)
 
-            #set the score label for each player
+            # set the score label for each player
             for i in range(len(self.playerList)):
                 text = playerData[i].score
                 self.playerList[i].score_label.setText(text)
@@ -553,15 +573,16 @@ class gameInterface(QWidget):
                 self.playerList[i].name = playerData[i].name
                 self.playerList[i].first_move = playerData[i].first_move
 
-            # Now the players are updates, update QLabel overlay accordingly
+                # Now the players are updates, update QLabel overlay accordingly
                 if self.playerList[i].is_turn:
                     for piece in self.playerList[i].pieces:
                         piece.set_color_overlay(Qt.transparent)
-    
+
     def on_exit_clicked(self):
-            self.close()
-            self.main_menu = game.MainWindow()  # Create an instance of your main menu
-            self.main_menu.show()
+        self.close()
+        self.main_menu = game.MainWindow()  # Create an instance of your main menu
+        self.main_menu.show()
+
 
 class saveMenu(QWidget):
     def __init__(self, playerList, turn, boardLayout, pieceList):
@@ -576,7 +597,7 @@ class saveMenu(QWidget):
         self.setStyleSheet("background-color: rgb(139, 69, 19);")
         self.setGeometry(500, 200, 500, 500)
 
-        #Button for each file
+        # Button for each file
         self.file1_button = self.makeFileButton("File 1")
         self.file2_button = self.makeFileButton("File 2")
         self.file3_button = self.makeFileButton("File 3")
@@ -590,7 +611,7 @@ class saveMenu(QWidget):
         # theButton.setEnabled(False)
         self.cancel_button.clicked.connect(self.close)
 
-        #Buttons formatting
+        # Buttons formatting
         self.layout = QVBoxLayout(self)
         self.layout.setAlignment(Qt.AlignCenter)
         self.layout.addWidget(self.file1_button, alignment=Qt.AlignCenter)
@@ -610,7 +631,7 @@ class saveMenu(QWidget):
         return theButton
 
     def check_existing_save(self, filename):
-        if len(os.listdir( f"Save/{filename}/")) > 1: # there is a .DS_Store file so condition is >1
+        if len(os.listdir(f"Save/{filename}/")) > 1:  # there is a .DS_Store file so condition is >1
             save_msg = QMessageBox()
             save_msg.setWindowTitle("Older saved file existed!")
             save_msg.setText("Another saved file already existed. Overwrite the old file?")
@@ -634,7 +655,7 @@ class saveMenu(QWidget):
             pickle.dump(self.boardLayout, file)
         with open(f"{f}savePieces.pkl", 'wb') as file:
             pickle.dump(self.pieceList, file)
-        #another messagebox saying the game was saved successfully
+        # another messagebox saying the game was saved successfully
         msg = QMessageBox()
         msg.setWindowTitle("Save Success")
         msg.setText(f"Game saved successfully to {filename}")
@@ -648,7 +669,7 @@ def startGame():
     window.showFullScreen()
     # window.showMaximized()
     sys.exit(app.exec_())
-    
+
 
 if __name__ == '__main__':
     startGame()
