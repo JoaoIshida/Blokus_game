@@ -7,6 +7,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import QWidget
+import game
 import pieces
 import players
 import board
@@ -157,7 +158,7 @@ class gameInterface(QWidget):
         self.boardLayout.setFixedSize(560, 560)
         
         #CREATE EXIT
-        exit_button = QPushButton('Exit', self)
+        exit_button = QPushButton('Main Menu', self)
         exit_button.clicked.connect(self.on_exit_clicked)
         exit_button.setStyleSheet("QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
 
@@ -556,7 +557,9 @@ class gameInterface(QWidget):
                         piece.set_color_overlay(Qt.transparent)
     
     def on_exit_clicked(self):
-            self.close()  # Close the current window (gameInterface)
+            self.close()
+            self.main_menu = game.MainWindow()  # Create an instance of your main menu
+            self.main_menu.show()
 
 class saveMenu(QWidget):
     def __init__(self, playerList, turn, boardLayout, pieceList):

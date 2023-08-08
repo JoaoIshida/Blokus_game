@@ -30,6 +30,7 @@ class tile(QFrame):
     def changeColour(self, color):
         self.tileColor = color
         self.setStyleSheet(f"background-color: {color}; border: 1px solid black;")
+        self.isTileEmpty = False
 
     def __getstate__(self):
         d = self.__dict__

@@ -4,7 +4,7 @@ import pickle
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
 
-from gameInterface import gameInterface
+import gameInterface
 from pieces import *
 
 class Color(QWidget):
@@ -99,7 +99,7 @@ class MainWindow(QMainWindow):
 
     def startGame(self):
         self.close()
-        self.game = gameInterface()
+        self.game = gameInterface.gameInterface()
         self.game.showFullScreen()
         self.game.setFocus(Qt.OtherFocusReason)
 
