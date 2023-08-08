@@ -29,10 +29,6 @@ def display_achievements(player):
         msg.exec_()
         achievement_text = ""
 
-def on_exit_clicked():
-    QApplication.quit()
-    # QApplication.exit()
-
 def next_player_clicked(players, turn, board):
     for i in range(len(players)):
         if players[i].is_turn:
@@ -51,7 +47,7 @@ def next_player_clicked(players, turn, board):
             for piece in players[next_player_index].pieces:
                 piece.movable = True
                 piece.set_color_overlay(Qt.transparent)
-            turn.turn.setText(f"Current player({players[next_player_index].pieces[0].colour}): {players[next_player_index].name}")
+            turn.turn.setText(f"  Current player({players[next_player_index].pieces[0].colour}): {players[next_player_index].name}  ")
             if players[next_player_index].is_ai:
                 ai_move(players, turn, next_player_index, board)
             break
@@ -155,13 +151,14 @@ class gameInterface(QWidget):
         self.setStyleSheet("background-color: rgb(173, 151, 108);")
         
         layout = QVBoxLayout(self)
+        layout.setSpacing(40)
                 
         self.boardLayout = board.Board()
         self.boardLayout.setFixedSize(560, 560)
         
         #CREATE EXIT
         exit_button = QPushButton('Exit', self)
-        exit_button.clicked.connect(on_exit_clicked)
+        exit_button.clicked.connect(self.on_exit_clicked)
         exit_button.setStyleSheet("QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
 
         #CREATE PASS
@@ -186,27 +183,35 @@ class gameInterface(QWidget):
         # save_button.clicked.connect(self.saveMenu.show)
         # save_button.setStyleSheet(
         #     "QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
-
+        self.endButton = QPushButton('End Game', self)
+        self.endButton.clicked.connect(self.endGame)
+        self.endButton.setStyleSheet("QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
+        line_layout = QHBoxLayout()
+        line_layout.setSpacing(20)
+        layout.addLayout(line_layout)
         # Show whose turn is it
-        self.current_player_label = QLabel("Current player (red): Player 1", self)
+        self.current_player_label = QLabel("  Current player (red): Player 1  ", self)
         self.current_player_label.setStyleSheet("font-size: 30px; font-weight: bold; color: black; background-color: #D9D9D9;")
         self.turn = players.Turn(self.current_player_label)
-        self.current_player_label.setFixedSize(600,100)
-        self.current_player_label.setContentsMargins(20,0,0,0)
         self.current_player_label.setFont(goldman(size=12))
-        layout.addWidget(self.current_player_label)
-        #frame
+        #layout.addWidget(self.current_player_label)
+        line_layout.addWidget(self.current_player_label)
+        line_layout.addWidget(self.endButton)
+        self.score_container = QWidget(self)
+        layout.addWidget(self.score_container, alignment=Qt.AlignCenter)
+
+        #board frame
         frame = QFrame(self)
         #self.centre_pos = self.boardLayout.pos()
-        frame.setFixedSize(580, 580)
-        frame.setStyleSheet("border: 10px solid black;")
+        frame.setFixedSize(570, 570)
+        frame.setStyleSheet("border: 5px solid black; background-color: transparent;")
         frame_layout = QVBoxLayout(frame)
         frame_layout.setContentsMargins(0,0,0,0)
-        frame.move(670, 266)
+        frame.move(675, 391)
         layout.addWidget(self.boardLayout, alignment=Qt.AlignCenter)
         # Create a horizontal layout to hold the buttons
         buttons_layout = QHBoxLayout()
-        buttons_layout.addWidget(exit_button)
+        #buttons_layout.addWidget(exit_button)
         buttons_layout.addWidget(confirm_button)
         buttons_layout.addWidget(rotate_button)
         buttons_layout.addWidget(pass_button)
@@ -258,13 +263,10 @@ class gameInterface(QWidget):
         playerPanel3 = self.player_containers[2]
         playerPanel4 = self.player_containers[3]
 
-        
-        self.score_container = QWidget(self)
         self.score_container.setFixedSize(500, 200)
         self.score_layout = QVBoxLayout(self.score_container)
-        self.score_container.setStyleSheet("background-color:#D9D9D9; border-radius: 50px; padding: black")
-        self.score_container.move(720,50)
-        self.score_container.setFont(goldman(size=12))
+        self.score_container.setStyleSheet("background-color:#D9D9D9; border-radius: 50px; padding: black;")
+        self.score_container.setFont(goldman(size=20))
        
         self.player_scores = [0, 0, 0, 0]
         
@@ -428,13 +430,41 @@ class gameInterface(QWidget):
                             playerList=self.playerList,pieceList=self.pieceList)  # popup menu to choose save destination
         save_button.clicked.connect(self.saveMenu.show)
         save_button.setStyleSheet("QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
-        buttons_layout.addWidget(save_button) 
-
+        #buttons_layout.addWidget(save_button) 
+        line_layout.addWidget(exit_button)
+        line_layout.addWidget(save_button)
         # confirm_button.setFixedSize(150,100)
         # rotate_button.setFixedSize(150,100)
         # pass_button.setFixedSize(150,100)
         # exit_button.setFixedSize(150,100)
         # save_button.setFixedSize(150,100)      
+    def endGame(self):
+        player_scores = {}  # Dictionary to store player scores
+        for player in self.playerList:  # Assuming you have a list of player objects
+            score = int(player.score_label.text())  # Implement this method in your player class
+            player_scores[player.name] = score
+
+        # Find the players with the highest score
+        highest_score = max(player_scores.values())
+        winners = [player for player, score in player_scores.items() if score == highest_score]
+
+        # Show the win screen
+        self.showWinScreen(winners, highest_score)
+
+    def showWinScreen(self, winners, score):
+        if len(winners) == 1:
+            winner_message = f"Player {winners[0]} won with a score of {score}!"
+        else:
+            winner_message = f"It's a draw between {', '.join(winners)} with a score of {score}!"
+
+        msg_box = QMessageBox()
+        msg_box.setWindowTitle("End Game!")
+        msg_box.setText(winner_message)
+        msg_box.setGeometry(700, 300, 100, 100)
+        msg_box.setStyleSheet("QMessageBox { border: 10px solid orange; }")
+        msg_box.setFont(goldman(size=20))
+        msg_box.exec_()
+
 
     def rotate_piece(self):
         # Find the last pressed piece
@@ -455,7 +485,6 @@ class gameInterface(QWidget):
 
         active_piece.shape = rotated_shape
         active_piece.pixmap = new_pixmap
-
         active_piece.setPixmap(active_piece.pixmap)
 
         active_piece.setFixedSize(rotated_pixmap.size())
@@ -468,7 +497,7 @@ class gameInterface(QWidget):
     def keyPressEvent(self, event):
         key = event.key()
         if key == Qt.Key_Escape:  # "ESC" key for exiting
-            on_exit_clicked()
+            self.on_exit_clicked()
         elif key == Qt.Key_R:  # "R" key for rotation
             self.rotate_piece()
         elif key == Qt.Key_P:  # "P" key for passing
@@ -525,6 +554,9 @@ class gameInterface(QWidget):
                 if self.playerList[i].is_turn:
                     for piece in self.playerList[i].pieces:
                         piece.set_color_overlay(Qt.transparent)
+    
+    def on_exit_clicked(self):
+            self.close()  # Close the current window (gameInterface)
 
 class saveMenu(QWidget):
     def __init__(self, playerList, turn, boardLayout, pieceList):
