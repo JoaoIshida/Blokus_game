@@ -1,5 +1,6 @@
 import sys
 import os
+from PyQt5.QtGui import QPixmap
 import pickle
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
@@ -15,8 +16,14 @@ class Color(QWidget):
         palette.setColor(self.backgroundRole(), color)
         self.setPalette(palette)
 
-
 class MainWindow(QMainWindow):
+
+    achievements = {
+        "FirstBlood": False,
+        "Peace Agreement": False,
+        "Philo-Blokus": False
+    }
+
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Blokus")
@@ -49,6 +56,11 @@ class MainWindow(QMainWindow):
             "font-size: 24px; padding: 10px; color: white; background-color: rgb(102, 73, 81);")
         self.tutorial_button.setEnabled(False)
 
+        self.achievement_button = QPushButton("ACHIEVEMENT")
+        self.achievement_button.setFixedSize(400, 100)
+        self.achievement_button.setStyleSheet(
+            "font-size: 24px; padding: 10px; color: black; background-color: rgb(224, 166, 181);")
+
         self.layout_container = QHBoxLayout()
         self.widget.setLayout(self.layout_container)
 
@@ -58,13 +70,14 @@ class MainWindow(QMainWindow):
         self.layout.addWidget(self.newGame_button, alignment=Qt.AlignCenter)
         self.layout.addWidget(self.load_button, alignment=Qt.AlignCenter)
         self.layout.addWidget(self.tutorial_button, alignment=Qt.AlignCenter)
+        self.layout.addWidget(self.achievement_button, alignment=Qt.AlignCenter)
 
         self.newGame_button.clicked.connect(self.on_newGame_button_press)
         self.load_button.clicked.connect(self.on_loadGame_button_press)
+        self.achievement_button.clicked.connect(self.on_achievement_button_press)
 
         self.layout_container.addLayout(self.layout)
         self.setCentralWidget(self.widget)
-
 
     def on_newGame_button_press(self):
         self.newGame_button.setText("You already clicked me.")
@@ -74,13 +87,20 @@ class MainWindow(QMainWindow):
         self.startGame()
         # self.setStyleSheet("background-color: rgb(139, 69, 19);")
         # self.showFullScreen()
+        MainWindow.achievements["FirstBlood"] = True
 
     def on_loadGame_button_press(self):
         #open a new window to choose the file
         self.loadMenu = loadMenu()
         self.close()
         self.loadMenu.show()
+        #
+        MainWindow.achievements["Peace Agreement"] = True
 
+    def on_achievement_button_press(self):
+        self.achievementMenu = achievementMenu(MainWindow.achievements)
+        self.close()
+        self.achievementMenu.show()
 
     # It just starts a new game and overwrite with the data from the saved files
     def load_chosen_file(self, filename):
@@ -103,7 +123,55 @@ class MainWindow(QMainWindow):
         self.game.showFullScreen()
         self.game.setFocus(Qt.OtherFocusReason)
 
+class achievementMenu(QWidget):
+    def __init__(self, achievements):
+        super().__init__()
+        self.achievements = achievements
 
+
+        self.setWindowTitle("Achievements")
+        self.setStyleSheet("background-color: rgb(196, 59, 93);")
+        self.setGeometry(100, 50, 900, 900)
+
+        # Button for each achievement
+        self.achievement1_button = self.makeAchievementButton("FirstBlood")
+        self.achievement2_button = self.makeAchievementButton("Peace Agreement")
+        self.achievement3_button = self.makeAchievementButton("Philo-Blokus")
+        self.achievement4_button = self.makeAchievementButton("Artificial Infant")
+        self.achievement5_button = self.makeAchievementButton("The Terminator")
+
+        self.back_button = QPushButton("Back")
+        self.back_button.setFixedSize(200, 50)
+        self.back_button.setStyleSheet(
+            "font-size: 24px; padding: 10px; color: black; background-color: rgb(224, 166, 181);")
+
+        self.back_button.clicked.connect(self.go_back_main_menu)
+
+        # Buttons formatting
+        self.layout = QVBoxLayout(self)
+        self.layout.setAlignment(Qt.AlignCenter)
+        self.layout.addWidget(self.achievement1_button, alignment=Qt.AlignCenter)
+        self.layout.addWidget(self.achievement2_button, alignment=Qt.AlignCenter)
+        self.layout.addWidget(self.achievement3_button, alignment=Qt.AlignCenter)
+        self.layout.addWidget(self.achievement4_button, alignment=Qt.AlignCenter)
+        self.layout.addWidget(self.achievement5_button, alignment=Qt.AlignCenter)
+        self.layout.addWidget(self.back_button, alignment=Qt.AlignCenter)
+
+    def makeAchievementButton(self, achievement):
+        theButton = QPushButton(achievement)
+        theButton.setFixedSize(400, 100)
+        # Check if the achievement is unlocked and change the button style accordingly
+        if self.achievements.get(achievement, False):
+            theButton.setStyleSheet(
+                "font-size: 24px; padding: 10px; color: black; background-color: rgb(224, 166, 181);")
+        else:
+            theButton.setStyleSheet("font-size: 24px; padding: 10px; color: white; background-color: rgb(102, 73, 81);")
+        return theButton
+
+    def go_back_main_menu(self):
+        self.close()
+        self.mainMenu = MainWindow()
+        self.mainMenu.show()
 class loadMenu(QWidget):
     def __init__(self):
         super().__init__()
@@ -135,7 +203,6 @@ class loadMenu(QWidget):
         self.layout.addWidget(self.file4_button, alignment=Qt.AlignCenter)
         self.layout.addWidget(self.file5_button, alignment=Qt.AlignCenter)
         self.layout.addWidget(self.back_button, alignment=Qt.AlignCenter)
-
 
     def makeFileButton(self, filename):
         theButton = QPushButton(filename)
