@@ -252,7 +252,7 @@ class loadMenu(QWidget):
         self.mainMenu.show()
 
     def startGame(self):
-        self.game = gameInterface()
+        self.game = gameInterface.gameInterface()
         self.game.showFullScreen()
         self.game.setFocus(Qt.OtherFocusReason)
 
