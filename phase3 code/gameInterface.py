@@ -67,7 +67,7 @@ def ai_move(players, turn, playerIndex, board):
             for rotation in range(0, 4):
                 for row in range(0, 20):
                     for col in range(0, 20):
-                        if board.canPlacePiece(col, row, piece) and not board.aiCollision(col, row, piece):
+                        if board.canPlacePiece(col, row, piece):
                             value = board.getValue(col, row, piece)
                             validPositions.append((col, row, piece, value, rotation))
                 piece.rotateShape()

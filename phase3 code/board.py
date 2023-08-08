@@ -117,8 +117,9 @@ class Board(QMainWindow):
             
             for row in range(pieceHeight):
                 for col in range(pieceWidth):
-                    if self.inBounds(tileX + col, tileY + row) == False or self.tileList[tileY + row][tileX + col].isEmpty() == False:
-                        return False
+                    if piece.shape[row][col] == 1:
+                        if self.inBounds(tileX + col, tileY + row) == False or self.tileList[tileY + row][tileX + col].isEmpty() == False:
+                            return False
                     
             for row in range(pieceHeight):
                 for col in range(pieceWidth):
@@ -153,7 +154,7 @@ class Board(QMainWindow):
                         x, y = tileX + col, tileY + row
 
                         # Check if the piece is within the bounds of the board
-                        if not (0 <= x < 20 and 0 <= y < 20):
+                        if not self.inBounds(x, y):
                             return False
                         
                         sideTiles = [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]
@@ -195,15 +196,6 @@ class Board(QMainWindow):
                     if piece.shape[row][col] == 1:
                         value += self.tileList[y + row][x + col].value
         return value
-
-    def aiCollision(self,x, y, piece):
-        for row in range(len(piece.shape)):
-            for col in range(len(piece.shape[row])):
-                if piece.shape[row][col] == 1:
-                    if self.tileList[y + row][x + col].isEmpty() == False:
-                        return True
-                    
-        return False
 
     def __getstate__(self):
         d = self.__dict__
