@@ -193,6 +193,12 @@ class gameInterface(QWidget):
         rotate_button.setStyleSheet(
             "QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
 
+        # CREATE FLIP
+        flip_button = QPushButton('Flip', self)
+        flip_button.clicked.connect(self.flip_piece)
+        flip_button.setStyleSheet(
+            "QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
+
         # # CREATE SAVE
         # save_button = QPushButton('Save', self)
         # # save_button.clicked.connect(self.saveGame)  # under development
@@ -233,6 +239,7 @@ class gameInterface(QWidget):
         # buttons_layout.addWidget(exit_button)
         buttons_layout.addWidget(confirm_button)
         buttons_layout.addWidget(rotate_button)
+        buttons_layout.addWidget(flip_button)
         buttons_layout.addWidget(pass_button)
         # buttons_layout.addWidget(save_button)
         buttons_layout.setContentsMargins(0, 0, 20, 0)
@@ -497,9 +504,37 @@ class gameInterface(QWidget):
         if active_piece == None:
             return
         # rotate shape and recreate pixmap
-        rotated_shape = list(zip(*reversed(active_piece.shape)))
+        # rotated_shape = list(zip(*reversed(active_piece.shape)))
+        rotated_shape = active_piece.rotateShape() #call function in the pieces class instead
         rotated_pixmap = active_piece.pixmap.transformed(QTransform().rotate(90))
+        new_pixmap = QPixmap(rotated_pixmap.size())
+        new_pixmap.fill(Qt.transparent)
+        painter = QPainter(new_pixmap)
+        painter.drawPixmap(0, 0, rotated_pixmap)
+        painter.end()
 
+        active_piece.shape = rotated_shape
+        active_piece.pixmap = new_pixmap
+        active_piece.setPixmap(active_piece.pixmap)
+
+        active_piece.setFixedSize(rotated_pixmap.size())
+
+        mask = QBitmap(active_piece.pixmap.createMaskFromColor(Qt.transparent))
+        active_piece.setMask(mask)
+
+        active_piece.move(active_piece.pos())
+
+    def flip_piece(self):
+        # Find the last pressed piece
+        active_piece = None
+        if self.last_pressed_piece is not None:
+            active_piece = self.last_pressed_piece
+
+        if active_piece == None:
+            return
+        # flip shape and recreate pixmap
+        rotated_shape = active_piece.flipShape() #call function in the pieces class instead
+        rotated_pixmap = active_piece.pixmap.transformed(QTransform().scale(-1, 1))
         new_pixmap = QPixmap(rotated_pixmap.size())
         new_pixmap.fill(Qt.transparent)
         painter = QPainter(new_pixmap)

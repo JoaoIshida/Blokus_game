@@ -250,7 +250,7 @@ class loadMenu(QWidget):
         self.close()
         # self.destroy()
         self.startGame()
-        # self.game.loadGame(filename)
+        self.game.loadGame(filename)
 
     def go_back_main_menu(self):
         self.close()

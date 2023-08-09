@@ -2,6 +2,15 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
+# import numpy as np
+
+def matrixflip(m):
+    tempm = m.copy()
+    for i in range(0, len(tempm), 1):
+        tempm[i].reverse()
+    # tempm.reverse()
+    return tempm
+
 class Piece(QLabel):
     # Shared flyweight pixmap object
     pixmap_cache = {}
@@ -136,9 +145,15 @@ class Piece(QLabel):
 
         return False
 
+    # These functions are for AI?
     def rotateShape(self):
         self.shape = list(zip(*reversed(self.shape)))
+        self.shape = [list(elem) for elem in self.shape]
+        return self.shape
 
+    def flipShape(self):
+        self.shape = matrixflip(self.shape)
+        return self.shape
 
     #order of pieces are the same, only need the values that changes with each move?
     def __getstate__(self):
