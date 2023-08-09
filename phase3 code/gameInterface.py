@@ -12,6 +12,7 @@ import game
 import pieces
 import players
 import board
+import sound
 
 from players import goldman
 
@@ -38,6 +39,7 @@ def display_achievements(player):
             pickle.dump(game.MainWindow.achievements, f)
 
 def next_player_clicked(players, turn, board):
+    sound.sound_player.play_sound()
     for i in range(len(players)):
         if players[i].is_turn:
             display_achievements(players[i])
@@ -115,6 +117,7 @@ def ai_move(players, turn, playerIndex, board):
 
 
 def confirm_placement(board, player_list, turn):
+    sound.sound_player.play_sound()
     piece_placed = False
     for player in player_list:
         if player.is_turn:
@@ -496,6 +499,7 @@ class gameInterface(QWidget):
         msg_box.exec_()
 
     def rotate_piece(self):
+        sound.sound_player.play_sound()
         # Find the last pressed piece
         active_piece = None
         if self.last_pressed_piece is not None:
@@ -525,6 +529,7 @@ class gameInterface(QWidget):
         active_piece.move(active_piece.pos())
 
     def flip_piece(self):
+        sound.sound_player.play_sound()
         # Find the last pressed piece
         active_piece = None
         if self.last_pressed_piece is not None:
@@ -614,6 +619,7 @@ class gameInterface(QWidget):
                         piece.set_color_overlay(Qt.transparent)
 
     def on_exit_clicked(self):
+        sound.sound_player.play_sound()
         self.close()
         self.main_menu = game.MainWindow()  # Create an instance of your main menu
         self.main_menu.show()

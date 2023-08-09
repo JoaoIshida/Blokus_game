@@ -5,6 +5,7 @@ import pickle
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
 from PyQt5.QtWidgets import QMessageBox
+import sound
 import gameInterface
 import gameRules
 from pieces import *
@@ -65,6 +66,11 @@ class MainWindow(QMainWindow):
         #     "font-size: 24px; padding: 10px; color: white; background-color: rgb(102, 73, 81);")
         # self.load_button.setEnabled(False)
 
+        self.settings_button = QPushButton("SETTINGS")
+        self.settings_button.setFixedSize(400, 100)
+        self.settings_button.setStyleSheet(
+            "font-size: 24px; padding: 10px; color: black; background-color: rgb(224, 166, 181);")
+
         self.tutorial_button = QPushButton("TUTORIAL (WIP)")
         self.tutorial_button.setFixedSize(400, 100)
         self.tutorial_button.setStyleSheet(
@@ -86,10 +92,12 @@ class MainWindow(QMainWindow):
         self.layout.addWidget(self.load_button, alignment=Qt.AlignCenter)
         self.layout.addWidget(self.tutorial_button, alignment=Qt.AlignCenter)
         self.layout.addWidget(self.achievement_button, alignment=Qt.AlignCenter)
+        self.layout.addWidget(self.settings_button, alignment=Qt.AlignCenter)
 
         self.newGame_button.clicked.connect(self.on_newGame_button_press)
         self.load_button.clicked.connect(self.on_loadGame_button_press)
         self.achievement_button.clicked.connect(self.on_achievement_button_press)
+        self.settings_button.clicked.connect(self.on_settings_button_press)
         self.tutorial_button.clicked.connect(self.open_tutorial)
 
         self.layout_container.addLayout(self.layout)
@@ -123,6 +131,11 @@ class MainWindow(QMainWindow):
         self.achievementMenu = achievementMenu(MainWindow.achievements)
         self.close()
         self.achievementMenu.show()
+
+    def on_settings_button_press(self):
+        self.settings_menu = settings_menu()
+        self.close()
+        self.settings_menu.show()
 
     def save_achievements(self):
         with open(MainWindow.achievements_file, "wb") as f:
@@ -271,6 +284,73 @@ class loadMenu(QWidget):
         self.game = gameInterface.gameInterface()
         self.game.showFullScreen()
         self.game.setFocus(Qt.OtherFocusReason)
+
+class settings_menu(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Blokus - Settings")
+        self.setGeometry(100, 50, 900, 900)
+        self.setStyleSheet("background-color: rgb(196, 59, 93);")
+
+        self.widget_container = QWidget()
+        #self.widget_container.setStyleSheet(
+        #    "background-color: rgb(224, 166, 181);"
+        #)
+        self.layout_container = QHBoxLayout()
+        self.widget_container.setLayout(self.layout_container)
+        self.setCentralWidget(self.widget_container)
+
+        self.layout = QVBoxLayout()
+        self.layout.setAlignment(Qt.AlignCenter)
+
+        self.layout_container.addLayout(self.layout)
+
+        self.volume_label = QLabel("SFX VOLUME")
+        self.volume_label.setFixedSize(400,60)
+        self.volume_label.setStyleSheet(
+            "font-size: 30px; color: black; font-weight: bold; text-align: center;")
+
+        self.volume_slider = QSlider(Qt.Horizontal)
+        self.volume_slider.setFixedSize(400, 100)
+        self.volume_slider.setMinimum(0)
+        self.volume_slider.setMaximum(100)
+        self.volume_slider.setSingleStep(1)
+        self.volume_slider.sliderMoved.connect(self.volume_slider_moved)
+
+        #self.volume_slider.setStyleSheet(
+        #    "background-color: rgb(224, 166, 181);")
+
+        self.volume_slider.setValue(60)
+        
+        self.volume_try_button = QPushButton("TRY SOUND")
+        self.volume_try_button.setFixedSize(400, 100)
+        self.volume_try_button.setStyleSheet(
+            "font-size: 24px; padding: 10px; color: black; background-color: rgb(224, 166, 181);")
+        self.volume_try_button.clicked.connect(self.on_try_button_click)
+
+        self.back_button = QPushButton("Back")
+        self.back_button.setFixedSize(200, 50)
+        self.back_button.setStyleSheet(
+            "font-size: 24px; padding: 10px; color: black; background-color: rgb(224, 166, 181);")
+        self.back_button.clicked.connect(self.go_back_main_menu)
+
+        self.layout.addWidget(self.volume_label)
+        self.layout.addWidget(self.volume_slider)
+        self.layout.addWidget(self.volume_try_button)
+        self.layout.addWidget(self.back_button)
+
+    def volume_slider_moved(self):
+        sound.sound_player.volume = self.volume_slider.sliderPosition()
+
+    def on_try_button_click(self):
+        sound.sound_player.play_sound()
+
+    def go_back_main_menu(self):
+        self.close()
+        self.mainMenu = MainWindow()
+        self.mainMenu.show()
+
 
 def draw_menu():
     app = QApplication(sys.argv)
