@@ -6,6 +6,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
 from PyQt5.QtWidgets import QMessageBox
 import gameInterface
+import gameRules
 from pieces import *
 from tutorial import Wizard
 
@@ -99,13 +100,15 @@ class MainWindow(QMainWindow):
         self.newGame_button.setEnabled(False)
         self.newGame_button.setVisible(False)
         self.clearLayout(layout=self.layout_container)
-        self.startGame()
+        self.drawMenu()
+        self.close()
         # self.setStyleSheet("background-color: rgb(139, 69, 19);")
         # self.showFullScreen()
         if not MainWindow.achievements["FirstBlood"]:
             MainWindow.achievements["FirstBlood"] = True
             self.save_achievements()
             self.show_achievement_message("FirstBlood")
+
     def on_loadGame_button_press(self):
         #open a new window to choose the file
         self.loadMenu = loadMenu()
@@ -144,6 +147,12 @@ class MainWindow(QMainWindow):
         self.close()
         self.game = gameInterface.gameInterface()
         self.game.showFullScreen()
+        self.game.setFocus(Qt.OtherFocusReason)
+
+    def drawMenu(self):
+        self.close()
+        self.game = gameRules.rules()
+        self.game.show()
         self.game.setFocus(Qt.OtherFocusReason)
 
     def open_tutorial(self):
@@ -199,6 +208,7 @@ class achievementMenu(QWidget):
         self.close()
         self.mainMenu = MainWindow()
         self.mainMenu.show()
+        
 class loadMenu(QWidget):
     def __init__(self):
         super().__init__()
