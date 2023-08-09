@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHB
 from PyQt5.QtWidgets import QMessageBox
 import gameInterface
 from pieces import *
+from tutorial import Wizard
 
 class Color(QWidget):
     def __init__(self, color):
@@ -66,8 +67,8 @@ class MainWindow(QMainWindow):
         self.tutorial_button = QPushButton("TUTORIAL (WIP)")
         self.tutorial_button.setFixedSize(400, 100)
         self.tutorial_button.setStyleSheet(
-            "font-size: 24px; padding: 10px; color: white; background-color: rgb(102, 73, 81);")
-        self.tutorial_button.setEnabled(False)
+            "font-size: 24px; padding: 10px; color: black; background-color: rgb(224, 166, 181);")
+
 
         self.achievement_button = QPushButton("ACHIEVEMENT")
         self.achievement_button.setFixedSize(400, 100)
@@ -88,6 +89,7 @@ class MainWindow(QMainWindow):
         self.newGame_button.clicked.connect(self.on_newGame_button_press)
         self.load_button.clicked.connect(self.on_loadGame_button_press)
         self.achievement_button.clicked.connect(self.on_achievement_button_press)
+        self.tutorial_button.clicked.connect(self.open_tutorial)
 
         self.layout_container.addLayout(self.layout)
         self.setCentralWidget(self.widget)
@@ -143,6 +145,10 @@ class MainWindow(QMainWindow):
         self.game = gameInterface.gameInterface()
         self.game.showFullScreen()
         self.game.setFocus(Qt.OtherFocusReason)
+
+    def open_tutorial(self):
+        self.tutorial = Wizard()
+        self.tutorial.show()
 
 class achievementMenu(QWidget):
     def __init__(self, achievements):
@@ -244,7 +250,7 @@ class loadMenu(QWidget):
         self.close()
         # self.destroy()
         self.startGame()
-        self.game.loadGame(filename)
+        # self.game.loadGame(filename)
 
     def go_back_main_menu(self):
         self.close()
