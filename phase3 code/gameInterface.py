@@ -450,7 +450,7 @@ class gameInterface(QWidget):
             piece.set_color_overlay(Qt.transparent)
 
         # CREATE SAVE BUTTON
-        save_button = button.createButton("rgb(224, 166, 181)", (300, 75), "Pass", "rgb(244, 195, 209)", "rgb(202, 123, 139)", parent=self)
+        save_button = button.createButton("rgb(224, 166, 181)", (300, 75), "Save game", "rgb(244, 195, 209)", "rgb(202, 123, 139)", parent=self)
 
         self.saveMenu = saveMenu(boardLayout=self.boardLayout, turn=self.turn,
                                  playerList=self.playerList,
@@ -613,7 +613,7 @@ class gameInterface(QWidget):
                         piece.set_color_overlay(Qt.transparent)
 
     def on_exit_clicked(self):
-        self.soundPlayer.play_sound()
+        #self.soundPlayer.play_sound()
         self.close()
         self.main_menu = game.MainWindow(self.soundPlayer)  # Create an instance of your main menu
         self.main_menu.show()

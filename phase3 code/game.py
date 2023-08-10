@@ -56,11 +56,11 @@ class MainWindow(QMainWindow):
         self.logo.setPixmap(self.logo_pixmap)
         self.logo.setAlignment(Qt.AlignCenter)
 
-        self.newGame_button = button.createButton("rgb(224, 166, 181)", (400,100), "NEW GAME", "rgb(244, 195, 209)", "rgb(202, 123, 139)")
-        self.load_button = button.createButton("rgb(224, 166, 181)", (400,100), "LOAD GAME", "rgb(244, 195, 209)", "rgb(202, 123, 139)")
-        self.settings_button = button.createButton("rgb(224, 166, 181)", (400,100), "SETTINGS", "rgb(244, 195, 209)", "rgb(202, 123, 139)")
-        self.tutorial_button = button.createButton("rgb(224, 166, 181)", (400,100), "TUTORIAL", "rgb(244, 195, 209)", "rgb(202, 123, 139)")
-        self.achievement_button = button.createButton("rgb(224, 166, 181)", (400,100), "ACHIEVEMENT", "rgb(244, 195, 209)", "rgb(202, 123, 139)")
+        self.newGame_button = button.createButtonSquared("rgb(224, 166, 181)", (400,100), "NEW GAME", "rgb(244, 195, 209)", "rgb(202, 123, 139)")
+        self.load_button = button.createButtonSquared("rgb(224, 166, 181)", (400,100), "LOAD GAME", "rgb(244, 195, 209)", "rgb(202, 123, 139)")
+        self.settings_button = button.createButtonSquared("rgb(224, 166, 181)", (400,100), "SETTINGS", "rgb(244, 195, 209)", "rgb(202, 123, 139)")
+        self.tutorial_button = button.createButtonSquared("rgb(224, 166, 181)", (400,100), "TUTORIAL", "rgb(244, 195, 209)", "rgb(202, 123, 139)")
+        self.achievement_button = button.createButtonSquared("rgb(224, 166, 181)", (400,100), "ACHIEVEMENT", "rgb(244, 195, 209)", "rgb(202, 123, 139)")
 
 
         self.layout_container = QHBoxLayout()
