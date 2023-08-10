@@ -181,7 +181,7 @@ class gameInterface(QWidget):
 
         # CREATE PASS
         pass_button = QPushButton('Pass', self)
-        pass_button.clicked.connect(lambda: next_player_clicked(self.playerList, self.turn, self.boardLayout, True))
+        pass_button.clicked.connect(lambda: next_player_clicked(self.playerList, self.turn, self.boardLayout, True, self))
         pass_button.setStyleSheet(
             "QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
 
