@@ -72,17 +72,22 @@ def ai_move(players, turn, playerIndex, board, gameInterface):
     # Check which positions are placeable for each piece
     if len(placeablePieces) != 0:
         for piece in placeablePieces:
-            for rotation in range(0, 4):
-                for row in range(0, 20):
-                    for col in range(0, 20):
-                        if board.canPlacePiece(col, row, piece):
-                            value = board.getValue(col, row, piece)
-                            validPositions.append((col, row, piece, value, rotation))
-                piece.rotateShape()
+            for flip in range(0, 2):
+                for rotation in range(0, 4):
+                    for row in range(0, 20):
+                        for col in range(0, 20):
+                            if board.canPlacePiece(col, row, piece):
+                                value = board.getValue(col, row, piece)
+                                validPositions.append((col, row, piece, value, rotation, flip))
+                    piece.rotateShape()
+                piece.flipShape()
+
     # Place the piece with the highest value
     if len(validPositions) != 0:
         maxValue = max(validPositions, key=lambda x: x[3])
 
+        for _ in range(maxValue[5]):
+            maxValue[2].flipShape()
         for _ in range(maxValue[4]):
             maxValue[2].rotateShape()
         if board.canPlacePiece(maxValue[0], maxValue[1], maxValue[2]):
