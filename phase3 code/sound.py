@@ -1,13 +1,18 @@
-from playsound import playsound
+from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
+from PyQt5.QtCore import QUrl
 
-class sound_player:
-
+class soundPlayer:
     def __init__(self):
-        super().__init__()
-
+        self.media_player = QMediaPlayer()
         self.volume = 60
+        self.media_player.setVolume(self.volume)
 
-    def play_sound():
-        playsound("assets\sfx\legolulw.wav")
+    def play_sound(self):
+        content = QMediaContent(QUrl.fromLocalFile("assets/sfx/legolulw.wav"))
+        self.media_player.setMedia(content)
+        self.media_player.play()
 
-    
+    def setVolume(self, volume):
+        self.volume = volume
+        self.media_player.setVolume(self.volume)
+

@@ -40,14 +40,14 @@ class MainWindow(QMainWindow):
         msg.setText(f"You've unlocked the {achievement_name} achievement!")
         msg.exec_()
 
-    def __init__(self):
+    def __init__(self, soundPlayer):
         super().__init__()
         self.setWindowTitle("Blokus")
         self.setGeometry(100, 50, 900, 900)
         self.setStyleSheet("background-color: rgb(196, 59, 93);")
 
         self.widget = QWidget()
-
+        self.soundPlayer = soundPlayer
         self.logo = QLabel(self)
         self.logo_pixmap = QPixmap('assets/Blokus.png')
         self.logo.setPixmap(self.logo_pixmap)
@@ -62,9 +62,6 @@ class MainWindow(QMainWindow):
         self.load_button.setFixedSize(400, 100)
         self.load_button.setStyleSheet(
             "font-size: 24px; padding: 10px; color: black; background-color: rgb(224, 166, 181);")
-        # self.load_button.setStyleSheet(
-        #     "font-size: 24px; padding: 10px; color: white; background-color: rgb(102, 73, 81);")
-        # self.load_button.setEnabled(False)
 
         self.settings_button = QPushButton("SETTINGS")
         self.settings_button.setFixedSize(400, 100)
@@ -110,8 +107,7 @@ class MainWindow(QMainWindow):
         self.clearLayout(layout=self.layout_container)
         self.drawMenu()
         self.close()
-        # self.setStyleSheet("background-color: rgb(139, 69, 19);")
-        # self.showFullScreen()
+
         if not MainWindow.achievements["FirstBlood"]:
             MainWindow.achievements["FirstBlood"] = True
             self.save_achievements()
@@ -119,7 +115,7 @@ class MainWindow(QMainWindow):
 
     def on_loadGame_button_press(self):
         #open a new window to choose the file
-        self.loadMenu = loadMenu()
+        self.loadMenu = loadMenu(self.soundPlayer)
         self.close()
         self.loadMenu.show()
         if not MainWindow.achievements["Peace Agreement"]:
@@ -128,12 +124,12 @@ class MainWindow(QMainWindow):
             self.show_achievement_message("Peace Agreement")
 
     def on_achievement_button_press(self):
-        self.achievementMenu = achievementMenu(MainWindow.achievements)
+        self.achievementMenu = achievementMenu(MainWindow.achievements, self.soundPlayer)
         self.close()
         self.achievementMenu.show()
 
     def on_settings_button_press(self):
-        self.settings_menu = settings_menu()
+        self.settings_menu = settings_menu(self.soundPlayer, True)
         self.close()
         self.settings_menu.show()
 
@@ -158,7 +154,7 @@ class MainWindow(QMainWindow):
 
     def drawMenu(self):
         self.close()
-        self.game = gameRules.rules()
+        self.game = gameRules.rules(self.soundPlayer)
         self.game.show()
         self.game.setFocus(Qt.OtherFocusReason)
 
@@ -167,10 +163,10 @@ class MainWindow(QMainWindow):
         self.tutorial.show()
 
 class achievementMenu(QWidget):
-    def __init__(self, achievements):
+    def __init__(self, achievements, soundPlayer):
         super().__init__()
         self.achievements = achievements
-
+        self.soundPlayer = soundPlayer
 
         self.setWindowTitle("Achievements")
         self.setStyleSheet("background-color: rgb(196, 59, 93);")
@@ -213,16 +209,15 @@ class achievementMenu(QWidget):
 
     def go_back_main_menu(self):
         self.close()
-        self.mainMenu = MainWindow()
+        self.mainMenu = MainWindow(self.soundPlayer)
         self.mainMenu.show()
 
 class loadMenu(QWidget):
-    def __init__(self):
+    def __init__(self, soundPlayer):
         super().__init__()
-
+        self.soundPlayer = soundPlayer
         self.setWindowTitle("Choose Saving Destination")
         self.setStyleSheet("background-color: rgb(196, 59, 93);")
-        # self.setGeometry(500, 200, 500, 500)
         self.setGeometry(100, 50, 900, 900)
 
         #Button for each file
@@ -267,35 +262,38 @@ class loadMenu(QWidget):
             self.playerTypes = pickle.load(file)
         return self.playerTypes
     
+    def loadSoundPlayer(self, filename):
+        f = f"Save/{filename}/"
+        with open(f"{f}saveSound.pkl", 'rb') as file:
+            sound_settings = pickle.load(file)
+            self.soundPlayer.setVolume(sound_settings['volume'])
+    
     def load_the_file(self, filename):
         # Start new game
         self.close()
-        # self.destroy()
         self.startGame(filename)
         self.game.loadGame(filename)
 
     def go_back_main_menu(self):
         self.close()
-        self.mainMenu = MainWindow()
+        self.mainMenu = MainWindow(self.soundPlayer)
         self.mainMenu.show()
 
     def startGame(self, filename):
-        self.game = gameInterface.gameInterface(self.loadPlayerTypes(filename))
+        self.loadSoundPlayer(filename)
+        self.game = gameInterface.gameInterface(self.loadPlayerTypes(filename), self.soundPlayer)
         self.game.showFullScreen()
         self.game.setFocus(Qt.OtherFocusReason)
 
 class settings_menu(QMainWindow):
-    def __init__(self):
+    def __init__(self, soundPlayer, mainMenu):
         super().__init__()
-
+        self.soundPlayer = soundPlayer
         self.setWindowTitle("Blokus - Settings")
         self.setGeometry(100, 50, 900, 900)
         self.setStyleSheet("background-color: rgb(196, 59, 93);")
 
         self.widget_container = QWidget()
-        #self.widget_container.setStyleSheet(
-        #    "background-color: rgb(224, 166, 181);"
-        #)
         self.layout_container = QHBoxLayout()
         self.widget_container.setLayout(self.layout_container)
         self.setCentralWidget(self.widget_container)
@@ -317,10 +315,7 @@ class settings_menu(QMainWindow):
         self.volume_slider.setSingleStep(1)
         self.volume_slider.sliderMoved.connect(self.volume_slider_moved)
 
-        #self.volume_slider.setStyleSheet(
-        #    "background-color: rgb(224, 166, 181);")
-
-        self.volume_slider.setValue(60)
+        self.volume_slider.setValue(soundPlayer.volume)
         
         self.volume_try_button = QPushButton("TRY SOUND")
         self.volume_try_button.setFixedSize(400, 100)
@@ -334,26 +329,30 @@ class settings_menu(QMainWindow):
             "font-size: 24px; padding: 10px; color: black; background-color: rgb(224, 166, 181);")
         self.back_button.clicked.connect(self.go_back_main_menu)
 
+
         self.layout.addWidget(self.volume_label)
         self.layout.addWidget(self.volume_slider)
         self.layout.addWidget(self.volume_try_button)
-        self.layout.addWidget(self.back_button)
-
+        if mainMenu == False:
+            pass
+        else:
+            self.layout.addWidget(self.back_button)
+    
     def volume_slider_moved(self):
-        sound.sound_player.volume = self.volume_slider.sliderPosition()
+        self.soundPlayer.setVolume(self.volume_slider.sliderPosition())
 
     def on_try_button_click(self):
-        sound.sound_player.play_sound()
+        self.soundPlayer.play_sound()
 
     def go_back_main_menu(self):
         self.close()
-        self.mainMenu = MainWindow()
+        self.mainMenu = MainWindow(self.soundPlayer)
         self.mainMenu.show()
 
-
 def draw_menu():
+    soundPlayer = sound.soundPlayer()
     app = QApplication(sys.argv)
-    window = MainWindow()
+    window = MainWindow(soundPlayer)
     window.show()
     sys.exit(app.exec_())
 

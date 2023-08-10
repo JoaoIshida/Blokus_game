@@ -14,7 +14,7 @@ def matrixflip(m):
 class Piece(QLabel):
     # Shared flyweight pixmap object
     pixmap_cache = {}
-
+    last_clicked_piece = None
     def __init__(self, parent, score_label, pixmap_path, initial_position, weight, board, pieces, shape, colour, player):
         super().__init__(parent)
         
@@ -63,6 +63,9 @@ class Piece(QLabel):
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
+            if Piece.last_clicked_piece is not None and Piece.last_clicked_piece != self:
+                Piece.last_clicked_piece.move(Piece.last_clicked_piece.last_confirmed_position)
+            Piece.last_clicked_piece = self
             # set last pressed piece
             self.parent().last_pressed_piece = self
             if not self.onboard and self.movable:  # Only allow dragging if the piece is not on the board

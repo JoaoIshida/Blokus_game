@@ -37,9 +37,10 @@ class playerMenu(QFrame):
         self.playerTypeChanged.emit(value)
 
 class rules(QWidget):
-    def __init__(self):
+    def __init__(self, soundPlayer):
         super().__init__()
         self.playerTypes = {}
+        self.soundPlayer = soundPlayer
         self.setWindowTitle("Choose Saving Destination")
         self.setStyleSheet("background-color: rgb(196, 59, 93);")
         self.setGeometry(100, 50, 700, 600)
@@ -113,12 +114,12 @@ class rules(QWidget):
             return
         
         self.close()
-        self.game = gameInterface.gameInterface(self.playerTypes)
+        self.game = gameInterface.gameInterface(self.playerTypes, self.soundPlayer)
         self.game.showFullScreen()
         self.game.setFocus(Qt.OtherFocusReason)
 
     def backtoMenu(self):
         self.close()
-        self.mainMenu = game.MainWindow()
+        self.mainMenu = game.MainWindow(self.soundPlayer)
         self.mainMenu.show()
         self.mainMenu.setFocus(Qt.OtherFocusReason)

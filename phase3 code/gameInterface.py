@@ -1,9 +1,7 @@
 import os
 import sys
-import time
 import pickle
 from PyQt5.QtWidgets import QMessageBox
-from PyQt5 import QtCore
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -18,8 +16,7 @@ from players import goldman
 
 def display_achievements(player):
     achievement_text = ""
-    # if player.first_move == True:
-    #   achievement_text += f"player first move\n"
+
     if player.score_label.text() == "89":
         if player.is_ai:
             achievement_text += "The Terminator: AI has shown dominance!\n"
@@ -38,7 +35,7 @@ def display_achievements(player):
         with open(game.MainWindow.achievements_file, "wb") as f:
             pickle.dump(game.MainWindow.achievements, f)
 
-def next_player_clicked(players, turn, board, playerMovedFirst):
+def next_player_clicked(players, turn, board, playerMovedFirst, gameInterface):
     for i in range(len(players)):
         if players[i].is_turn:
             display_achievements(players[i])
@@ -61,11 +58,11 @@ def next_player_clicked(players, turn, board, playerMovedFirst):
             if players[next_player_index].is_ai:
                 if playerMovedFirst == False:
                     return
-                ai_move(players, turn, next_player_index, board)
+                ai_move(players, turn, next_player_index, board, gameInterface)
             break
 
 
-def ai_move(players, turn, playerIndex, board):
+def ai_move(players, turn, playerIndex, board, gameInterface):
     placeablePieces = []
     validPositions = []
     # Check which pieces are placeable on the board
@@ -90,6 +87,7 @@ def ai_move(players, turn, playerIndex, board):
         for _ in range(maxValue[4]):
             maxValue[2].rotateShape()
         if board.canPlacePiece(maxValue[0], maxValue[1], maxValue[2]):
+            gameInterface.soundPlayer.play_sound()
             for row in range(len(maxValue[2].shape)):
                 for col in range(len(maxValue[2].shape[row])):
                     if maxValue[2].shape[row][col] == 1:
@@ -112,13 +110,12 @@ def ai_move(players, turn, playerIndex, board):
                 if maxValue[2].player.first_move:
                     maxValue[2].player.first_move = False
                 if turn:
-                    next_player_clicked(players, turn, board, True)
+                    next_player_clicked(players, turn, board, True, gameInterface)
     else:
-        next_player_clicked(players, turn, board,True)
+        next_player_clicked(players, turn, board,True, gameInterface)
 
 
-def confirm_placement(board, player_list, turn):
-    sound.sound_player.play_sound()
+def confirm_placement(board, player_list, turn, gameInterface):
     piece_placed = False
     for player in player_list:
         if player.is_turn:
@@ -131,6 +128,7 @@ def confirm_placement(board, player_list, turn):
 
                     # Check if the piece can be placed according to Blokus rules
                     if board.canPlacePiece(startX, startY, piece):
+                        gameInterface.soundPlayer.play_sound()
                         # Loop through the piece shape and update the tile colors accordingly
                         for row in range(len(piece.shape)):
                             for col in range(len(piece.shape[row])):
@@ -155,14 +153,15 @@ def confirm_placement(board, player_list, turn):
                             if piece.player.first_move:
                                 piece.player.first_move = False
                             if turn:
-                                next_player_clicked(player_list, turn, board, True)
+                                next_player_clicked(player_list, turn, board, True, gameInterface)
 
 
 class gameInterface(QWidget):
-    def __init__(self, playerTypes):
+    def __init__(self, playerTypes, soundPlayer):
         super().__init__()
         self.pieceList = []
         self.playerList = []
+        self.soundPlayer = soundPlayer
         self.playerTypes = playerTypes
         self.last_pressed_piece = None
         self.setWindowTitle("Game")
@@ -182,13 +181,13 @@ class gameInterface(QWidget):
 
         # CREATE PASS
         pass_button = QPushButton('Pass', self)
-        pass_button.clicked.connect(lambda: next_player_clicked(self.playerList, self.turn, self.boardLayout))
+        pass_button.clicked.connect(lambda: next_player_clicked(self.playerList, self.turn, self.boardLayout, gameInterface=self))
         pass_button.setStyleSheet(
             "QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
 
         # CREATE CONFIRM
         confirm_button = QPushButton('Confirm', self)
-        confirm_button.clicked.connect(lambda: confirm_placement(self.boardLayout, self.playerList, self.turn))
+        confirm_button.clicked.connect(lambda: confirm_placement(self.boardLayout, self.playerList, self.turn, self))
         confirm_button.setStyleSheet(
             "QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
 
@@ -202,15 +201,15 @@ class gameInterface(QWidget):
         flip_button = QPushButton('Flip', self)
         flip_button.clicked.connect(self.flip_piece)
         flip_button.setStyleSheet(
+            "QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")\
+            
+        # CREATE Settings
+        settingsButton = QPushButton('Settings', self)
+        settingsButton.clicked.connect(self.on_settings_button_press)
+        settingsButton.setStyleSheet(
             "QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
 
-        # # CREATE SAVE
-        # save_button = QPushButton('Save', self)
-        # # save_button.clicked.connect(self.saveGame)  # under development
-        # self.saveMenu = saveMenu(parent=self, boardLayout=self.boardLayout, turn = self.turn, playerList=self.playerList, pieceList=self.pieceList)  #popup menu to choose save destination
-        # save_button.clicked.connect(self.saveMenu.show)
-        # save_button.setStyleSheet(
-        #     "QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
+        # Create End game
         self.endButton = QPushButton('End Game', self)
         self.endButton.clicked.connect(self.endGame)
         self.endButton.setStyleSheet(
@@ -218,13 +217,13 @@ class gameInterface(QWidget):
         line_layout = QHBoxLayout()
         line_layout.setSpacing(20)
         layout.addLayout(line_layout)
+
         # Show whose turn is it
         self.current_player_label = QLabel("  Current player (red): Player 1  ", self)
         self.current_player_label.setStyleSheet(
             "font-size: 30px; font-weight: bold; color: black; background-color: #D9D9D9;")
         self.turn = players.Turn(self.current_player_label)
         self.current_player_label.setFont(goldman(size=12))
-        # layout.addWidget(self.current_player_label)
         line_layout.addWidget(self.current_player_label)
         line_layout.addWidget(self.endButton)
         self.score_container = QWidget(self)
@@ -232,31 +231,22 @@ class gameInterface(QWidget):
 
         # board frame
         frame = QFrame(self)
-        # self.centre_pos = self.boardLayout.pos()
         frame.setFixedSize(570, 570)
         frame.setStyleSheet("border: 5px solid black; background-color: transparent;")
         frame_layout = QVBoxLayout(frame)
         frame_layout.setContentsMargins(0, 0, 0, 0)
         frame.move(675, 396)
         layout.addWidget(self.boardLayout, alignment=Qt.AlignCenter)
+
         # Create a horizontal layout to hold the buttons
         buttons_layout = QHBoxLayout()
-        # buttons_layout.addWidget(exit_button)
         buttons_layout.addWidget(confirm_button)
         buttons_layout.addWidget(rotate_button)
         buttons_layout.addWidget(flip_button)
         buttons_layout.addWidget(pass_button)
-        # buttons_layout.addWidget(save_button)
         buttons_layout.setContentsMargins(0, 0, 20, 0)
         buttons_layout.setSpacing(20)
         layout.addLayout(buttons_layout)
-
-        # board_text_layout = QHBoxLayout()
-        # board_text_layout.addWidget(self.boardLayout)
-        # paragraph_text = QLabel("Drag the piece to the board when is your turn. \nCorfirm piece location by pressing Confirm or \"enter\" on your keyboard\nRotate piece location by pressing Rotate or \"R\" on your keyboard\nPass turn by pressing Pass or \"P\" on your keyboard\nExit game by pressing Exit or \"Esc\" on your keyboard\nSave the game state by pressing Save")
-        # board_text_layout.addWidget(paragraph_text)
-        # layout.addLayout(board_text_layout)
-        # paragraph_text.setStyleSheet("font-size: 20px; color: white;")
 
         self.player_containers = []
         for i in range(4):
@@ -472,18 +462,13 @@ class gameInterface(QWidget):
         save_button = QPushButton('Save', self)
         self.saveMenu = saveMenu(boardLayout=self.boardLayout, turn=self.turn,
                                  playerList=self.playerList,
-                                 pieceList=self.pieceList, playerTypes=self.playerTypes)  # popup menu to choose save destination
+                                 pieceList=self.pieceList, playerTypes=self.playerTypes, soundPlayer=self.soundPlayer)  # popup menu to choose save destination
         save_button.clicked.connect(self.saveMenu.show)
         save_button.setStyleSheet(
             "QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
-        # buttons_layout.addWidget(save_button)
         line_layout.addWidget(exit_button)
         line_layout.addWidget(save_button)
-        # confirm_button.setFixedSize(150,100)
-        # rotate_button.setFixedSize(150,100)
-        # pass_button.setFixedSize(150,100)
-        # exit_button.setFixedSize(150,100)
-        # save_button.setFixedSize(150,100)
+        line_layout.addWidget(settingsButton)
         if self.playerTypes[1] == "Human":
             pass
         else:
@@ -518,7 +503,7 @@ class gameInterface(QWidget):
         msg_box.exec_()
 
     def rotate_piece(self):
-        sound.sound_player.play_sound()
+        self.soundPlayer.play_sound()
         # Find the last pressed piece
         active_piece = None
         if self.last_pressed_piece is not None:
@@ -527,7 +512,6 @@ class gameInterface(QWidget):
         if active_piece == None:
             return
         # rotate shape and recreate pixmap
-        # rotated_shape = list(zip(*reversed(active_piece.shape)))
         rotated_shape = active_piece.rotateShape() #call function in the pieces class instead
         rotated_pixmap = active_piece.pixmap.transformed(QTransform().rotate(90))
         new_pixmap = QPixmap(rotated_pixmap.size())
@@ -548,7 +532,7 @@ class gameInterface(QWidget):
         active_piece.move(active_piece.pos())
 
     def flip_piece(self):
-        sound.sound_player.play_sound()
+        self.soundPlayer.play_sound()
         # Find the last pressed piece
         active_piece = None
         if self.last_pressed_piece is not None:
@@ -585,7 +569,7 @@ class gameInterface(QWidget):
         elif key == Qt.Key_P:  # "P" key for passing
             next_player_clicked(self.playerList, self.turn, self.boardLayout)
         elif key == Qt.Key_Return or key == Qt.Key_Enter:
-            confirm_placement(self.boardLayout, self.playerList, self.turn)
+            confirm_placement(self.boardLayout, self.playerList, self.turn, self)
 
     def loadGame(self, filename="File 2"):
         f = f"Save/{filename}/"
@@ -638,14 +622,18 @@ class gameInterface(QWidget):
                         piece.set_color_overlay(Qt.transparent)
 
     def on_exit_clicked(self):
-        sound.sound_player.play_sound()
+        self.soundPlayer.play_sound()
         self.close()
-        self.main_menu = game.MainWindow()  # Create an instance of your main menu
+        self.main_menu = game.MainWindow(self.soundPlayer)  # Create an instance of your main menu
         self.main_menu.show()
+
+    def on_settings_button_press(self):
+        self.settings_menu = game.settings_menu(self.soundPlayer, False)
+        self.settings_menu.show()
 
 
 class saveMenu(QWidget):
-    def __init__(self, playerList, turn, boardLayout, pieceList, playerTypes):
+    def __init__(self, playerList, turn, boardLayout, pieceList, playerTypes, soundPlayer):
         super().__init__()
 
         self.playerList = playerList
@@ -653,6 +641,7 @@ class saveMenu(QWidget):
         self.boardLayout = boardLayout
         self.pieceList = pieceList
         self.playerTypes = playerTypes
+        self.soundPlayer = soundPlayer
 
         self.setWindowTitle("Choose Saving Destination")
         self.setStyleSheet("background-color: rgb(139, 69, 19);")
@@ -718,6 +707,9 @@ class saveMenu(QWidget):
             pickle.dump(self.pieceList, file)
         with open(f"{f}savePlayerTypes.pkl", 'wb') as file:
             pickle.dump(self.playerTypes, file)
+        soundSettings = {'volume': self.soundPlayer.volume}
+        with open(f"{f}saveSound.pkl", 'wb') as file:
+            pickle.dump(soundSettings, file)
         # another messagebox saying the game was saved successfully
         msg = QMessageBox()
         msg.setWindowTitle("Save Success")
