@@ -65,6 +65,7 @@ class Piece(QLabel):
         if event.button() == Qt.LeftButton:
             if Piece.last_clicked_piece is not None and Piece.last_clicked_piece != self:
                 Piece.last_clicked_piece.move(Piece.last_clicked_piece.last_confirmed_position)
+                Piece.last_clicked_piece.new_position = Piece.last_clicked_piece.last_confirmed_position
             Piece.last_clicked_piece = self
             # set last pressed piece
             self.parent().last_pressed_piece = self

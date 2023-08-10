@@ -221,12 +221,12 @@ class gameInterface(QWidget):
         layout.addWidget(self.score_container, alignment=Qt.AlignCenter)
 
         # board frame
-        frame = QFrame(self)
-        frame.setFixedSize(570, 570)
-        frame.setStyleSheet("border: 5px solid black; background-color: transparent;")
-        frame_layout = QVBoxLayout(frame)
-        frame_layout.setContentsMargins(0, 0, 0, 0)
-        frame.move(675, 389)
+        # frame = QFrame(self)
+        # frame.setFixedSize(570, 570)
+        # frame.setStyleSheet("border: 5px solid black; background-color: transparent;")
+        # frame_layout = QVBoxLayout(frame)
+        # frame_layout.setContentsMargins(0, 0, 0, 0)
+        # # frame.move(675, 389)
         layout.addWidget(self.boardLayout, alignment=Qt.AlignCenter)
 
         # Create a horizontal layout to hold the buttons
@@ -560,7 +560,7 @@ class gameInterface(QWidget):
         elif key == Qt.Key_R:  # "R" key for rotation
             self.rotate_piece()
         elif key == Qt.Key_P:  # "P" key for passing
-            next_player_clicked(self.playerList, self.turn, self.boardLayout, True)
+            next_player_clicked(self.playerList, self.turn, self.boardLayout, True, self)
         elif key == Qt.Key_Return or key == Qt.Key_Enter:
             confirm_placement(self.boardLayout, self.playerList, self.turn, self)
 
