@@ -39,7 +39,6 @@ def display_achievements(player):
             pickle.dump(game.MainWindow.achievements, f)
 
 def next_player_clicked(players, turn, board, playerMovedFirst):
-    sound.sound_player.play_sound()
     for i in range(len(players)):
         if players[i].is_turn:
             display_achievements(players[i])

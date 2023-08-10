@@ -8,4 +8,6 @@ class sound_player:
         self.volume = 60
 
     def play_sound():
-        playsound("assets/sfx/legolulw.wav")
+        playsound("assets\sfx\legolulw.wav")
+
+    
