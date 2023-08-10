@@ -307,14 +307,15 @@ class gameInterface(QWidget):
         # create players
         for i in range(1,5):
             if i == 1 and self.playerTypes[i] == "AI":
-                player = players.Player(self.player_scores[i-1], is_ai=True, is_turn=False, name=f"Player {i}", color=colours[i-1], num=f"player{i}")
+                player = players.Player(self.player_scores[i-1], is_ai=True, is_turn=True, name=f"Player {i}", color=colours[i-1], num=f"player{i}")
                 self.aiMovesBeforeFirstMove += 1
             elif i == 1 and self.playerTypes[i] == "Human":
                 self.humanFirstMove = True
                 player = players.Player(self.player_scores[i-1], is_ai=False, is_turn=True, name=f"Player {i}", color=colours[i-1], num=f"player{i}")
             elif self.playerTypes[i] == "AI":
                 player = players.Player(self.player_scores[i-1],is_ai=True, is_turn=False, name=f"Player {i}", color=colours[i-1], num=f"player{i}")
-                self.aiMovesBeforeFirstMove += 1
+                if self.humanFirstMove == False:
+                    self.aiMovesBeforeFirstMove += 1
             elif self.playerTypes[i] == "Human":
                 if self.humanFirstMove == False:
                     player = players.Player(self.player_scores[i-1],is_ai=False, is_turn=True, name=f"Player {i}", color=colours[i-1], num=f"player{i}")
@@ -463,7 +464,8 @@ class gameInterface(QWidget):
         if self.playerTypes[1] == "Human":
             pass
         else:
-            for i in range(self.aiMovesBeforeFirstMove+1):
+            print(self.aiMovesBeforeFirstMove)
+            for i in range(self.aiMovesBeforeFirstMove):
                 next_player_clicked(self.playerList,self.turn,self.boardLayout, False, self)
     
     def endGame(self):
