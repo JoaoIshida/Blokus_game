@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
-
+import button
 import gameInterface
 import game
 
@@ -59,35 +59,9 @@ class rules(QWidget):
             self.playerMenus.append(menu)
             self.layout.addWidget(menu, positons[i][0], positons[i][1])
 
-        backButton = QPushButton("Back to Main Menu")
-        backButton.setFixedSize(300, 100)
-        backButton.setStyleSheet(
-            "QPushButton {"
-            "   font-size: 24px; padding: 10px;"
-            "   color: black; background-color: rgb(224, 166, 181);"
-            "   border: 3px solid black; border-radius: 5px;"
-            "}"
-            "QPushButton:hover {"
-            "   background-color: rgb(244, 195, 209);"
-            "}"
-            "QPushButton:pressed {"
-            "   background-color: rgb(202, 123, 139);"
-            "}")
+        backButton = button.createButton("rgb(224, 166, 181)", (300, 100), "Back", "rgb(244, 195, 209)", "rgb(202, 123, 139)")
 
-        startButton = QPushButton("Start Game")
-        startButton.setFixedSize(300, 100)
-        startButton.setStyleSheet(
-            "QPushButton {"
-            "   font-size: 24px; padding: 10px;"
-            "   color: black; background-color: rgb(224, 166, 181);"
-            "   border: 3px solid black; border-radius: 5px;"
-            "}"
-            "QPushButton:hover {"
-            "   background-color: rgb(244, 195, 209);"
-            "}"
-            "QPushButton:pressed {"
-            "   background-color: rgb(202, 123, 139);"
-            "}")
+        startButton = button.createButton("rgb(224, 166, 181)", (300, 100), "Start", "rgb(244, 195, 209)", "rgb(202, 123, 139)")
 
         buttonLayout = QVBoxLayout()
         buttonLayout.addWidget(startButton)

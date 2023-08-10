@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import QMessageBox
 import sound
 import gameInterface
 import gameRules
+import button
 from pieces import *
 from tutorial import Wizard
 
@@ -55,31 +56,12 @@ class MainWindow(QMainWindow):
         self.logo.setPixmap(self.logo_pixmap)
         self.logo.setAlignment(Qt.AlignCenter)
 
-        self.newGame_button = QPushButton("NEW GAME")
-        self.newGame_button.setFixedSize(400, 100)
-        self.newGame_button.setStyleSheet(
-            "font-size: 24px; padding: 10px; color: black; background-color: rgb(224, 166, 181);")
+        self.newGame_button = button.createButton("rgb(224, 166, 181)", (400,100), "NEW GAME", "rgb(244, 195, 209)", "rgb(202, 123, 139)")
+        self.load_button = button.createButton("rgb(224, 166, 181)", (400,100), "LOAD GAME", "rgb(244, 195, 209)", "rgb(202, 123, 139)")
+        self.settings_button = button.createButton("rgb(224, 166, 181)", (400,100), "SETTINGS", "rgb(244, 195, 209)", "rgb(202, 123, 139)")
+        self.tutorial_button = button.createButton("rgb(224, 166, 181)", (400,100), "TUTORIAL", "rgb(244, 195, 209)", "rgb(202, 123, 139)")
+        self.achievement_button = button.createButton("rgb(224, 166, 181)", (400,100), "ACHIEVEMENT", "rgb(244, 195, 209)", "rgb(202, 123, 139)")
 
-        self.load_button = QPushButton("LOAD GAME")
-        self.load_button.setFixedSize(400, 100)
-        self.load_button.setStyleSheet(
-            "font-size: 24px; padding: 10px; color: black; background-color: rgb(224, 166, 181);")
-
-        self.settings_button = QPushButton("SETTINGS")
-        self.settings_button.setFixedSize(400, 100)
-        self.settings_button.setStyleSheet(
-            "font-size: 24px; padding: 10px; color: black; background-color: rgb(224, 166, 181);")
-
-        self.tutorial_button = QPushButton("TUTORIAL (WIP)")
-        self.tutorial_button.setFixedSize(400, 100)
-        self.tutorial_button.setStyleSheet(
-            "font-size: 24px; padding: 10px; color: black; background-color: rgb(224, 166, 181);")
-
-
-        self.achievement_button = QPushButton("ACHIEVEMENT")
-        self.achievement_button.setFixedSize(400, 100)
-        self.achievement_button.setStyleSheet(
-            "font-size: 24px; padding: 10px; color: black; background-color: rgb(224, 166, 181);")
 
         self.layout_container = QHBoxLayout()
         self.widget.setLayout(self.layout_container)
@@ -195,10 +177,7 @@ class achievementMenu(QWidget):
         self.achievement4_button = self.makeAchievementButton("Artificial Infant")
         self.achievement5_button = self.makeAchievementButton("The Terminator")
 
-        self.back_button = QPushButton("Back")
-        self.back_button.setFixedSize(200, 50)
-        self.back_button.setStyleSheet(
-            "font-size: 24px; padding: 10px; color: black; background-color: rgb(224, 166, 181);")
+        self.back_button = button.createButton("rgb(224, 166, 181)", (200,50), "Back", "rgb(244, 195, 209)", "rgb(202, 123, 139)")
 
         self.back_button.clicked.connect(self.go_back_main_menu)
 
@@ -229,6 +208,7 @@ class achievementMenu(QWidget):
         self.close()
         self.mainMenu = MainWindow(self.soundPlayer)
         self.mainMenu.show()
+
 class loadMenu(QWidget):
     def __init__(self, soundPlayer):
         super().__init__()
@@ -244,10 +224,7 @@ class loadMenu(QWidget):
         self.file4_button = self.makeFileButton("File 4")
         self.file5_button = self.makeFileButton("File 5")
 
-        self.back_button = QPushButton("Back")
-        self.back_button.setFixedSize(200, 50)
-        self.back_button.setStyleSheet(
-            "font-size: 24px; padding: 10px; color: black; background-color: rgb(224, 166, 181);")
+        self.back_button = button.createButton("rgb(224, 166, 181)", (200,50), "Back", "rgb(244, 195, 209)", "rgb(202, 123, 139)")
 
         self.back_button.clicked.connect(self.go_back_main_menu)
         #Buttons formatting
@@ -334,16 +311,10 @@ class settings_menu(QMainWindow):
 
         self.volume_slider.setValue(soundPlayer.volume)
         
-        self.volume_try_button = QPushButton("TRY SOUND")
-        self.volume_try_button.setFixedSize(400, 100)
-        self.volume_try_button.setStyleSheet(
-            "font-size: 24px; padding: 10px; color: black; background-color: rgb(224, 166, 181);")
+        self.volume_try_button = button.createButton("rgb(224, 166, 181)", (400,75), "TRY SOUND", "rgb(244, 195, 209)", "rgb(202, 123, 139)")
         self.volume_try_button.clicked.connect(self.on_try_button_click)
 
-        self.back_button = QPushButton("Back")
-        self.back_button.setFixedSize(200, 50)
-        self.back_button.setStyleSheet(
-            "font-size: 24px; padding: 10px; color: black; background-color: rgb(224, 166, 181);")
+        self.back_button = button.createButton("rgb(224, 166, 181)", (400,50), "BACK", "rgb(244, 195, 209)", "rgb(202, 123, 139)")
         self.back_button.clicked.connect(self.go_back_main_menu)
 
 

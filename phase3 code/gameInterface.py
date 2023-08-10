@@ -10,8 +10,7 @@ import game
 import pieces
 import players
 import board
-import sound
-
+import button
 from players import goldman
 
 def display_achievements(player):
@@ -164,7 +163,7 @@ class gameInterface(QWidget):
         self.soundPlayer = soundPlayer
         self.playerTypes = playerTypes
         self.last_pressed_piece = None
-        self.setWindowTitle("Game")
+        self.setWindowTitle("Exit")
         self.setStyleSheet("background-color: rgb(173, 151, 108);")
 
         layout = QVBoxLayout(self)
@@ -174,46 +173,33 @@ class gameInterface(QWidget):
         self.boardLayout.setFixedSize(560, 560)
 
         # CREATE EXIT
-        exit_button = QPushButton('Main Menu', self)
+        exit_button = button.createButton("rgb(224, 166, 181)", (300, 75), "Exit", "rgb(244, 195, 209)", "rgb(202, 123, 139)", parent=self)
         exit_button.clicked.connect(self.on_exit_clicked)
-        exit_button.setStyleSheet(
-            "QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
 
         # CREATE PASS
-        pass_button = QPushButton('Pass', self)
+        pass_button = button.createButton("rgb(224, 166, 181)", (300, 75), "Pass", "rgb(244, 195, 209)", "rgb(202, 123, 139)", parent=self)
         pass_button.clicked.connect(lambda: next_player_clicked(self.playerList, self.turn, self.boardLayout, True, self))
-        pass_button.setStyleSheet(
-            "QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
 
         # CREATE CONFIRM
-        confirm_button = QPushButton('Confirm', self)
+        confirm_button = button.createButton("rgb(224, 166, 181)", (300, 75), "Confirm Placement", "rgb(244, 195, 209)", "rgb(202, 123, 139)", parent=self)
         confirm_button.clicked.connect(lambda: confirm_placement(self.boardLayout, self.playerList, self.turn, self))
-        confirm_button.setStyleSheet(
-            "QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
 
         # CREATE ROTATE
-        rotate_button = QPushButton('Rotate', self)
+        rotate_button = button.createButton("rgb(224, 166, 181)", (300, 75), "Rotate", "rgb(244, 195, 209)", "rgb(202, 123, 139)", parent=self)
         rotate_button.clicked.connect(self.rotate_piece)
-        rotate_button.setStyleSheet(
-            "QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
 
         # CREATE FLIP
-        flip_button = QPushButton('Flip', self)
+        flip_button = button.createButton("rgb(224, 166, 181)", (300, 75), "Flip", "rgb(244, 195, 209)", "rgb(202, 123, 139)", parent=self)
         flip_button.clicked.connect(self.flip_piece)
-        flip_button.setStyleSheet(
-            "QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")\
-            
+
         # CREATE Settings
-        settingsButton = QPushButton('Settings', self)
+        settingsButton = button.createButton("rgb(224, 166, 181)", (300, 75), "Settings", "rgb(244, 195, 209)", "rgb(202, 123, 139)", parent=self)
         settingsButton.clicked.connect(self.on_settings_button_press)
-        settingsButton.setStyleSheet(
-            "QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
 
         # Create End game
-        self.endButton = QPushButton('End Game', self)
+        self.endButton = button.createButton("rgb(224, 166, 181)", (300, 75), "End Game", "rgb(244, 195, 209)", "rgb(202, 123, 139)", parent=self)
         self.endButton.clicked.connect(self.endGame)
-        self.endButton.setStyleSheet(
-            "QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
+
         line_layout = QHBoxLayout()
         line_layout.setSpacing(20)
         layout.addLayout(line_layout)
@@ -235,7 +221,7 @@ class gameInterface(QWidget):
         frame.setStyleSheet("border: 5px solid black; background-color: transparent;")
         frame_layout = QVBoxLayout(frame)
         frame_layout.setContentsMargins(0, 0, 0, 0)
-        frame.move(675, 396)
+        frame.move(675, 389)
         layout.addWidget(self.boardLayout, alignment=Qt.AlignCenter)
 
         # Create a horizontal layout to hold the buttons
@@ -459,13 +445,13 @@ class gameInterface(QWidget):
             piece.set_color_overlay(Qt.transparent)
 
         # CREATE SAVE BUTTON
-        save_button = QPushButton('Save', self)
+        save_button = button.createButton("rgb(224, 166, 181)", (300, 75), "Pass", "rgb(244, 195, 209)", "rgb(202, 123, 139)", parent=self)
+
         self.saveMenu = saveMenu(boardLayout=self.boardLayout, turn=self.turn,
                                  playerList=self.playerList,
                                  pieceList=self.pieceList, playerTypes=self.playerTypes, soundPlayer=self.soundPlayer)  # popup menu to choose save destination
         save_button.clicked.connect(self.saveMenu.show)
-        save_button.setStyleSheet(
-            "QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
+
         line_layout.addWidget(exit_button)
         line_layout.addWidget(save_button)
         line_layout.addWidget(settingsButton)
