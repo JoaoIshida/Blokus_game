@@ -498,7 +498,7 @@ class gameInterface(QWidget):
         # Find the players with the highest score
         highest_score = max(player_scores.values())
         winners = [player for player, score in player_scores.items() if score == highest_score]
-
+        
         # Show the win screen
         self.showWinScreen(winners, highest_score)
 
@@ -509,12 +509,32 @@ class gameInterface(QWidget):
             winner_message = f"It's a draw between {', '.join(winners)} with a score of {score}!"
 
         msg_box = QMessageBox()
+
         msg_box.setWindowTitle("End Game!")
         msg_box.setText(winner_message)
         msg_box.setGeometry(700, 300, 100, 100)
         msg_box.setStyleSheet("QMessageBox { border: 10px solid orange; }")
-        msg_box.setFont(goldman(size=20))
+        msg_box.setFont(goldman(size=20))      
+
+        
+        msg_box.setStandardButtons(QMessageBox.NoButton)
+        # Add custom buttons
+        back_to_menu_button = msg_box.addButton("Back to Main Menu", QMessageBox.ActionRole)
+        view_board_button = msg_box.addButton("View Board", QMessageBox.ActionRole)
+
         msg_box.exec_()
+        # Check which button was clicked
+        clicked_button = msg_box.clickedButton()
+        if clicked_button == back_to_menu_button:
+            self.on_exit_clicked()
+            pass
+        elif clicked_button == view_board_button:
+            for player in self.playerList:
+                player.is_turn = False
+                for piece in player.pieces:
+                    piece.movable = False
+                    piece.set_color_overlay(Qt.gray)
+            pass
 
     def rotate_piece(self):
         # Find the last pressed piece
