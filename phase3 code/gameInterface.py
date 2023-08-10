@@ -37,7 +37,7 @@ def display_achievements(player):
         with open(game.MainWindow.achievements_file, "wb") as f:
             pickle.dump(game.MainWindow.achievements, f)
 
-def next_player_clicked(players, turn, board):
+def next_player_clicked(players, turn, board, playerMovedFirst):
     for i in range(len(players)):
         if players[i].is_turn:
             display_achievements(players[i])
@@ -58,6 +58,8 @@ def next_player_clicked(players, turn, board):
             turn.turn.setText(
                 f"  Current player({players[next_player_index].pieces[0].colour}): {players[next_player_index].name}  ")
             if players[next_player_index].is_ai:
+                if playerMovedFirst == False:
+                    return
                 ai_move(players, turn, next_player_index, board)
             break
 
@@ -109,9 +111,9 @@ def ai_move(players, turn, playerIndex, board):
                 if maxValue[2].player.first_move:
                     maxValue[2].player.first_move = False
                 if turn:
-                    next_player_clicked(players, turn, board)
+                    next_player_clicked(players, turn, board, True)
     else:
-        next_player_clicked(players, turn, board)
+        next_player_clicked(players, turn, board,True)
 
 
 def confirm_placement(board, player_list, turn):
@@ -151,14 +153,15 @@ def confirm_placement(board, player_list, turn):
                             if piece.player.first_move:
                                 piece.player.first_move = False
                             if turn:
-                                next_player_clicked(player_list, turn, board)
+                                next_player_clicked(player_list, turn, board, True)
 
 
 class gameInterface(QWidget):
-    def __init__(self):
+    def __init__(self, playerTypes):
         super().__init__()
         self.pieceList = []
         self.playerList = []
+        self.playerTypes = playerTypes
         self.last_pressed_piece = None
         self.setWindowTitle("Game")
         self.setStyleSheet("background-color: rgb(173, 151, 108);")
@@ -315,16 +318,28 @@ class gameInterface(QWidget):
         self.score_layout.addLayout(hbox1)
         self.score_layout.addLayout(hbox2)
 
+        colours = ["red", "green", "blue", "yellow"]
+        self.humanFirstMove = False
+        self.aiMovesBeforeFirstMove = 0
         # create players
-        player1 = players.Player(self.player_scores[0], is_turn=True, name="Player 1", color='red', num="player1")
-        player2 = players.Player(self.player_scores[1], is_ai=True, name="Player 2: AI1", color='green', num="player2")
-        player3 = players.Player(self.player_scores[2], is_ai=False, name="Player 3", color='blue', num="player3")
-        player4 = players.Player(self.player_scores[3], is_ai=True, name="Player 4: AI2", color='yellow', num="player4")
+        for i in range(1,5):
+            if i == 1 and self.playerTypes[i] == "AI":
+                player = players.Player(self.player_scores[i-1], is_ai=True, is_turn=False, name=f"Player {i}", color=colours[i-1], num=f"player{i}")
+                self.aiMovesBeforeFirstMove += 1
+            elif i == 1 and self.playerTypes[i] == "Human":
+                self.humanFirstMove = True
+                player = players.Player(self.player_scores[i-1], is_ai=False, is_turn=True, name=f"Player {i}", color=colours[i-1], num=f"player{i}")
+            elif self.playerTypes[i] == "AI":
+                player = players.Player(self.player_scores[i-1],is_ai=True, is_turn=False, name=f"Player {i}", color=colours[i-1], num=f"player{i}")
+                self.aiMovesBeforeFirstMove += 1
+            elif self.playerTypes[i] == "Human":
+                if self.humanFirstMove == False:
+                    player = players.Player(self.player_scores[i-1],is_ai=False, is_turn=True, name=f"Player {i}", color=colours[i-1], num=f"player{i}")
+                    self.humanFirstMove = True
+                else:
+                    player = players.Player(self.player_scores[i-1],is_ai=False, is_turn=False, name=f"Player {i}", color=colours[i-1], num=f"player{i}")
+            self.playerList.append(player)
 
-        self.playerList.append(player1)
-        self.playerList.append(player2)
-        self.playerList.append(player3)
-        self.playerList.append(player4)
 
         player_panels = [playerPanel1, playerPanel2, playerPanel3, playerPanel4]
 
@@ -455,7 +470,7 @@ class gameInterface(QWidget):
         save_button = QPushButton('Save', self)
         self.saveMenu = saveMenu(boardLayout=self.boardLayout, turn=self.turn,
                                  playerList=self.playerList,
-                                 pieceList=self.pieceList)  # popup menu to choose save destination
+                                 pieceList=self.pieceList, playerTypes=self.playerTypes)  # popup menu to choose save destination
         save_button.clicked.connect(self.saveMenu.show)
         save_button.setStyleSheet(
             "QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
@@ -467,7 +482,12 @@ class gameInterface(QWidget):
         # pass_button.setFixedSize(150,100)
         # exit_button.setFixedSize(150,100)
         # save_button.setFixedSize(150,100)
-
+        if self.playerTypes[1] == "Human":
+            pass
+        else:
+            for i in range(self.aiMovesBeforeFirstMove+1):
+                next_player_clicked(self.playerList,self.turn,self.boardLayout, False)
+    
     def endGame(self):
         player_scores = {}  # Dictionary to store player scores
         for player in self.playerList:  # Assuming you have a list of player objects
@@ -620,13 +640,14 @@ class gameInterface(QWidget):
 
 
 class saveMenu(QWidget):
-    def __init__(self, playerList, turn, boardLayout, pieceList):
+    def __init__(self, playerList, turn, boardLayout, pieceList, playerTypes):
         super().__init__()
 
         self.playerList = playerList
         self.turn = turn
         self.boardLayout = boardLayout
         self.pieceList = pieceList
+        self.playerTypes = playerTypes
 
         self.setWindowTitle("Choose Saving Destination")
         self.setStyleSheet("background-color: rgb(139, 69, 19);")
@@ -690,6 +711,8 @@ class saveMenu(QWidget):
             pickle.dump(self.boardLayout, file)
         with open(f"{f}savePieces.pkl", 'wb') as file:
             pickle.dump(self.pieceList, file)
+        with open(f"{f}savePlayerTypes.pkl", 'wb') as file:
+            pickle.dump(self.playerTypes, file)
         # another messagebox saying the game was saved successfully
         msg = QMessageBox()
         msg.setWindowTitle("Save Success")
@@ -705,6 +728,3 @@ def startGame():
     # window.showMaximized()
     sys.exit(app.exec_())
 
-
-if __name__ == '__main__':
-    startGame()

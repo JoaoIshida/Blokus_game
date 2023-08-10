@@ -143,12 +143,6 @@ class MainWindow(QMainWindow):
                 else:
                     self.clearLayout(item.layout())
 
-    def startGame(self):
-        self.close()
-        self.game = gameInterface.gameInterface()
-        self.game.showFullScreen()
-        self.game.setFocus(Qt.OtherFocusReason)
-
     def drawMenu(self):
         self.close()
         self.game = gameRules.rules()
@@ -208,7 +202,7 @@ class achievementMenu(QWidget):
         self.close()
         self.mainMenu = MainWindow()
         self.mainMenu.show()
-        
+
 class loadMenu(QWidget):
     def __init__(self):
         super().__init__()
@@ -254,12 +248,17 @@ class loadMenu(QWidget):
             theButton.clicked.connect(lambda: self.load_the_file(filename))
         return theButton
 
-
+    def loadPlayerTypes(self, filename):
+        f = f"Save/{filename}/"
+        with open (f"{f}savePlayerTypes.pkl", "rb") as file:
+            self.playerTypes = pickle.load(file)
+        return self.playerTypes
+    
     def load_the_file(self, filename):
         # Start new game
         self.close()
         # self.destroy()
-        self.startGame()
+        self.startGame(filename)
         self.game.loadGame(filename)
 
     def go_back_main_menu(self):
@@ -267,8 +266,8 @@ class loadMenu(QWidget):
         self.mainMenu = MainWindow()
         self.mainMenu.show()
 
-    def startGame(self):
-        self.game = gameInterface.gameInterface()
+    def startGame(self, filename):
+        self.game = gameInterface.gameInterface(self.loadPlayerTypes(filename))
         self.game.showFullScreen()
         self.game.setFocus(Qt.OtherFocusReason)
 
