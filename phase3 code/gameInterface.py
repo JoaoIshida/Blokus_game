@@ -464,7 +464,7 @@ class gameInterface(QWidget):
             pass
         else:
             for i in range(self.aiMovesBeforeFirstMove+1):
-                next_player_clicked(self.playerList,self.turn,self.boardLayout, False)
+                next_player_clicked(self.playerList,self.turn,self.boardLayout, False, self)
     
     def endGame(self):
         player_scores = {}  # Dictionary to store player scores
