@@ -181,7 +181,7 @@ class gameInterface(QWidget):
 
         # CREATE PASS
         pass_button = QPushButton('Pass', self)
-        pass_button.clicked.connect(lambda: next_player_clicked(self.playerList, self.turn, self.boardLayout, gameInterface=self))
+        pass_button.clicked.connect(lambda: next_player_clicked(self.playerList, self.turn, self.boardLayout, True))
         pass_button.setStyleSheet(
             "QPushButton { border-radius: 25px; padding: 20px; font-size: 20px; border: 2px solid black; background-color: rgb(224, 166, 181);}")
 
@@ -567,7 +567,7 @@ class gameInterface(QWidget):
         elif key == Qt.Key_R:  # "R" key for rotation
             self.rotate_piece()
         elif key == Qt.Key_P:  # "P" key for passing
-            next_player_clicked(self.playerList, self.turn, self.boardLayout)
+            next_player_clicked(self.playerList, self.turn, self.boardLayout, True)
         elif key == Qt.Key_Return or key == Qt.Key_Enter:
             confirm_placement(self.boardLayout, self.playerList, self.turn, self)
 

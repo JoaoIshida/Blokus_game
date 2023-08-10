@@ -30,7 +30,9 @@ class MainWindow(QMainWindow):
         achievements = {
             "FirstBlood": False,
             "Peace Agreement": False,
-            "Philo-Blokus": False
+            "Philo-Blokus": False,
+            "Artificial Infant": False,
+            "The Terminator": False
         }
 
     def show_achievement_message(self, achievement_name):
@@ -161,6 +163,10 @@ class MainWindow(QMainWindow):
     def open_tutorial(self):
         self.tutorial = Wizard()
         self.tutorial.show()
+        if not MainWindow.achievements["Philo-Blokus"]:
+            MainWindow.achievements["Philo-Blokus"] = True
+            self.save_achievements()
+            self.show_achievement_message("Philo-Blokus")
 
 class achievementMenu(QWidget):
     def __init__(self, achievements, soundPlayer):
