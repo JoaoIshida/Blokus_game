@@ -176,31 +176,31 @@ class gameInterface(QWidget):
         self.boardLayout.setFixedSize(560, 560)
 
         # CREATE EXIT
-        exit_button = button.createButton("rgb(224, 166, 181)", (300, 50), "Exit", "rgb(244, 195, 209)", "rgb(202, 123, 139)", "25",parent=self)
+        exit_button = button.createButton("rgb(224, 166, 181)", (300, 60), "Exit", "rgb(244, 195, 209)", "rgb(202, 123, 139)", "25",parent=self)
         exit_button.clicked.connect(self.on_exit_clicked)
 
         # CREATE PASS
-        pass_button = button.createButton("rgb(224, 166, 181)", (300, 50), "Pass", "rgb(244, 195, 209)", "rgb(202, 123, 139)", "25",parent=self)
+        pass_button = button.createButton("rgb(224, 166, 181)", (300, 60), "Pass", "rgb(244, 195, 209)", "rgb(202, 123, 139)", "25",parent=self)
         pass_button.clicked.connect(lambda: next_player_clicked(self.playerList, self.turn, self.boardLayout, True, self))
 
         # CREATE CONFIRM
-        confirm_button = button.createButton("rgb(224, 166, 181)", (300, 50), "Confirm Placement", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
+        confirm_button = button.createButton("rgb(224, 166, 181)", (300, 60), "Confirm Placement", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
         confirm_button.clicked.connect(lambda: confirm_placement(self.boardLayout, self.playerList, self.turn, self))
 
         # CREATE ROTATE
-        rotate_button = button.createButton("rgb(224, 166, 181)", (300, 50), "Rotate", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
+        rotate_button = button.createButton("rgb(224, 166, 181)", (300, 60), "Rotate", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
         rotate_button.clicked.connect(self.rotate_piece)
 
         # CREATE FLIP
-        flip_button = button.createButton("rgb(224, 166, 181)", (300, 50), "Flip", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
+        flip_button = button.createButton("rgb(224, 166, 181)", (300, 60), "Flip", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
         flip_button.clicked.connect(self.flip_piece)
 
         # CREATE Settings
-        settingsButton = button.createButton("rgb(224, 166, 181)", (300, 50), "Settings", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
+        settingsButton = button.createButton("rgb(224, 166, 181)", (300, 60), "Settings", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
         settingsButton.clicked.connect(self.on_settings_button_press)
 
         # Create End game
-        self.endButton = button.createButton("rgb(224, 166, 181)", (300, 50), "End Game", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
+        self.endButton = button.createButton("rgb(224, 166, 181)", (300, 60), "End Game", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
         self.endButton.clicked.connect(self.endGame)
 
         line_layout = QHBoxLayout()
@@ -238,7 +238,7 @@ class gameInterface(QWidget):
             # Add player panel content (replace the following line with your player panel content)
             label = QLabel(f"Player {i + 1} Panel", player_container)
             label.setAlignment(Qt.AlignBottom)
-            label.setFixedSize(270, 50)
+            label.setFixedSize(270, 60)
             label.setContentsMargins(20, 0, 0, 0)
             label.setStyleSheet("font-size: 30px; font-weight: bold; color: black; border-radius: 50px;")
             label.setFont(goldman(size=12))
@@ -440,7 +440,7 @@ class gameInterface(QWidget):
             piece.set_color_overlay(Qt.transparent)
 
         # CREATE SAVE BUTTON
-        save_button = button.createButton("rgb(224, 166, 181)", (300, 50), "Save game", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
+        save_button = button.createButton("rgb(224, 166, 181)", (300, 60), "Save", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
 
         self.saveMenu = saveMenu(boardLayout=self.boardLayout, turn=self.turn,
                                  playerList=self.playerList,
@@ -674,7 +674,7 @@ class saveMenu(QWidget):
 
         self.setWindowTitle("Choose Saving Destination")
         self.setStyleSheet("background-color: rgb(139, 69, 19);")
-        self.setGeometry(500, 200, 500, 500)
+        self.setGeometry(500, 200, 600, 600)
 
         # Button for each file
         self.file1_button = self.makeFileButton("File 1")
@@ -684,7 +684,7 @@ class saveMenu(QWidget):
         self.file5_button = self.makeFileButton("File 5")
 
         self.cancel_button = QPushButton("Cancel")
-        self.cancel_button.setFixedSize(200, 50)
+        self.cancel_button.setFixedSize(200, 60)
         self.cancel_button.setStyleSheet(
             "font-size: 24px; padding: 10px; color: black; background-color: rgb(224, 166, 181);")
         # theButton.setEnabled(False)
@@ -710,7 +710,7 @@ class saveMenu(QWidget):
         return theButton
 
     def check_existing_save(self, filename):
-        if len(os.listdir(f"Save/{filename}/")) > 1:  # there is a .DS_Store file so condition is >1
+        if len(os.listdir(f"Save/{filename}")) > 1:  # there is a .DS_Store file so condition is >1
             save_msg = QMessageBox()
             save_msg.setWindowTitle("Older saved file existed!")
             save_msg.setText("Another saved file already existed. Overwrite the old file?")
