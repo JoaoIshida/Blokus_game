@@ -54,7 +54,7 @@ def next_player_clicked(players, turn, board, playerMovedFirst, gameInterface):
                 piece.movable = True
                 piece.set_color_overlay(Qt.transparent)
             turn.turn.setText(
-                f"  Current player({players[next_player_index].pieces[0].colour}): {players[next_player_index].name}  ")
+                f"  Current player: {players[next_player_index].pieces[0].colour}  ")
             if players[next_player_index].is_ai:
                 if playerMovedFirst == False:
                     return
@@ -83,8 +83,6 @@ def ai_move(players, turn, playerIndex, board, gameInterface):
     if len(validPositions) != 0:
         maxValue = max(validPositions, key=lambda x: x[3])
 
-        for _ in range(maxValue[5]):
-            maxValue[2].flipShape()
         for _ in range(maxValue[4]):
             maxValue[2].rotateShape()
         if board.canPlacePiece(maxValue[0], maxValue[1], maxValue[2]):
@@ -176,58 +174,52 @@ class gameInterface(QWidget):
         self.boardLayout.setFixedSize(560, 560)
 
         # CREATE EXIT
-        exit_button = button.createButton("rgb(224, 166, 181)", (300, 60), "Exit", "rgb(244, 195, 209)", "rgb(202, 123, 139)", "25",parent=self)
+        exit_button = button.createButton("rgb(224, 166, 181)", (200, 60), "Exit", "rgb(244, 195, 209)", "rgb(202, 123, 139)", "25",parent=self)
         exit_button.clicked.connect(self.on_exit_clicked)
 
         # CREATE PASS
-        pass_button = button.createButton("rgb(224, 166, 181)", (300, 60), "Pass", "rgb(244, 195, 209)", "rgb(202, 123, 139)", "25",parent=self)
+        pass_button = button.createButton("rgb(224, 166, 181)", (200, 60), "Pass", "rgb(244, 195, 209)", "rgb(202, 123, 139)", "25",parent=self)
         pass_button.clicked.connect(lambda: next_player_clicked(self.playerList, self.turn, self.boardLayout, True, self))
 
         # CREATE CONFIRM
-        confirm_button = button.createButton("rgb(224, 166, 181)", (300, 60), "Confirm Placement", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
+        confirm_button = button.createButton("rgb(224, 166, 181)", (200, 60), "Confirm", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
         confirm_button.clicked.connect(lambda: confirm_placement(self.boardLayout, self.playerList, self.turn, self))
 
         # CREATE ROTATE
-        rotate_button = button.createButton("rgb(224, 166, 181)", (300, 60), "Rotate", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
+        rotate_button = button.createButton("rgb(224, 166, 181)", (200, 60), "Rotate", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
         rotate_button.clicked.connect(self.rotate_piece)
 
-        # CREATE FLIP
-        flip_button = button.createButton("rgb(224, 166, 181)", (300, 60), "Flip", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
-        flip_button.clicked.connect(self.flip_piece)
-
         # CREATE Settings
-        settingsButton = button.createButton("rgb(224, 166, 181)", (300, 60), "Settings", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
+        settingsButton = button.createButton("rgb(224, 166, 181)", (200, 60), "Settings", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
         settingsButton.clicked.connect(self.on_settings_button_press)
 
         # Create End game
-        self.endButton = button.createButton("rgb(224, 166, 181)", (300, 60), "End Game", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
+        self.endButton = button.createButton("rgb(224, 166, 181)", (200, 60), "End Game", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
         self.endButton.clicked.connect(self.endGame)
 
-        line_layout = QHBoxLayout()
+        line_layout = QGridLayout()
         line_layout.setSpacing(20)
         layout.addLayout(line_layout)
 
         # Show whose turn is it
-        self.current_player_label = QLabel("  Current player (red): Player 1  ", self)
+        self.current_player_label = QLabel("  Current player: red  ", self)
         self.current_player_label.setStyleSheet(
             "font-size: 30px; font-weight: bold; color: black; background-color: #D9D9D9;")
         self.turn = players.Turn(self.current_player_label)
         self.current_player_label.setFont(goldman(size=12))
-        line_layout.addWidget(self.current_player_label)
-        line_layout.addWidget(self.endButton)
+        line_layout.addWidget(self.current_player_label, 0, 0)
+        line_layout.addWidget(self.endButton, 0 , 1)
         self.score_container = QWidget(self)
         layout.addWidget(self.score_container, alignment=Qt.AlignCenter)
         layout.addWidget(self.boardLayout, alignment=Qt.AlignCenter)
 
         # Create a horizontal layout to hold the buttons
-        buttons_layout = QHBoxLayout()
-        buttons_layout.addWidget(confirm_button)
-        buttons_layout.addWidget(rotate_button)
-        buttons_layout.addWidget(flip_button)
-        buttons_layout.addWidget(pass_button)
-        buttons_layout.setContentsMargins(0, 0, 20, 0)
-        buttons_layout.setSpacing(20)
-        layout.addLayout(buttons_layout)
+        line_layout.addWidget(confirm_button, 0 , 2)
+        line_layout.addWidget(rotate_button, 0 , 3)
+        line_layout.addWidget(pass_button, 0 , 4)
+        # line_layout.setContentsMargins(0, 0, 20, 0)
+        # line_layout.setSpacing(20)
+        # layout.addLayout(buttons_layout)
 
         self.player_containers = []
         for i in range(4):
@@ -440,16 +432,16 @@ class gameInterface(QWidget):
             piece.set_color_overlay(Qt.transparent)
 
         # CREATE SAVE BUTTON
-        save_button = button.createButton("rgb(224, 166, 181)", (300, 60), "Save", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
+        save_button = button.createButton("rgb(224, 166, 181)", (200, 60), "Save", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
 
         self.saveMenu = saveMenu(boardLayout=self.boardLayout, turn=self.turn,
                                  playerList=self.playerList,
                                  pieceList=self.pieceList, playerTypes=self.playerTypes, soundPlayer=self.soundPlayer)  # popup menu to choose save destination
         save_button.clicked.connect(self.saveMenu.show)
 
-        line_layout.addWidget(exit_button)
-        line_layout.addWidget(save_button)
-        line_layout.addWidget(settingsButton)
+        line_layout.addWidget(exit_button, 0 , 5)
+        line_layout.addWidget(save_button, 0 , 6)
+        line_layout.addWidget(settingsButton, 0 , 7)
         if self.playerTypes[1] == "Human":
             pass
         else:
@@ -469,15 +461,13 @@ class gameInterface(QWidget):
 
         if len(placeablePieces) != 0:
             for piece in placeablePieces:
-                    for flip in range(0, 2):
-                        for rotation in range(0, 4):
-                            for row in range(0, 20):
-                                for col in range(0, 20):
-                                    if board.canPlacePiece(col, row, piece):
-                                        value = board.getValue(col, row, piece)
-                                        valid_moves.append((col, row, piece, value, rotation, flip))
-                            piece.rotateShape()
-                        piece.flipShape()
+                for rotation in range(0, 4):
+                    for row in range(0, 20):
+                        for col in range(0, 20):
+                            if board.canPlacePiece(col, row, piece):
+                                value = board.getValue(col, row, piece)
+                                valid_moves.append((col, row, piece, value, rotation))
+                    piece.rotateShape()
                 
 
         return valid_moves
@@ -558,43 +548,12 @@ class gameInterface(QWidget):
         active_piece.move(active_piece.pos())
         self.soundPlayer.play_sound()
 
-    def flip_piece(self):
-        # Find the last pressed piece
-        active_piece = None
-        if self.last_pressed_piece is not None:
-            active_piece = self.last_pressed_piece
-
-        if active_piece == None:
-            return
-        # flip shape and recreate pixmap
-        rotated_shape = active_piece.flipShape() #call function in the pieces class instead
-        rotated_pixmap = active_piece.pixmap.transformed(QTransform().scale(-1, 1))
-        new_pixmap = QPixmap(rotated_pixmap.size())
-        new_pixmap.fill(Qt.transparent)
-        painter = QPainter(new_pixmap)
-        painter.drawPixmap(0, 0, rotated_pixmap)
-        painter.end()
-
-        active_piece.shape = rotated_shape
-        active_piece.pixmap = new_pixmap
-        active_piece.setPixmap(active_piece.pixmap)
-
-        active_piece.setFixedSize(rotated_pixmap.size())
-
-        mask = QBitmap(active_piece.pixmap.createMaskFromColor(Qt.transparent))
-        active_piece.setMask(mask)
-
-        active_piece.move(active_piece.pos())
-        self.soundPlayer.play_sound()
-
     def keyPressEvent(self, event):
         key = event.key()
         if key == Qt.Key_Escape:  # "ESC" key for exiting
             self.on_exit_clicked()
         elif key == Qt.Key_R:  # "R" key for rotation
             self.rotate_piece()
-        elif key == Qt.Key_F:  # "F" key for rotation
-            self.flip_piece()
         elif key == Qt.Key_P:  # "P" key for passing
             next_player_clicked(self.playerList, self.turn, self.boardLayout, True, self)
         elif key == Qt.Key_Return or key == Qt.Key_Enter:
