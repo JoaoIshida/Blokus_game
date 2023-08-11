@@ -137,7 +137,8 @@ def confirm_placement(board, player_list, turn, gameInterface):
                                     board.tileList[startY + row][startX + col].changeState()
 
                         # Mark the piece as on the board
-                        piece.last_confirmed_position = piece.new_position
+                        # piece.last_confirmed_position = piece.new_position
+                        piece.move(piece.last_confirmed_position) #move the label back to initial position so that it doesn't collide with future pieces
                         piece.new_position = None
                         piece.onboard = True
                         piece_placed = True
