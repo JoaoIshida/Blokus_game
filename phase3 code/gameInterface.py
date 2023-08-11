@@ -35,6 +35,7 @@ def display_achievements(player):
             pickle.dump(game.MainWindow.achievements, f)
 
 def next_player_clicked(players, turn, board, playerMovedFirst, gameInterface):
+    gameInterface.check_end_game()
     for i in range(len(players)):
         if players[i].is_turn:
             display_achievements(players[i])
@@ -60,27 +61,23 @@ def next_player_clicked(players, turn, board, playerMovedFirst, gameInterface):
                 ai_move(players, turn, next_player_index, board, gameInterface)
             break
 
+def placeable_pieces(player):
+    placeablePieces = []
+    for piece in player.pieces:
+            if not piece.onboard:
+                placeablePieces.append(piece)
+    return placeablePieces
 
 def ai_move(players, turn, playerIndex, board, gameInterface):
-    placeablePieces = []
     validPositions = []
     # Check which pieces are placeable on the board
-    for piece in players[playerIndex].pieces:
-        if not piece.onboard:
-            placeablePieces.append(piece)
+    
+    placeablePieces = []
+    placeablePieces = placeable_pieces(players[playerIndex])
 
     # Check which positions are placeable for each piece
     if len(placeablePieces) != 0:
-        for piece in placeablePieces:
-            for flip in range(0, 2):
-                for rotation in range(0, 4):
-                    for row in range(0, 20):
-                        for col in range(0, 20):
-                            if board.canPlacePiece(col, row, piece):
-                                value = board.getValue(col, row, piece)
-                                validPositions.append((col, row, piece, value, rotation, flip))
-                    piece.rotateShape()
-                piece.flipShape()
+        validPositions = gameInterface.get_valid_moves(playerIndex, placeablePieces, board)
 
     # Place the piece with the highest value
     if len(validPositions) != 0:
@@ -91,7 +88,6 @@ def ai_move(players, turn, playerIndex, board, gameInterface):
         for _ in range(maxValue[4]):
             maxValue[2].rotateShape()
         if board.canPlacePiece(maxValue[0], maxValue[1], maxValue[2]):
-            gameInterface.soundPlayer.play_sound()
             for row in range(len(maxValue[2].shape)):
                 for col in range(len(maxValue[2].shape[row])):
                     if maxValue[2].shape[row][col] == 1:
@@ -111,6 +107,7 @@ def ai_move(players, turn, playerIndex, board, gameInterface):
             maxValue[2].score_label.setText(str(int(maxValue[2].score_label.text()) + maxValue[2].weight))
 
             if piece_placed:
+                gameInterface.soundPlayer.play_sound()
                 if maxValue[2].player.first_move:
                     maxValue[2].player.first_move = False
                 if turn:
@@ -132,7 +129,6 @@ def confirm_placement(board, player_list, turn, gameInterface):
 
                     # Check if the piece can be placed according to Blokus rules
                     if board.canPlacePiece(startX, startY, piece):
-                        gameInterface.soundPlayer.play_sound()
                         # Loop through the piece shape and update the tile colors accordingly
                         for row in range(len(piece.shape)):
                             for col in range(len(piece.shape[row])):
@@ -141,7 +137,8 @@ def confirm_placement(board, player_list, turn, gameInterface):
                                     board.tileList[startY + row][startX + col].changeState()
 
                         # Mark the piece as on the board
-                        piece.last_confirmed_position = piece.new_position
+                        # piece.last_confirmed_position = piece.new_position
+                        piece.move(piece.last_confirmed_position) #move the label back to initial position so that it doesn't collide with future pieces
                         piece.new_position = None
                         piece.onboard = True
                         piece_placed = True
@@ -154,6 +151,7 @@ def confirm_placement(board, player_list, turn, gameInterface):
                         piece.score_label.setText(str(int(piece.score_label.text()) + piece.weight))
 
                         if piece_placed:
+                            gameInterface.soundPlayer.play_sound()
                             if piece.player.first_move:
                                 piece.player.first_move = False
                             if turn:
@@ -299,15 +297,14 @@ class gameInterface(QWidget):
         # create players
         for i in range(1,5):
             if i == 1 and self.playerTypes[i] == "AI":
-                player = players.Player(self.player_scores[i-1], is_ai=True, is_turn=True, name=f"Player {i}", color=colours[i-1], num=f"player{i}")
+                player = players.Player(self.player_scores[i-1], is_ai=True, is_turn=False, name=f"Player {i}", color=colours[i-1], num=f"player{i}")
                 self.aiMovesBeforeFirstMove += 1
             elif i == 1 and self.playerTypes[i] == "Human":
                 self.humanFirstMove = True
                 player = players.Player(self.player_scores[i-1], is_ai=False, is_turn=True, name=f"Player {i}", color=colours[i-1], num=f"player{i}")
             elif self.playerTypes[i] == "AI":
                 player = players.Player(self.player_scores[i-1],is_ai=True, is_turn=False, name=f"Player {i}", color=colours[i-1], num=f"player{i}")
-                if self.humanFirstMove == False:
-                    self.aiMovesBeforeFirstMove += 1
+                self.aiMovesBeforeFirstMove += 1
             elif self.playerTypes[i] == "Human":
                 if self.humanFirstMove == False:
                     player = players.Player(self.player_scores[i-1],is_ai=False, is_turn=True, name=f"Player {i}", color=colours[i-1], num=f"player{i}")
@@ -456,10 +453,35 @@ class gameInterface(QWidget):
         if self.playerTypes[1] == "Human":
             pass
         else:
-            print(self.aiMovesBeforeFirstMove)
-            for i in range(self.aiMovesBeforeFirstMove):
+            for i in range(self.aiMovesBeforeFirstMove+1):
                 next_player_clicked(self.playerList,self.turn,self.boardLayout, False, self)
-    
+
+    def check_end_game(self):
+            for player in self.playerList:
+                placeablePieces = []
+                placeablePieces = placeable_pieces(player)
+                if not self.get_valid_moves(player, placeablePieces, self.boardLayout) == []:
+                    return
+            self.endGame()
+
+    def get_valid_moves(self, player, placeablePieces, board):
+        valid_moves = []
+
+        if len(placeablePieces) != 0:
+            for piece in placeablePieces:
+                    for flip in range(0, 2):
+                        for rotation in range(0, 4):
+                            for row in range(0, 20):
+                                for col in range(0, 20):
+                                    if board.canPlacePiece(col, row, piece):
+                                        value = board.getValue(col, row, piece)
+                                        valid_moves.append((col, row, piece, value, rotation, flip))
+                            piece.rotateShape()
+                        piece.flipShape()
+                
+
+        return valid_moves
+
     def endGame(self):
         player_scores = {}  # Dictionary to store player scores
         for player in self.playerList:  # Assuming you have a list of player objects
@@ -469,7 +491,7 @@ class gameInterface(QWidget):
         # Find the players with the highest score
         highest_score = max(player_scores.values())
         winners = [player for player, score in player_scores.items() if score == highest_score]
-
+        
         # Show the win screen
         self.showWinScreen(winners, highest_score)
 
@@ -480,15 +502,34 @@ class gameInterface(QWidget):
             winner_message = f"It's a draw between {', '.join(winners)} with a score of {score}!"
 
         msg_box = QMessageBox()
+
         msg_box.setWindowTitle("End Game!")
         msg_box.setText(winner_message)
         msg_box.setGeometry(700, 300, 100, 100)
         msg_box.setStyleSheet("QMessageBox { border: 10px solid orange; }")
-        msg_box.setFont(goldman(size=20))
+        msg_box.setFont(goldman(size=20))      
+
+        
+        msg_box.setStandardButtons(QMessageBox.NoButton)
+        # Add custom buttons
+        back_to_menu_button = msg_box.addButton("Back to Main Menu", QMessageBox.ActionRole)
+        view_board_button = msg_box.addButton("View Board", QMessageBox.ActionRole)
+
         msg_box.exec_()
+        # Check which button was clicked
+        clicked_button = msg_box.clickedButton()
+        if clicked_button == back_to_menu_button:
+            self.on_exit_clicked()
+            pass
+        elif clicked_button == view_board_button:
+            for player in self.playerList:
+                player.is_turn = False
+                for piece in player.pieces:
+                    piece.movable = False
+                    piece.set_color_overlay(Qt.gray)
+            pass
 
     def rotate_piece(self):
-        self.soundPlayer.play_sound()
         # Find the last pressed piece
         active_piece = None
         if self.last_pressed_piece is not None:
@@ -515,9 +556,9 @@ class gameInterface(QWidget):
         active_piece.setMask(mask)
 
         active_piece.move(active_piece.pos())
+        self.soundPlayer.play_sound()
 
     def flip_piece(self):
-        self.soundPlayer.play_sound()
         # Find the last pressed piece
         active_piece = None
         if self.last_pressed_piece is not None:
@@ -544,6 +585,7 @@ class gameInterface(QWidget):
         active_piece.setMask(mask)
 
         active_piece.move(active_piece.pos())
+        self.soundPlayer.play_sound()
 
     def keyPressEvent(self, event):
         key = event.key()
@@ -551,6 +593,8 @@ class gameInterface(QWidget):
             self.on_exit_clicked()
         elif key == Qt.Key_R:  # "R" key for rotation
             self.rotate_piece()
+        elif key == Qt.Key_F:  # "F" key for rotation
+            self.flip_piece()
         elif key == Qt.Key_P:  # "P" key for passing
             next_player_clicked(self.playerList, self.turn, self.boardLayout, True, self)
         elif key == Qt.Key_Return or key == Qt.Key_Enter:
