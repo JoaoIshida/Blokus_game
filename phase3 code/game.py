@@ -98,14 +98,10 @@ class MainWindow(QMainWindow):
             self.show_achievement_message("FirstBlood")
 
     def on_loadGame_button_press(self):
-        #open a new window to choose the file
-        self.loadMenu = loadMenu(self.soundPlayer)
+        # open a new window to choose the file
+        self.loadMenu = loadMenu(self, self.soundPlayer)  # Passing `self` (MainWindow instance) as an argument
         self.close()
         self.loadMenu.show()
-        if not MainWindow.achievements["Peace Agreement"]:
-            MainWindow.achievements["Peace Agreement"] = True
-            self.save_achievements()
-            self.show_achievement_message("Peace Agreement")
 
     def on_achievement_button_press(self):
         self.achievementMenu = achievementMenu(MainWindow.achievements, self.soundPlayer)
@@ -210,8 +206,9 @@ class achievementMenu(QWidget):
         self.mainMenu.show()
 
 class loadMenu(QWidget):
-    def __init__(self, soundPlayer):
+    def __init__(self, main_window, soundPlayer):  # Modify the __init__ to accept main_window
         super().__init__()
+        self.main_window = main_window  # Assign the passed main_window to an instance variable
         self.soundPlayer = soundPlayer
         self.setWindowTitle("Choose Saving Destination")
         self.setStyleSheet("background-color: rgb(196, 59, 93);")
@@ -263,10 +260,20 @@ class loadMenu(QWidget):
             self.soundPlayer.setVolume(sound_settings['volume'])
     
     def load_the_file(self, filename):
-        # Start new game
-        self.close()
-        self.startGame(filename)
-        self.game.loadGame(filename)
+        try:
+            # Start new game
+            self.close()
+            self.startGame(filename)
+            self.game.loadGame(filename)
+
+            # Use the passed main_window instance to unlock the achievement:
+            if not self.main_window.achievements["Peace Agreement"]:
+                self.main_window.achievements["Peace Agreement"] = True
+                self.main_window.save_achievements()
+                self.main_window.show_achievement_message("Peace Agreement")
+
+        except Exception as e:
+            print(f"Error: {e}")
 
     def go_back_main_menu(self):
         self.close()
