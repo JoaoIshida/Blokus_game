@@ -54,7 +54,7 @@ def next_player_clicked(players, turn, board, playerMovedFirst, gameInterface):
                 piece.movable = True
                 piece.set_color_overlay(Qt.transparent)
             turn.turn.setText(
-                f"  Current player: {players[next_player_index].pieces[0].colour}  ")
+                f"  Current player({players[next_player_index].pieces[0].colour}): {players[next_player_index].name}  ")
             if players[next_player_index].is_ai:
                 if playerMovedFirst == False:
                     return
@@ -174,52 +174,53 @@ class gameInterface(QWidget):
         self.boardLayout.setFixedSize(560, 560)
 
         # CREATE EXIT
-        exit_button = button.createButton("rgb(224, 166, 181)", (200, 60), "Exit", "rgb(244, 195, 209)", "rgb(202, 123, 139)", "25",parent=self)
+        exit_button = button.createButton("rgb(224, 166, 181)", (300, 60), "Exit", "rgb(244, 195, 209)", "rgb(202, 123, 139)", "25",parent=self)
         exit_button.clicked.connect(self.on_exit_clicked)
 
         # CREATE PASS
-        pass_button = button.createButton("rgb(224, 166, 181)", (200, 60), "Pass", "rgb(244, 195, 209)", "rgb(202, 123, 139)", "25",parent=self)
+        pass_button = button.createButton("rgb(224, 166, 181)", (300, 60), "Pass", "rgb(244, 195, 209)", "rgb(202, 123, 139)", "25",parent=self)
         pass_button.clicked.connect(lambda: next_player_clicked(self.playerList, self.turn, self.boardLayout, True, self))
 
         # CREATE CONFIRM
-        confirm_button = button.createButton("rgb(224, 166, 181)", (200, 60), "Confirm", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
+        confirm_button = button.createButton("rgb(224, 166, 181)", (300, 60), "Confirm Placement", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
         confirm_button.clicked.connect(lambda: confirm_placement(self.boardLayout, self.playerList, self.turn, self))
 
         # CREATE ROTATE
-        rotate_button = button.createButton("rgb(224, 166, 181)", (200, 60), "Rotate", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
+        rotate_button = button.createButton("rgb(224, 166, 181)", (300, 60), "Rotate", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
         rotate_button.clicked.connect(self.rotate_piece)
 
         # CREATE Settings
-        settingsButton = button.createButton("rgb(224, 166, 181)", (200, 60), "Settings", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
+        settingsButton = button.createButton("rgb(224, 166, 181)", (300, 60), "Settings", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
         settingsButton.clicked.connect(self.on_settings_button_press)
 
         # Create End game
-        self.endButton = button.createButton("rgb(224, 166, 181)", (200, 60), "End Game", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
+        self.endButton = button.createButton("rgb(224, 166, 181)", (300, 60), "End Game", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
         self.endButton.clicked.connect(self.endGame)
 
-        line_layout = QGridLayout()
+        line_layout = QHBoxLayout()
         line_layout.setSpacing(20)
         layout.addLayout(line_layout)
 
         # Show whose turn is it
-        self.current_player_label = QLabel("  Current player: red  ", self)
+        self.current_player_label = QLabel("  Current player (red): Player 1  ", self)
         self.current_player_label.setStyleSheet(
             "font-size: 30px; font-weight: bold; color: black; background-color: #D9D9D9;")
         self.turn = players.Turn(self.current_player_label)
         self.current_player_label.setFont(goldman(size=12))
-        line_layout.addWidget(self.current_player_label, 0, 0)
-        line_layout.addWidget(self.endButton, 0 , 1)
+        line_layout.addWidget(self.current_player_label)
+        line_layout.addWidget(self.endButton)
         self.score_container = QWidget(self)
         layout.addWidget(self.score_container, alignment=Qt.AlignCenter)
         layout.addWidget(self.boardLayout, alignment=Qt.AlignCenter)
 
         # Create a horizontal layout to hold the buttons
-        line_layout.addWidget(confirm_button, 0 , 2)
-        line_layout.addWidget(rotate_button, 0 , 3)
-        line_layout.addWidget(pass_button, 0 , 4)
-        # line_layout.setContentsMargins(0, 0, 20, 0)
-        # line_layout.setSpacing(20)
-        # layout.addLayout(buttons_layout)
+        buttons_layout = QHBoxLayout()
+        buttons_layout.addWidget(confirm_button)
+        buttons_layout.addWidget(rotate_button)
+        buttons_layout.addWidget(pass_button)
+        buttons_layout.setContentsMargins(0, 0, 20, 0)
+        buttons_layout.setSpacing(20)
+        layout.addLayout(buttons_layout)
 
         self.player_containers = []
         for i in range(4):
@@ -432,16 +433,16 @@ class gameInterface(QWidget):
             piece.set_color_overlay(Qt.transparent)
 
         # CREATE SAVE BUTTON
-        save_button = button.createButton("rgb(224, 166, 181)", (200, 60), "Save", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
+        save_button = button.createButton("rgb(224, 166, 181)", (300, 60), "Save", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
 
         self.saveMenu = saveMenu(boardLayout=self.boardLayout, turn=self.turn,
                                  playerList=self.playerList,
                                  pieceList=self.pieceList, playerTypes=self.playerTypes, soundPlayer=self.soundPlayer)  # popup menu to choose save destination
         save_button.clicked.connect(self.saveMenu.show)
 
-        line_layout.addWidget(exit_button, 0 , 5)
-        line_layout.addWidget(save_button, 0 , 6)
-        line_layout.addWidget(settingsButton, 0 , 7)
+        line_layout.addWidget(exit_button)
+        line_layout.addWidget(save_button)
+        line_layout.addWidget(settingsButton)
         if self.playerTypes[1] == "Human":
             pass
         else:

@@ -89,7 +89,7 @@ class rules(QWidget):
         
         self.close()
         self.game = gameInterface.gameInterface(self.playerTypes, self.soundPlayer)
-        self.game.show()
+        self.game.showFullScreen()
         self.game.setFocus(Qt.OtherFocusReason)
 
     def backtoMenu(self):
