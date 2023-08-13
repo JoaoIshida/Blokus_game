@@ -2,7 +2,10 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
-def createButton(colour, size, text, hoverColour, pressColour, borderRadius, parent=None):
+def createButton(colours, size, text, borderRadius, parent=None):
+    colour = colours[0]
+    hoverColour = colours[1]
+    pressColour = colours[2]
     button = QPushButton(parent)
     button.setText(text)
     button.setFixedSize(size[0],size[1])

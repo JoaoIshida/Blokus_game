@@ -55,11 +55,11 @@ class MainWindow(QMainWindow):
         self.logo.setPixmap(self.logo_pixmap)
         self.logo.setAlignment(Qt.AlignCenter)
 
-        self.newGame_button = button.createButton("rgb(224, 166, 181)", (400,100), "NEW GAME", "rgb(244, 195, 209)", "rgb(202, 123, 139)", "3")
-        self.load_button = button.createButton("rgb(224, 166, 181)", (400,100), "LOAD GAME", "rgb(244, 195, 209)", "rgb(202, 123, 139)", "3")
-        self.settings_button = button.createButton("rgb(224, 166, 181)", (400,100), "SETTINGS", "rgb(244, 195, 209)", "rgb(202, 123, 139)", "3")
-        self.tutorial_button = button.createButton("rgb(224, 166, 181)", (400,100), "TUTORIAL", "rgb(244, 195, 209)", "rgb(202, 123, 139)", "3")
-        self.achievement_button = button.createButton("rgb(224, 166, 181)", (400,100), "ACHIEVEMENT", "rgb(244, 195, 209)", "rgb(202, 123, 139)", "3")
+        self.newGame_button = button.createButton(("rgb(224, 166, 181)","rgb(244, 195, 209)", "rgb(202, 123, 139)"), (400,100), "NEW GAME", "3")
+        self.load_button = button.createButton(("rgb(224, 166, 181)","rgb(244, 195, 209)", "rgb(202, 123, 139)"), (400,100), "LOAD GAME", "3")
+        self.settings_button = button.createButton(("rgb(224, 166, 181)","rgb(244, 195, 209)", "rgb(202, 123, 139)"), (400,100), "SETTINGS", "3")
+        self.tutorial_button = button.createButton(("rgb(224, 166, 181)","rgb(244, 195, 209)", "rgb(202, 123, 139)"), (400,100), "TUTORIAL", "3")
+        self.achievement_button = button.createButton(("rgb(224, 166, 181)","rgb(244, 195, 209)", "rgb(202, 123, 139)"), (400,100), "ACHIEVEMENT", "3")
 
 
         self.layout_container = QHBoxLayout()
@@ -164,7 +164,7 @@ class achievementMenu(QWidget):
         self.achievement3_button = self.makeAchievementButton("Artificial Infant")
         self.achievement4_button = self.makeAchievementButton("The Terminator")
 
-        self.back_button = button.createButton("rgb(224, 166, 181)", (200,50), "Back", "rgb(244, 195, 209)", "rgb(202, 123, 139)", "25")
+        self.back_button = button.createButton(("rgb(224, 166, 181)","rgb(244, 195, 209)", "rgb(202, 123, 139)"), (200,50), "Back", "25")
 
         self.back_button.clicked.connect(self.go_back_main_menu)
 
@@ -211,7 +211,7 @@ class loadMenu(QWidget):
         self.file4_button = self.makeFileButton("File 4")
         self.file5_button = self.makeFileButton("File 5")
 
-        self.back_button = button.createButton("rgb(224, 166, 181)", (200,50), "Back", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25")
+        self.back_button = button.createButton(("rgb(224, 166, 181)","rgb(244, 195, 209)", "rgb(202, 123, 139)"), (200,50), "Back","25")
 
         self.back_button.clicked.connect(self.go_back_main_menu)
         #Buttons formatting
@@ -308,10 +308,10 @@ class settings_menu(QMainWindow):
 
         self.volume_slider.setValue(soundPlayer.volume)
         
-        self.volume_try_button = button.createButton("rgb(224, 166, 181)", (400,75), "TRY SOUND", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25")
+        self.volume_try_button = button.createButton(("rgb(224, 166, 181)","rgb(244, 195, 209)", "rgb(202, 123, 139)"), (400,75), "TRY SOUND","25")
         self.volume_try_button.clicked.connect(self.on_try_button_click)
 
-        self.back_button = button.createButton("rgb(224, 166, 181)", (400,50), "BACK", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25")
+        self.back_button = button.createButton(("rgb(224, 166, 181)","rgb(244, 195, 209)", "rgb(202, 123, 139)"), (400,50), "BACK","25")
         self.back_button.clicked.connect(self.go_back_main_menu)
 
 

@@ -174,27 +174,27 @@ class gameInterface(QWidget):
         self.boardLayout.setFixedSize(560, 560)
 
         # CREATE EXIT
-        exit_button = button.createButton("rgb(224, 166, 181)", (300, 60), "Exit", "rgb(244, 195, 209)", "rgb(202, 123, 139)", "25",parent=self)
+        exit_button = button.createButton(("rgb(224, 166, 181)","rgb(244, 195, 209)", "rgb(202, 123, 139)"), (300, 60), "Exit", "25",parent=self)
         exit_button.clicked.connect(self.on_exit_clicked)
 
         # CREATE PASS
-        pass_button = button.createButton("rgb(224, 166, 181)", (300, 60), "Pass", "rgb(244, 195, 209)", "rgb(202, 123, 139)", "25",parent=self)
+        pass_button = button.createButton(("rgb(224, 166, 181)","rgb(244, 195, 209)", "rgb(202, 123, 139)"), (300, 60), "Pass", "25",parent=self)
         pass_button.clicked.connect(lambda: next_player_clicked(self.playerList, self.turn, self.boardLayout, True, self))
 
         # CREATE CONFIRM
-        confirm_button = button.createButton("rgb(224, 166, 181)", (300, 60), "Confirm Placement", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
+        confirm_button = button.createButton(("rgb(224, 166, 181)","rgb(244, 195, 209)", "rgb(202, 123, 139)"), (300, 60), "Confirm Placement","25", parent=self)
         confirm_button.clicked.connect(lambda: confirm_placement(self.boardLayout, self.playerList, self.turn, self))
 
         # CREATE ROTATE
-        rotate_button = button.createButton("rgb(224, 166, 181)", (300, 60), "Rotate", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
+        rotate_button = button.createButton(("rgb(224, 166, 181)","rgb(244, 195, 209)", "rgb(202, 123, 139)"), (300, 60), "Rotate","25", parent=self)
         rotate_button.clicked.connect(self.rotate_piece)
 
         # CREATE Settings
-        settingsButton = button.createButton("rgb(224, 166, 181)", (300, 60), "Settings", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
+        settingsButton = button.createButton(("rgb(224, 166, 181)","rgb(244, 195, 209)", "rgb(202, 123, 139)"), (300, 60), "Settings","25", parent=self)
         settingsButton.clicked.connect(self.on_settings_button_press)
 
         # Create End game
-        self.endButton = button.createButton("rgb(224, 166, 181)", (300, 60), "End Game", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
+        self.endButton = button.createButton(("rgb(224, 166, 181)","rgb(244, 195, 209)", "rgb(202, 123, 139)"), (300, 60), "End Game", "25", parent=self)
         self.endButton.clicked.connect(self.endGame)
 
         line_layout = QHBoxLayout()
@@ -433,7 +433,7 @@ class gameInterface(QWidget):
             piece.set_color_overlay(Qt.transparent)
 
         # CREATE SAVE BUTTON
-        save_button = button.createButton("rgb(224, 166, 181)", (300, 60), "Save", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25", parent=self)
+        save_button = button.createButton(("rgb(224, 166, 181)","rgb(244, 195, 209)", "rgb(202, 123, 139)"), (300, 60), "Save","25", parent=self)
 
         self.saveMenu = saveMenu(boardLayout=self.boardLayout, turn=self.turn,
                                  playerList=self.playerList,

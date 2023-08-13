@@ -59,9 +59,9 @@ class rules(QWidget):
             self.playerMenus.append(menu)
             self.layout.addWidget(menu, positons[i][0], positons[i][1])
 
-        backButton = button.createButton("rgb(224, 166, 181)", (300, 100), "Back", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25")
+        backButton = button.createButton(("rgb(224, 166, 181)","rgb(244, 195, 209)", "rgb(202, 123, 139)"), (300, 100), "Back","25")
 
-        startButton = button.createButton("rgb(224, 166, 181)", (300, 100), "Start", "rgb(244, 195, 209)", "rgb(202, 123, 139)","25")
+        startButton = button.createButton(("rgb(224, 166, 181)","rgb(244, 195, 209)", "rgb(202, 123, 139)"), (300, 100), "Start","25")
 
         buttonLayout = QVBoxLayout()
         buttonLayout.addWidget(startButton)
