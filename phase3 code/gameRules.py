@@ -86,11 +86,16 @@ class rules(QWidget):
 
         if humanPlayers == 0:
             return
-        
+    
         self.close()
         self.game = gameInterface.gameInterface(self.playerTypes, self.soundPlayer)
         self.game.showFullScreen()
         self.game.setFocus(Qt.OtherFocusReason)
+
+        if not game.MainWindow.achievements["FirstBlood"]:
+            game.MainWindow.achievements["FirstBlood"] = True
+            game.MainWindow.save_achievements(game.MainWindow)
+            game.MainWindow.show_achievement_message(game.MainWindow, "FirstBlood")
 
     def backtoMenu(self):
         self.close()

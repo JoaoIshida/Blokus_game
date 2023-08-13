@@ -28,15 +28,16 @@ class MainWindow(QMainWindow):
         with open(achievements_file, "rb") as f:
             achievements = pickle.load(f)
     else:
-        achievements = {
-            "Peace Agreement": False,
-            "Philo-Blokus": False,
-            "Artificial Infant": False,
-            "The Terminator": False
-        }
+         achievements = {
+                "FirstBlood": False,
+                "Peace Agreement": False,
+                "Philo-Blokus": False,
+                "Artificial Infant": False,
+                "The Terminator": False
+            }
 
     def show_achievement_message(self, achievement_name):
-        msg = QMessageBox(self)
+        msg = QMessageBox()
         msg.setIcon(QMessageBox.Information)
         msg.setWindowTitle("Achievement Unlocked!")
         msg.setText(f"You've unlocked the {achievement_name} achievement!")
@@ -140,6 +141,7 @@ class MainWindow(QMainWindow):
         self.tutorial = Wizard()
         self.tutorial.show()
 
+
 class achievementMenu(QWidget):
     def __init__(self, achievements, soundPlayer):
         super().__init__()
@@ -148,6 +150,7 @@ class achievementMenu(QWidget):
 
         # Achievement descriptions
         self.achievement_descriptions = {
+            "FirstBlood": "Unlock by starting the first game",
             "Peace Agreement": "Unlock by trying load a half-way game",
             "Philo-Blokus": "Unlock by learning game tutorial",
             "Artificial Infant": "Unlock by defeating AI",
@@ -159,14 +162,15 @@ class achievementMenu(QWidget):
         self.setGeometry(100, 50, 900, 900)
 
         # Button for each achievement
-        self.achievement1_button = self.makeAchievementButton("Peace Agreement")
-        self.achievement2_button = self.makeAchievementButton("Philo-Blokus")
-        self.achievement3_button = self.makeAchievementButton("Artificial Infant")
-        self.achievement4_button = self.makeAchievementButton("The Terminator")
+        self.achievement1_button = self.makeAchievementButton("FirstBlood")
+        self.achievement2_button = self.makeAchievementButton("Peace Agreement")
+        self.achievement3_button = self.makeAchievementButton("Philo-Blokus")
+        self.achievement4_button = self.makeAchievementButton("Artificial Infant")
+        self.achievement5_button = self.makeAchievementButton("The Terminator")
 
         self.back_button = button.createButton(("rgb(224, 166, 181)","rgb(244, 195, 209)", "rgb(202, 123, 139)"), (200,50), "Back", "25")
 
-        self.back_button.clicked.connect(self.go_back_main_menu)
+        self.back_button.clicked.connect(lambda: go_back_main_menu(self))
 
         # Buttons formatting
         self.layout = QVBoxLayout(self)
@@ -175,6 +179,7 @@ class achievementMenu(QWidget):
         self.layout.addWidget(self.achievement2_button, alignment=Qt.AlignCenter)
         self.layout.addWidget(self.achievement3_button, alignment=Qt.AlignCenter)
         self.layout.addWidget(self.achievement4_button, alignment=Qt.AlignCenter)
+        self.layout.addWidget(self.achievement5_button, alignment=Qt.AlignCenter)
         self.layout.addWidget(self.back_button, alignment=Qt.AlignCenter)
 
     def makeAchievementButton(self, achievement):
@@ -189,11 +194,6 @@ class achievementMenu(QWidget):
         else:
             theButton.setStyleSheet("font-size: 24px; padding: 10px; color: black; background-color: rgb(102, 73, 81);")
         return theButton
-
-    def go_back_main_menu(self):
-        self.close()
-        self.mainMenu = MainWindow(self.soundPlayer)
-        self.mainMenu.show()
 
 class loadMenu(QWidget):
     def __init__(self, main_window, soundPlayer):  # Modify the __init__ to accept main_window
@@ -213,7 +213,7 @@ class loadMenu(QWidget):
 
         self.back_button = button.createButton(("rgb(224, 166, 181)","rgb(244, 195, 209)", "rgb(202, 123, 139)"), (200,50), "Back","25")
 
-        self.back_button.clicked.connect(self.go_back_main_menu)
+        self.back_button.clicked.connect(lambda: go_back_main_menu(self))
         #Buttons formatting
         self.layout = QVBoxLayout(self)
         self.layout.setAlignment(Qt.AlignCenter)
@@ -227,7 +227,8 @@ class loadMenu(QWidget):
     def makeFileButton(self, filename):
         theButton = QPushButton(filename)
         theButton.setFixedSize(400, 100)
-        if len(os.listdir(f"Save/{filename}/")) < 2:
+        NUM_FILES_IN_BUTTON = 2
+        if len(os.listdir(f"Save/{filename}/")) < NUM_FILES_IN_BUTTON:
             theButton.setStyleSheet(
                 "font-size: 24px; padding: 10px; color: white; background-color: rgb(102, 73, 81);")
             theButton.setEnabled(False)
@@ -264,11 +265,6 @@ class loadMenu(QWidget):
 
         except Exception as e:
             print(f"Error: {e}")
-
-    def go_back_main_menu(self):
-        self.close()
-        self.mainMenu = MainWindow(self.soundPlayer)
-        self.mainMenu.show()
 
     def startGame(self, filename):
         self.loadSoundPlayer(filename)
@@ -312,8 +308,7 @@ class settings_menu(QMainWindow):
         self.volume_try_button.clicked.connect(self.on_try_button_click)
 
         self.back_button = button.createButton(("rgb(224, 166, 181)","rgb(244, 195, 209)", "rgb(202, 123, 139)"), (400,50), "BACK","25")
-        self.back_button.clicked.connect(self.go_back_main_menu)
-
+        self.back_button.clicked.connect(lambda: go_back_main_menu(self))
 
         self.layout.addWidget(self.volume_label)
         self.layout.addWidget(self.volume_slider)
@@ -329,10 +324,10 @@ class settings_menu(QMainWindow):
     def on_try_button_click(self):
         self.soundPlayer.play_sound()
 
-    def go_back_main_menu(self):
-        self.close()
-        self.mainMenu = MainWindow(self.soundPlayer)
-        self.mainMenu.show()
+def go_back_main_menu(window):
+    window.close()
+    window.main_menu = MainWindow(window.soundPlayer)  # Create an instance of your main menu
+    window.main_menu.show()
 
 def draw_menu():
     soundPlayer = sound.soundPlayer()
@@ -340,7 +335,6 @@ def draw_menu():
     window = MainWindow(soundPlayer)
     window.show()
     sys.exit(app.exec_())
-
 
 if __name__ == '__main__':
     draw_menu()
