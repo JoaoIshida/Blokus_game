@@ -29,7 +29,6 @@ class MainWindow(QMainWindow):
             achievements = pickle.load(f)
     else:
         achievements = {
-            "FirstBlood": False,
             "Peace Agreement": False,
             "Philo-Blokus": False,
             "Artificial Infant": False,
@@ -92,11 +91,6 @@ class MainWindow(QMainWindow):
         self.drawMenu()
         self.close()
 
-        if not MainWindow.achievements["FirstBlood"]:
-            MainWindow.achievements["FirstBlood"] = True
-            self.save_achievements()
-            self.show_achievement_message("FirstBlood")
-
     def on_loadGame_button_press(self):
         # open a new window to choose the file
         self.loadMenu = loadMenu(self, self.soundPlayer)  # Passing `self` (MainWindow instance) as an argument
@@ -139,13 +133,12 @@ class MainWindow(QMainWindow):
         self.game.setFocus(Qt.OtherFocusReason)
 
     def open_tutorial(self):
-        self.tutorial = Wizard()
-        self.tutorial.show()
         if not MainWindow.achievements["Philo-Blokus"]:
             MainWindow.achievements["Philo-Blokus"] = True
             self.save_achievements()
             self.show_achievement_message("Philo-Blokus")
-
+        self.tutorial = Wizard()
+        self.tutorial.show()
 
 class achievementMenu(QWidget):
     def __init__(self, achievements, soundPlayer):
@@ -155,7 +148,6 @@ class achievementMenu(QWidget):
 
         # Achievement descriptions
         self.achievement_descriptions = {
-            "FirstBlood": "Unlock by starting the first game",
             "Peace Agreement": "Unlock by trying load a half-way game",
             "Philo-Blokus": "Unlock by learning game tutorial",
             "Artificial Infant": "Unlock by defeating AI",
@@ -167,11 +159,10 @@ class achievementMenu(QWidget):
         self.setGeometry(100, 50, 900, 900)
 
         # Button for each achievement
-        self.achievement1_button = self.makeAchievementButton("FirstBlood")
-        self.achievement2_button = self.makeAchievementButton("Peace Agreement")
-        self.achievement3_button = self.makeAchievementButton("Philo-Blokus")
-        self.achievement4_button = self.makeAchievementButton("Artificial Infant")
-        self.achievement5_button = self.makeAchievementButton("The Terminator")
+        self.achievement1_button = self.makeAchievementButton("Peace Agreement")
+        self.achievement2_button = self.makeAchievementButton("Philo-Blokus")
+        self.achievement3_button = self.makeAchievementButton("Artificial Infant")
+        self.achievement4_button = self.makeAchievementButton("The Terminator")
 
         self.back_button = button.createButton("rgb(224, 166, 181)", (200,50), "Back", "rgb(244, 195, 209)", "rgb(202, 123, 139)", "25")
 
@@ -184,7 +175,6 @@ class achievementMenu(QWidget):
         self.layout.addWidget(self.achievement2_button, alignment=Qt.AlignCenter)
         self.layout.addWidget(self.achievement3_button, alignment=Qt.AlignCenter)
         self.layout.addWidget(self.achievement4_button, alignment=Qt.AlignCenter)
-        self.layout.addWidget(self.achievement5_button, alignment=Qt.AlignCenter)
         self.layout.addWidget(self.back_button, alignment=Qt.AlignCenter)
 
     def makeAchievementButton(self, achievement):
