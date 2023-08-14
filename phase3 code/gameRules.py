@@ -63,11 +63,18 @@ class rules(QWidget):
 
         startButton = button.createButton(("rgb(224, 166, 181)","rgb(244, 195, 209)", "rgb(202, 123, 139)"), (300, 100), "Start","25")
 
+        textHint = QLabel("Choose the type of player,\n one colour must be human")
+        textHint.setFixedSize(300, 100)
+        textHint.setAlignment(Qt.AlignCenter)
+        textHint.setStyleSheet("border: 3px solid black;")
+        textHint.setFont(QFont('Arial', 16, QFont.Bold))
+        
+        self.layout.addWidget(textHint, 0,2)
         buttonLayout = QVBoxLayout()
         buttonLayout.addWidget(startButton)
         buttonLayout.addWidget(backButton)
 
-        self.layout.addLayout(buttonLayout, 1, 2, alignment=Qt.AlignCenter)
+        self.layout.addLayout(buttonLayout, 1, 2)
         startButton.clicked.connect(self.startGame)
         backButton.clicked.connect(self.backtoMenu)
 
