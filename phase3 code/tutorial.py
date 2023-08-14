@@ -3,40 +3,38 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
 import sys
 
-class Page1(QWizardPage):
-    def __init__(self, parent=None):
+class TutorialWizard(QWizardPage):
+    def __init__(self, pageNum, parent=None):
         super().__init__(parent)
-        self.setTitle("We can have text only tutorial like this")
-        self.setSubTitle("Compare these prototypes in group discussions and analyze their "
-                         "strengths and weaknesses. Your discussion should reference UI design "
-                         "principles such as the ten heuristics of the Nielsen Norman Group. Describe"
-                         " how your final UI evolved from each prototype by incorporating the strong "
-                         "elements of each prototype, and what new design elements you created after "
-                         "the discussion.")
-
-
-class Page2(QWizardPage):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setTitle("Or we can write a document and take screenshots")
-
         layout = QVBoxLayout()
         self.setLayout(layout)
 
-        self.logo = QLabel(self)
-        self.logo_pixmap = QPixmap('screenshot.png')
-        self.logo_pixmap = self.logo_pixmap.scaled(800,600)
-        self.logo.setPixmap(self.logo_pixmap)
-        self.logo.setAlignment(Qt.AlignCenter)
-        layout.addWidget(self.logo)
+        self.tut = QLabel(self)
+        self.tut_pixmap = QPixmap(f"Tutorial/{pageNum}.png")
+        self.tut_pixmap = self.tut_pixmap.scaledToWidth(850)
+        self.tut.setPixmap(self.tut_pixmap)
+        self.tut.setAlignment(Qt.AlignCenter)
+        layout.addWidget(self.tut)
 
 class Wizard(QWizard):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("My Wizard")
-        self.setGeometry(100, 50, 900, 900)
-        self.addPage(Page1())
-        self.addPage(Page2())
+        self.setWindowTitle("Tutorial")
+        self.setGeometry(100, 50, 1000, 800)
+        self.pageOne = TutorialWizard("One")
+        self.pageTwo = TutorialWizard("Two")
+        self.pageThree = TutorialWizard("Three")
+        self.pageFour = TutorialWizard("Four")
+        self.pageFive = TutorialWizard("Five")
+
+        self.addPage(self.pageOne)
+        self.addPage(self.pageTwo)
+        self.addPage(self.pageThree)
+        self.addPage(self.pageFour)
+        self.addPage(self.pageFive)
+
+        # self.addPage(Page1())
+        # self.addPage(Page2())
         # self.addPage(Page3())
         # self.addPage(Page4())
 
