@@ -23,4 +23,3 @@ def createButton(colours, size, text, borderRadius, parent=None):
         f"}}")
     
     return button
-    
