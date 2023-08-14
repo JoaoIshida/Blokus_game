@@ -175,7 +175,7 @@ class gameInterface(QWidget):
 
         # CREATE EXIT
         exit_button = button.createButton(("rgb(224, 166, 181)","rgb(244, 195, 209)", "rgb(202, 123, 139)"), (300, 60), "Exit", "25",parent=self)
-        exit_button.clicked.connect(self.on_exit_clicked)
+        exit_button.clicked.connect(lambda: game.go_back_main_menu(self))
 
         # CREATE PASS
         pass_button = button.createButton(("rgb(224, 166, 181)","rgb(244, 195, 209)", "rgb(202, 123, 139)"), (300, 60), "Pass", "25",parent=self)
@@ -511,7 +511,7 @@ class gameInterface(QWidget):
         # Check which button was clicked
         clicked_button = msg_box.clickedButton()
         if clicked_button == back_to_menu_button:
-            self.on_exit_clicked()
+            game.go_back_main_menu(self)
             pass
         elif clicked_button == view_board_button:
             for player in self.playerList:
@@ -553,7 +553,7 @@ class gameInterface(QWidget):
     def keyPressEvent(self, event):
         key = event.key()
         if key == Qt.Key_Escape:  # "ESC" key for exiting
-            self.on_exit_clicked()
+            game.go_back_main_menu(self)
         elif key == Qt.Key_R:  # "R" key for rotation
             self.rotate_piece()
         elif key == Qt.Key_P:  # "P" key for passing
@@ -610,12 +610,6 @@ class gameInterface(QWidget):
                 if self.playerList[i].is_turn:
                     for piece in self.playerList[i].pieces:
                         piece.set_color_overlay(Qt.transparent)
-
-    def on_exit_clicked(self):
-        #self.soundPlayer.play_sound()
-        self.close()
-        self.main_menu = game.MainWindow(self.soundPlayer)  # Create an instance of your main menu
-        self.main_menu.show()
 
     def on_settings_button_press(self):
         self.settings_menu = game.settings_menu(self.soundPlayer, False)
