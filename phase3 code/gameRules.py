@@ -67,7 +67,7 @@ class rules(QWidget):
         textHint.setFixedSize(300, 100)
         textHint.setAlignment(Qt.AlignCenter)
         textHint.setStyleSheet("border: 3px solid black;")
-        textHint.setFont(QFont('Arial', 16, QFont.Bold))
+        textHint.setFont(QFont('Arial', 12, QFont.Bold))
         
         self.layout.addWidget(textHint, 0,2)
         buttonLayout = QVBoxLayout()
