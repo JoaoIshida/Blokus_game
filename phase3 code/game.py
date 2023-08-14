@@ -131,7 +131,6 @@ class MainWindow(QMainWindow):
         self.close()
         self.game = gameRules.rules(self.soundPlayer)
         self.game.show()
-        self.game.setFocus(Qt.OtherFocusReason)
 
     def open_tutorial(self):
         if not MainWindow.achievements["Philo-Blokus"]:
