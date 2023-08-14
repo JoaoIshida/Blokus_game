@@ -612,7 +612,7 @@ class gameInterface(QWidget):
                         piece.set_color_overlay(Qt.transparent)
 
     def on_exit_clicked(self):
-        #self.soundPlayer.play_sound()
+        self.soundPlayer.play_sound()
         self.close()
         self.main_menu = game.MainWindow(self.soundPlayer)  # Create an instance of your main menu
         self.main_menu.show()
