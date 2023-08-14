@@ -40,6 +40,8 @@ class tile(QFrame):
     def __setstate__(self, state):
         self.__dict__ = state
 
+BOARD_TILE_NUM = 20
+TILE_EXISTS = 1
 # Game Window
 class Board(QMainWindow):
     def __init__(self):
@@ -60,11 +62,11 @@ class Board(QMainWindow):
 
     # Create a 20x20 board with each tile being a QFrame
     def initBoard(self):
-        for _ in range(20):
+        for _ in range(BOARD_TILE_NUM):
             self.tileList.append([])
             
-        for row in range(20):
-            for col in range(20):
+        for row in range(BOARD_TILE_NUM):
+            for col in range(BOARD_TILE_NUM):
                 # Calculate the value of the tiles. Increased in value as the tile is closer to the center
                 center = 10
                 distance_to_center = math.sqrt((row - center)**2 + (col - center)**2)
@@ -78,8 +80,8 @@ class Board(QMainWindow):
                 self.gridLayout.addWidget(tileObject, row+1, col+1)
 
     def inBounds(self, x, y):
-        return 0 <= x < 20 and 0 <= y < 20
-
+        return 0 <= x < BOARD_TILE_NUM and 0 <= y < BOARD_TILE_NUM
+    
     def checkInCorner(self , x , y):
         if x == 0 and y == 0:
             return True
@@ -98,13 +100,13 @@ class Board(QMainWindow):
         piece_colour = piece.colour
         inCorner = False
         # Check if the piece is within the bounds of the board
-        if not (0 <= tileX < 20 and 0 <= tileY < 20):
+        if not (0 <= tileX < BOARD_TILE_NUM and 0 <= tileY < BOARD_TILE_NUM):
             return False
         
         if piece.player.first_move:
             for row in range(pieceHeight):
                 for col in range(pieceWidth):
-                    if self.checkInCorner(tileX + col, tileY + row) == True and piece.shape[row][col] == 1:
+                    if self.checkInCorner(tileX + col, tileY + row) == True and piece.shape[row][col] == TILE_EXISTS:
                         inCorner = True
                     if self.inBounds(tileX + col, tileY + row) == False or self.tileList[tileY + row][tileX + col].isEmpty() == False:
                         return False
@@ -117,17 +119,17 @@ class Board(QMainWindow):
             
             for row in range(pieceHeight):
                 for col in range(pieceWidth):
-                    if piece.shape[row][col] == 1:
+                    if piece.shape[row][col] == TILE_EXISTS:
                         if self.inBounds(tileX + col, tileY + row) == False or self.tileList[tileY + row][tileX + col].isEmpty() == False:
                             return False
                     
             for row in range(pieceHeight):
                 for col in range(pieceWidth):
-                    if piece.shape[row][col] == 1:
+                    if piece.shape[row][col] == TILE_EXISTS:
                         x, y = tileX + col, tileY + row
 
                         # Check if the piece is within the bounds of the board
-                        if not (0 <= x < 20 and 0 <= y < 20):
+                        if not (0 <= x < BOARD_TILE_NUM and 0 <= y < BOARD_TILE_NUM):
                             return False
 
                         if not self.tileList[y][x].isEmpty():
@@ -150,7 +152,7 @@ class Board(QMainWindow):
             # Check if any side tiles are filled
             for row in range(pieceHeight):
                 for col in range(pieceWidth):
-                    if piece.shape[row][col] == 1:
+                    if piece.shape[row][col] == TILE_EXISTS:
                         x, y = tileX + col, tileY + row
 
                         # Check if the piece is within the bounds of the board
@@ -172,7 +174,7 @@ class Board(QMainWindow):
 
         for row in range(len(piece.shape)):
             for col in range(len(piece.shape[row])):
-                if piece.shape[row][col] == 1:
+                if piece.shape[row][col] == TILE_EXISTS:
                     tile_x = startX + col
                     tile_y = startY + row
 
@@ -193,7 +195,7 @@ class Board(QMainWindow):
         if self.canPlacePiece(x, y, piece) == True:
             for row in range(pieceHeight):
                 for col in range(pieceWidth):
-                    if piece.shape[row][col] == 1:
+                    if piece.shape[row][col] == TILE_EXISTS:
                         value += self.tileList[y + row][x + col].value
         return value
 
