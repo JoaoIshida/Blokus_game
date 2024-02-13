@@ -309,112 +309,114 @@ class gameInterface(QWidget):
 
 
         player_panels = [playerPanel1, playerPanel2, playerPanel3, playerPanel4]
-
+        def get_image_path(player_color, image_name):
+            return os.path.join('assets', player_color, image_name)
+        
         for player_index, player in enumerate(self.playerList):
             player_panel = player_panels[player_index]
             pieces_data = [
                 {
-                    'player': player.num, 'image': f'assets/{player.color}/1.png', 'weight': 1,
+                    'player': player.num, 'image': get_image_path(player.color, '1.png'), 'weight': 1,
                     'initial_position': QPoint(player_panel.x() + 10, player_panel.y() + 50),
                     'shape': [[1]], 'colour': f'{player.color}'
                 },
                 {
-                    'player': player.num, 'image': f'assets/{player.color}/2.png', 'weight': 2,
+                    'player': player.num, 'image': get_image_path(player.color, '2.png'), 'weight': 2,
                     'initial_position': QPoint(player_panel.x() + 50, player_panel.y() + 50),
                     'shape': [[1], [1]], 'colour': f'{player.color}'
                 },
                 {
-                    'player': player.num, 'image': f'assets/{player.color}/3.png', 'weight': 3,
+                    'player': player.num, 'image': get_image_path(player.color, '3.png'), 'weight': 3,
                     'initial_position': QPoint(player_panel.x() + 90, player_panel.y() + 50),
                     'shape': [[1], [1], [1]], 'colour': f'{player.color}'
                 },
                 {
-                    'player': player.num, 'image': f'assets/{player.color}/4.png', 'weight': 4,
+                    'player': player.num, 'image': get_image_path(player.color, '4.png'), 'weight': 4,
                     'initial_position': QPoint(player_panel.x() + 130, player_panel.y() + 50),
                     'shape': [[1], [1], [1], [1]], 'colour': f'{player.color}'
                 },
                 {
-                    'player': player.num, 'image': f'assets/{player.color}/5.png', 'weight': 5,
+                    'player': player.num, 'image': get_image_path(player.color, '5.png'), 'weight': 5,
                     'initial_position': QPoint(player_panel.x() + 170, player_panel.y() + 50),
                     'shape': [[1], [1], [1], [1], [1]], 'colour': f'{player.color}'
                 },
                 {
-                    'player': player.num, 'image': f'assets/{player.color}/F5.png', 'weight': 5,
+                    'player': player.num, 'image': get_image_path(player.color, 'F5.png'), 'weight': 5,
                     'initial_position': QPoint(player_panel.x() + 190, player_panel.y() + 170),
                     'shape': [[0, 1, 1], [1, 1, 0], [0, 1, 0]], 'colour': f'{player.color}'
                 },
                 {
-                    'player': player.num, 'image': f'assets/{player.color}/L3.png', 'weight': 3,
+                    'player': player.num, 'image': get_image_path(player.color, 'L3.png'), 'weight': 3,
                     'initial_position': QPoint(player_panel.x() + 180, player_panel.y() + 350),
                     'shape': [[1, 0], [1, 1]], 'colour': f'{player.color}'
                 },
                 {
-                    'player': player.num, 'image': f'assets/{player.color}/L4.png', 'weight': 4,
+                    'player': player.num, 'image': get_image_path(player.color, 'L4.png'), 'weight': 4,
                     'initial_position': QPoint(player_panel.x() + 320, player_panel.y() + 150),
                     'shape': [[1, 1, 1], [0, 0, 1]], 'colour': f'{player.color}'
                 },
                 {
-                    'player': player.num, 'image': f'assets/{player.color}/L5.png', 'weight': 5,
+                    'player': player.num, 'image': get_image_path(player.color, 'L5.png'), 'weight': 5,
                     'initial_position': QPoint(player_panel.x() + 60, player_panel.y() + 300),
                     'shape': [[1, 1, 1, 1], [0, 0, 0, 1]], 'colour': f'{player.color}'
                 },
                 {
-                    'player': player.num, 'image': f'assets/{player.color}/O4.png', 'weight': 4,
+                    'player': player.num, 'image': get_image_path(player.color, 'O4.png'), 'weight': 4,
                     'initial_position': QPoint(player_panel.x() + 285, player_panel.y() + 50),
                     'shape': [[1, 1], [1, 1]], 'colour': f'{player.color}'
                 },
                 {
-                    'player': player.num, 'image': f'assets/{player.color}/P5.png', 'weight': 5,
+                    'player': player.num, 'image': get_image_path(player.color, 'P5.png'), 'weight': 5,
                     'initial_position': QPoint(player_panel.x() + 210, player_panel.y() + 50),
                     'shape': [[1, 1], [1, 1], [1, 0]], 'colour': f'{player.color}'
                 },
                 {
-                    'player': player.num, 'image': f'assets/{player.color}/S5.png', 'weight': 5,
+                    'player': player.num, 'image': get_image_path(player.color, 'S5.png'), 'weight': 5,
                     'initial_position': QPoint(player_panel.x() + 100, player_panel.y() + 170),
                     'shape': [[1, 1, 0], [0, 1, 0], [0, 1, 1]], 'colour': f'{player.color}'
                 },
                 {
-                    'player': player.num, 'image': f'assets/{player.color}/T4.png', 'weight': 4,
+                    'player': player.num, 'image': get_image_path(player.color, 'T4.png'), 'weight': 4,
                     'initial_position': QPoint(player_panel.x() + 190, player_panel.y() + 270),
                     'shape': [[1, 1, 1], [0, 1, 0]], 'colour': f'{player.color}'
                 },
                 {
-                    'player': player.num, 'image': f'assets/{player.color}/T5.png', 'weight': 5,
+                    'player': player.num, 'image': get_image_path(player.color, 'T5.png'), 'weight': 5,
                     'initial_position': QPoint(player_panel.x() + 255, player_panel.y() + 110),
                     'shape': [[1, 1, 1], [0, 1, 0], [0, 1, 0]], 'colour': f'{player.color}'
                 },
                 {
-                    'player': player.num, 'image': f'assets/{player.color}/U5.png', 'weight': 5,
+                    'player': player.num, 'image': get_image_path(player.color, 'U5.png'), 'weight': 5,
                     'initial_position': QPoint(player_panel.x() + 350, player_panel.y() + 50),
                     'shape': [[1, 1], [1, 0], [1, 1]], 'colour': f'{player.color}'
                 },
                 {
-                    'player': player.num, 'image': f'assets/{player.color}/V5.png', 'weight': 5,
+                    'player': player.num, 'image': get_image_path(player.color, 'V5.png'), 'weight': 5,
                     'initial_position': QPoint(player_panel.x() + 10, player_panel.y() + 300),
                     'shape': [[1, 0, 0], [1, 0, 0], [1, 1, 1]], 'colour': f'{player.color}'
                 },
                 {
-                    'player': player.num, 'image': f'assets/{player.color}/W5.png', 'weight': 5,
+                    'player': player.num, 'image': get_image_path(player.color, 'W5.png'), 'weight': 5,
                     'initial_position': QPoint(player_panel.x() + 10, player_panel.y() + 100),
                     'shape': [[1, 0, 0], [1, 1, 0], [0, 1, 1]], 'colour': f'{player.color}'
                 },
                 {
-                    'player': player.num, 'image': f'assets/{player.color}/X5.png', 'weight': 5,
+                    'player': player.num, 'image': get_image_path(player.color, 'X5.png'), 'weight': 5,
                     'initial_position': QPoint(player_panel.x() + 10, player_panel.y() + 200),
                     'shape': [[0, 1, 0], [1, 1, 1], [0, 1, 0]], 'colour': f'{player.color}'
                 },
                 {
-                    'player': player.num, 'image': f'assets/{player.color}/Y5.png', 'weight': 5,
+                    'player': player.num, 'image': get_image_path(player.color, 'Y5.png'), 'weight': 5,
                     'initial_position': QPoint(player_panel.x() + 300, player_panel.y() + 300),
                     'shape': [[1, 1, 1, 1], [0, 1, 0, 0]], 'colour': f'{player.color}'
                 },
                 {
-                    'player': player.num, 'image': f'assets/{player.color}/Z4.png', 'weight': 4,
+                    'player': player.num, 'image': get_image_path(player.color, 'Z4.png'), 'weight': 4,
                     'initial_position': QPoint(player_panel.x() + 250, player_panel.y() + 350),
                     'shape': [[1, 1, 0, ], [0, 1, 1]], 'colour': f'{player.color}'
                 },
                 {
-                    'player': player.num, 'image': f'assets/{player.color}/Z5.png', 'weight': 5,
+                    'player': player.num, 'image': get_image_path(player.color, 'Z5.png'), 'weight': 5,
                     'initial_position': QPoint(player_panel.x() + 270, player_panel.y() + 220),
                     'shape': [[1, 1, 1, 0], [0, 0, 1, 1]], 'colour': f'{player.color}'
                 },

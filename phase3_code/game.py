@@ -22,6 +22,8 @@ class Color(QWidget):
 
 class MainWindow(QMainWindow):
     achievements_file = "achievements.pkl"
+    assets_folder = "assets"
+
 
     # Load achievements from file or set default values
     if os.path.exists(achievements_file):
@@ -52,7 +54,7 @@ class MainWindow(QMainWindow):
         self.widget = QWidget()
         self.soundPlayer = soundPlayer
         self.logo = QLabel(self)
-        self.logo_pixmap = QPixmap('assets/Blokus.png')
+        self.logo_pixmap = QPixmap(os.path.join(MainWindow.assets_folder, 'Blokus.png'))
         self.logo.setPixmap(self.logo_pixmap)
         self.logo.setAlignment(Qt.AlignCenter)
 

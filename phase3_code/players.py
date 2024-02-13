@@ -2,11 +2,13 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 
-def goldman(size=12):
-    # Load the font from the font file
-    font_id = QFontDatabase.addApplicationFont("assets/Goldman-Regular.ttf") 
+import os
 
-    # Get the font family name if the font was loaded successfully
+def goldman(size=12):
+    font_file = os.path.join('assets', 'Goldman-Regular.ttf')
+
+    font_id = QFontDatabase.addApplicationFont(font_file)
+
     font_families = QFontDatabase.applicationFontFamilies(font_id)
     if font_families:
         goldman_font_family = font_families[0]
@@ -16,6 +18,7 @@ def goldman(size=12):
     goldman_font = QFont(goldman_font_family, size)
 
     return goldman_font
+
     
 class Player:
     def __init__(self, score_label, is_ai=False, is_turn=False, name="Player", color='red', num="player0"):
