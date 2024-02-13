@@ -121,3 +121,4 @@ class Board(QMainWindow):
                                 return False
             return True
 
+
