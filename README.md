@@ -54,25 +54,39 @@ This will start the Blokus Game application.
 
 - **Main Menu:** You'll be greeted with the main menu when you launch the game. From here, you can start a new game, load a saved game, access achievements, or configure settings.
 
-![alt text](menu.png)
+<p align="center">
+    <img src="menu.png" alt="game menu" style="width:60%;height:60%;">
+</p>
 
 - **Player Customization:** Before starting a game, customize the number of human and AI players.
 
-![alt text](player_customization.png)
+<p align="center">
+    <img src="player_customization.png" alt="player customization menu" style="width:60%;height:60%">
+</p>
 
 - **Gameplay:** Enjoy the Blokus gameplay, aiming to place your pieces strategically while blocking your opponents.
 
-![alt text](game_b.png)
-![alt text](game_m.png)
+<p align="center">
+    <img src="game_b.png" alt="game beginning menu" style="width:60%;height:60%">
+</p>
+<p align="center">
+    <img src="game_m.png" alt="game middle menu" style="width:60%;height:60%">
+</p>
 
 - **Achievements:** Unlock achievements during gameplay and view them in the Achievements menu.
 
-![alt text](achievements.png)
+<p align="center">
+    <img src="achievements.png" alt="achievements menu" style="width:60%;height:60%">
+</p>
 
 - **Settings:** Adjust the sound effects volume to your liking.
 
-![alt text](settings.png)
+<p align="center">
+    <img src="settings.png" alt="settings menu" style="width:60%;height:60%">
+</p>
 
 - **Tutorial:** If you're new to Blokus, explore the interactive tutorial to learn the rules.
 
-![alt text](tutorial.png)
+<p align="center">
+    <img src="tutorial.png" alt="tutorial menu" style="width:60%;height:60%">
+</p>
