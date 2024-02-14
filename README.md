@@ -36,7 +36,7 @@ pip install PyQt5
 3. **Change Directory:** Navigate to the project directory
 
 ```
-cd path/to/directory/phase3 code
+cd path/to/directory/phase3_code
 ```
 
 4. **Run the Game:** Run the main script:
@@ -45,13 +45,34 @@ cd path/to/directory/phase3 code
 python game.py
 ```
 
+or
+run using your debugger of choice (e.g., extension)
+
 This will start the Blokus Game application.
 
 ## Usage
 
 - **Main Menu:** You'll be greeted with the main menu when you launch the game. From here, you can start a new game, load a saved game, access achievements, or configure settings.
+
+![alt text](menu.png)
+
 - **Player Customization:** Before starting a game, customize the number of human and AI players.
+
+![alt text](player_customization.png)
+
 - **Gameplay:** Enjoy the Blokus gameplay, aiming to place your pieces strategically while blocking your opponents.
+
+![alt text](game_b.png)
+![alt text](game_m.png)
+
 - **Achievements:** Unlock achievements during gameplay and view them in the Achievements menu.
+
+![alt text](achievements.png)
+
 - **Settings:** Adjust the sound effects volume to your liking.
+
+![alt text](settings.png)
+
 - **Tutorial:** If you're new to Blokus, explore the interactive tutorial to learn the rules.
+
+![alt text](tutorial.png)
